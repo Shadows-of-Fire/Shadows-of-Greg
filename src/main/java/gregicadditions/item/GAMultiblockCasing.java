@@ -13,7 +13,7 @@ public class GAMultiblockCasing extends VariantBlock<GAMultiblockCasing.CasingTy
 
 	public GAMultiblockCasing() {
 		super(Material.IRON);
-		setTranslationKey("ga_multiblock_casing");
+		//setTranslationKey("ga_multiblock_casing");
 		setHardness(5.0f);
 		setResistance(10.0f);
 		setSoundType(SoundType.METAL);

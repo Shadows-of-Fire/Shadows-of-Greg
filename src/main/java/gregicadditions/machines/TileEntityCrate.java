@@ -25,6 +25,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
+import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -88,8 +89,8 @@ public class TileEntityCrate extends MetaTileEntity {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public TextureAtlasSprite getParticleTexture() {
-		return material.toString().contains("wood") ? Textures.WOODEN_CHEST.getParticleTexture() : ClientHandler.METAL_CRATE.getParticleTexture();
+	public Pair<TextureAtlasSprite, Integer> getParticleTexture() {
+		return Pair.of(material.toString().contains("wood") ? Textures.WOODEN_CHEST.getParticleTexture() : ClientHandler.METAL_CRATE.getParticleTexture(), 16777215);
 	}
 
 	@Override
