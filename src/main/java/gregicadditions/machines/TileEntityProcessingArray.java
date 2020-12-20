@@ -1,12 +1,7 @@
 package gregicadditions.machines;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import gregicadditions.GAEnums;
 import gregicadditions.recipes.GARecipeMaps;
@@ -30,6 +25,7 @@ import gregtech.api.render.ICubeRenderer;
 import gregtech.api.render.Textures;
 import gregtech.api.util.GTLog;
 import gregtech.api.util.GTUtility;
+import gregtech.api.util.InventoryUtils;
 import gregtech.common.blocks.BlockMetalCasing.MetalCasingType;
 import gregtech.common.blocks.MetaBlocks;
 import net.minecraft.block.state.IBlockState;
@@ -238,7 +234,18 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			List<FluidStack> outputF = new ArrayList<>();
 			this.multiplyInputsAndOutputs(newRecipeInputs, newFluidInputs, outputI, outputF, r, numberOfOperations);
 
-			RecipeBuilder<?> newRecipe = recipeM.recipeBuilder().inputsIngredients(newRecipeInputs).fluidInputs(newFluidInputs).outputs(outputI).fluidOutputs(outputF).EUt(r.getEUt()).duration(r.getDuration());
+			//Checks to see if all the generated items can fit inside the output buses.
+			if(!InventoryUtils.simulateItemStackMerge(outputI, getOutputInventory())) {
+				return null;
+			}
+
+			RecipeBuilder<?> newRecipe = recipeM.recipeBuilder()
+					.inputsIngredients(newRecipeInputs)
+					.fluidInputs(newFluidInputs)
+					.outputs(outputI)
+					.fluidOutputs(outputF)
+					.EUt(r.getEUt())
+					.duration(r.getDuration());
 
 			copyChancedItemOutputs(newRecipe, r, numberOfOperations);
 			newRecipe.notConsumable(this.machineItemStack);
@@ -259,7 +266,7 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 		}
 
 		protected void findIngredients(Set<ItemStack> countIngredients, IItemHandlerModifiable inputs) {
-
+			//Seems Extremely inefficient, also finds the machine stack
 			for (int slot = 0; slot < inputs.getSlots(); slot++) {
 				ItemStack wholeItemStack = inputs.getStackInSlot(slot);
 				String name = wholeItemStack.getItem().getUnlocalizedNameInefficiently(wholeItemStack);
@@ -355,8 +362,9 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			for (ItemStack s : r.getOutputs()) {
 				int num = s.getCount() * numberOfOperations;
 				ItemStack itemCopy = s.copy();
-				itemCopy.setCount(num);
-				outputI.add(itemCopy);
+				ArrayList<ItemStack> temp = new ArrayList<>();
+				computeOutputItemStacks(temp, itemCopy, num);
+				outputI.addAll(temp);
 			}
 			for (FluidStack f : r.getFluidOutputs()) {
 				int fluidNum = f.amount * numberOfOperations;
@@ -421,7 +429,9 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 
 			if (!enoughPower) { return false; }
 
-			return MetaTileEntity.addItemsToItemHandler(exportInventory, true, recipe.getAllItemOutputs(exportInventory.getSlots())) && MetaTileEntity.addFluidsToFluidHandler(exportFluids, true, recipe.getFluidOutputs()) && recipe.matches(true, importInventory, importFluids);
+			return MetaTileEntity.addItemsToItemHandler(exportInventory, true, recipe.getAllItemOutputs(exportInventory.getSlots())) &&
+					MetaTileEntity.addFluidsToFluidHandler(exportFluids, true, recipe.getFluidOutputs()) &&
+					recipe.matches(true, importInventory, importFluids);
 		}
 
 		@Override
@@ -483,6 +493,36 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			metaTileEntity.markDirty();
 			if (!metaTileEntity.getWorld().isRemote) {
 				writeCustomData(1, buf -> buf.writeBoolean(active));
+			}
+		}
+
+		private void computeOutputItemStacks(Collection<ItemStack> recipeOutputs,
+											 ItemStack outputStack,
+											 int outputAmount)
+		{
+			if(!outputStack.isEmpty()) {
+
+				// max items allowed in a stack
+				int maxCount = outputStack.getMaxStackSize();
+
+				// number of whole stacks of output this will make
+				int numStacks = outputAmount / maxCount;
+
+				// number of items left (partial stack)
+				int remainder = outputAmount % maxCount;
+
+				// Add full stacks of the output item
+				for(int fullStacks = numStacks; fullStacks > 0; fullStacks--) {
+					ItemStack full = outputStack.copy();
+					recipeOutputs.add(full);
+				}
+
+				// if there is a partial stack, add it too
+				if(remainder > 0) {
+					ItemStack partial = outputStack.copy();
+					partial.setCount(remainder);
+					recipeOutputs.add(partial);
+				}
 			}
 		}
 
