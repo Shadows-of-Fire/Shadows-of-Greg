@@ -44,7 +44,7 @@ public class GAMachineRecipeRemoval {
 			}
 
 			//Remove Old Rotor Recipe
-			if (!OreDictUnifier.get(OrePrefix.rotor, m).isEmpty() && GAConfig.GT6.BendingRotors && GAConfig.GT6.BendingCylinders) removeRecipesByInputs(RecipeMaps.ASSEMBLER_RECIPES, OreDictUnifier.get(OrePrefix.plate, m, 4), OreDictUnifier.get(OrePrefix.ring, m));
+			if (!OreDictUnifier.get(OrePrefix.rotor, m).isEmpty() && !OreDictUnifier.get(OrePrefix.valueOf("plateCurved"), m).isEmpty() && GAConfig.GT6.BendingRotors && GAConfig.GT6.BendingCylinders) removeRecipesByInputs(RecipeMaps.ASSEMBLER_RECIPES, OreDictUnifier.get(OrePrefix.plate, m, 4), OreDictUnifier.get(OrePrefix.ring, m));
 
 			//Remove Old Wrench Recipes
 			if (m instanceof IngotMaterial && !m.hasFlag(DustMaterial.MatFlags.NO_SMASHING) && GAConfig.GT6.ExpensiveWrenches) {
@@ -71,7 +71,7 @@ public class GAMachineRecipeRemoval {
 		}
 
 		//Remove Old Bucket Recipe
-		if (GAConfig.GT6.BendingCurvedPlates) {
+		if (GAConfig.GT6.BendingCurvedPlates && GAConfig.GT6.addCurvedPlates) {
 			removeRecipesByInputs(RecipeMaps.BENDER_RECIPES, OreDictUnifier.get(OrePrefix.plate, Materials.Iron, 12), IntCircuitIngredient.getIntegratedCircuit(1));
 			removeRecipesByInputs(RecipeMaps.BENDER_RECIPES, OreDictUnifier.get(OrePrefix.plate, Materials.WroughtIron, 12), IntCircuitIngredient.getIntegratedCircuit(1));
 		}
