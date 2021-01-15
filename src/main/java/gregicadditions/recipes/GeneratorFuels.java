@@ -17,11 +17,6 @@ public class GeneratorFuels {
 	public static void init() {
 		//Removal
 		removeFuelRecipe(RecipeMaps.DIESEL_GENERATOR_FUELS, Materials.LightFuel.getFluid(1));
-		//Note that GTCE currently adds Hydrogen to the gas generator twice. Once this is fixed, its removal and addition
-		//here can be removed, as the added recipe is the same as the GTCE one.
-		removeFuelRecipe(RecipeMaps.GAS_TURBINE_FUELS, Materials.Hydrogen.getFluid(1));
-		//Note, the same thing happens for Methane as for Hydrogen
-		removeFuelRecipe(RecipeMaps.GAS_TURBINE_FUELS, Materials.Methane.getFluid(1));
 		removeFuelRecipe(RecipeMaps.SEMI_FLUID_GENERATOR_FUELS, Materials.Creosote.getFluid(2));
 		removeFuelRecipe(RecipeMaps.STEAM_TURBINE_FUELS, Materials.Steam.getFluid(60));
 
@@ -29,8 +24,6 @@ public class GeneratorFuels {
 		FuelRecipes.registerSteamGeneratorFuel(Materials.Steam.getFluid(64), 1, GTValues.LV);
 
 		//Gas Turbine Fuels
-		FuelRecipes.registerGasGeneratorFuel(Materials.Hydrogen.getFluid(8), 5, GTValues.LV);
-		FuelRecipes.registerGasGeneratorFuel(Materials.Methane.getFluid(4), 14, GTValues.LV);
 		FuelRecipes.registerGasGeneratorFuel(Materials.RocketFuel.getFluid(16), 125, GTValues.LV);
 
 		//Diesel Generator Fluids
