@@ -17,7 +17,9 @@ public class GeneratorFuels {
 	public static void init() {
 		//Removal
 		removeFuelRecipe(RecipeMaps.DIESEL_GENERATOR_FUELS, Materials.LightFuel.getFluid(1));
-		removeFuelRecipe(RecipeMaps.SEMI_FLUID_GENERATOR_FUELS, Materials.Creosote.getFluid(2));
+		removeFuelRecipe(RecipeMaps.SEMI_FLUID_GENERATOR_FUELS, Materials.Creosote.getFluid(14));
+		removeFuelRecipe(RecipeMaps.SEMI_FLUID_GENERATOR_FUELS, Materials.OilLight.getFluid(64));
+		removeFuelRecipe(RecipeMaps.SEMI_FLUID_GENERATOR_FUELS, Materials.OilMedium.getFluid(32));
 		removeFuelRecipe(RecipeMaps.STEAM_TURBINE_FUELS, Materials.Steam.getFluid(60));
 
 		//Steam Turbine
@@ -41,9 +43,6 @@ public class GeneratorFuels {
 		FuelRecipes.registerSemiFluidGeneratorFuel(Materials.Biomass.getFluid(16), 1, GTValues.LV);
 		FuelRecipes.registerSemiFluidGeneratorFuel(Materials.OilLight.getFluid(32), 5, GTValues.LV);
 		FuelRecipes.registerSemiFluidGeneratorFuel(Materials.OilMedium.getFluid(64), 15, GTValues.LV);
-		FuelRecipes.registerSemiFluidGeneratorFuel(Materials.OilHeavy.getFluid(16), 5, GTValues.LV);
-		FuelRecipes.registerSemiFluidGeneratorFuel(Materials.SulfuricHeavyFuel.getFluid(16), 5, GTValues.LV);
-		FuelRecipes.registerSemiFluidGeneratorFuel(Materials.HeavyFuel.getFluid(8), 15, GTValues.LV);
 	}
 
 	//Register Methods
