@@ -31,7 +31,7 @@ public class CommonProxy {
 	}
 
 	public void postInit() {
-		if (!GAConfig.GTBees.EnableGTCEBees || !Loader.isModLoaded("forestry")) return;
+		if (!GAConfig.GTBees.EnableGTCEBees || !Loader.isModLoaded("forestry") || !ForestryAPI.enabledModules.contains(new ResourceLocation("forestry","apiculture"))) return;
 		if (GAConfig.GTBees.GenerateCentrifugeRecipes) for (ICentrifugeRecipe recipe : RecipeManagers.centrifugeManager.recipes()) {
 			SimpleRecipeBuilder builder = RecipeMaps.CENTRIFUGE_RECIPES.recipeBuilder();
 			builder.inputs(recipe.getInput().copy());
