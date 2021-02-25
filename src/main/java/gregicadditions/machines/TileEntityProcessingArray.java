@@ -133,7 +133,6 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 												  .duration(recipe.getDuration());
 
 			copyChancedItemOutputs(newRecipe, recipe, minMultiplier);
-			//newRecipe.notConsumable(this.machineItemStack);
 			this.numberOfOperations = minMultiplier;
 			return newRecipe.build().getResult();
 		}
@@ -174,19 +173,13 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 				}
 			});
 
-			//Convert the ItemStack List to an Item List, for the ability to compare items while ignoring stack count
-			List<Item> itemList = new ArrayList<>();
-			for(ItemStack item : itemStackList) {
-				itemList.add(item.getItem());
-			}
-
 			//Iterate over the input inventory, to match items in the input inventory to the recipe items
 			for(int slot = 0; slot < inputs.getSlots(); slot++) {
 				ItemStack wholeItemStack = inputs.getStackInSlot(slot);
 
 				//Skips empty slots in the input inventory, and slots that don't contain a recipe ingredient
 				//This means that the machine stack and non Consumed inputs are not added to the Ingredients list
-				if(wholeItemStack.isEmpty() || !itemList.contains(wholeItemStack.getItem())) {
+				if(wholeItemStack.isEmpty() || itemStackList.stream().anyMatch(stack -> areItemStacksEqual(stack, wholeItemStack))) {
 					continue;
 				}
 
