@@ -99,8 +99,11 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			if(recipe == null)
 				return null;
 
-			int itemMultiplier = getMinRatioItem(findIngredients(inputs), recipe, this.numberOfMachines);
-			int fluidMultiplier = getMinRatioFluid(findFluid(fluidInputs), recipe, this.numberOfMachines);
+			Set<ItemStack> ingredientStacks = findIngredients(inputs, recipe);
+			Map<String, Integer> fluidStacks = findFluid(fluidInputs);
+
+			int itemMultiplier = getMinRatioItem(ingredientStacks, recipe, this.numberOfMachines);
+			int fluidMultiplier = getMinRatioFluid(fluidStacks, recipe, this.numberOfMachines);
 
 			int minMultiplier = Math.min(itemMultiplier, fluidMultiplier);
 
@@ -130,7 +133,7 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 												  .duration(recipe.getDuration());
 
 			copyChancedItemOutputs(newRecipe, recipe, minMultiplier);
-			newRecipe.notConsumable(this.machineItemStack);
+			//newRecipe.notConsumable(this.machineItemStack);
 			this.numberOfOperations = minMultiplier;
 			return newRecipe.build().getResult();
 		}
@@ -148,28 +151,68 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			}
 		}
 
-		protected static Set<ItemStack> findIngredients(IItemHandlerModifiable inputs) {
-			Set<ItemStack> countIngredients = new HashSet<>();
+		protected static Set<ItemStack> findIngredients(IItemHandlerModifiable inputs, Recipe recipe) {
+			Set<ItemStack> countedIngredients = new HashSet<>();
+
+			//Convert the CountableIngredient recipe Inputs to an ItemStack list. This is safe because at this point, the recipe
+			//is already known not to be null
+			List<ItemStack> itemStackList = new ArrayList<>();
+			recipe.getInputs().forEach(ingredient -> {
+				int count = ingredient.getCount();
+				ItemStack itemStack = null;
+				int meta = 0;
+				ItemStack[] matching = ingredient.getIngredient().getMatchingStacks();
+				if (matching.length > 0) {
+					for (ItemStack stack : matching) {
+						if (stack != null) {
+							itemStack = stack;
+							meta = stack.getMetadata();
+							break;
+						}
+					}
+					itemStackList.add(new ItemStack(itemStack.getItem(), count, meta));
+				}
+			});
+
+			//Convert the ItemStack List to an Item List, for the ability to compare items while ignoring stack count
+			List<Item> itemList = new ArrayList<>();
+			for(ItemStack item : itemStackList) {
+				itemList.add(item.getItem());
+			}
+
+			//Iterate over the input inventory, to match items in the input inventory to the recipe items
 			for(int slot = 0; slot < inputs.getSlots(); slot++) {
 				ItemStack wholeItemStack = inputs.getStackInSlot(slot);
 
-				// skip empty slots
-				if(wholeItemStack.isEmpty())
+				//Skips empty slots in the input inventory, and slots that don't contain a recipe ingredient
+				//This means that the machine stack and non Consumed inputs are not added to the Ingredients list
+				if(wholeItemStack.isEmpty() || !itemList.contains(wholeItemStack.getItem())) {
 					continue;
+				}
 
-				boolean found = false;
-				for(ItemStack i : countIngredients)
-					if(ItemStack.areItemsEqual(i, wholeItemStack)) {
-						i.setCount(i.getCount() + wholeItemStack.getCount());
-						found = true;
-						break;
+				//If there is nothing in the ingredient list, add the current item
+				if(countedIngredients.isEmpty()) {
+					countedIngredients.add(wholeItemStack.copy());
+				}
+				//Increment count of current items, or add new items
+				else {
+					Iterator<ItemStack> ciIterator = countedIngredients.iterator();
+
+					while(ciIterator.hasNext()) {
+						ItemStack stack = ciIterator.next();
+
+						if(countedIngredients.contains(stack)) {
+							stack.setCount(stack.getCount() + wholeItemStack.getCount());
+						}
+						else {
+							countedIngredients.add(stack.copy());
+						}
+
 					}
-
-				if(!found)
-					countIngredients.add(wholeItemStack.copy());
+				}
 
 			}
-			return countIngredients;
+			return countedIngredients;
 		}
 
 		protected int getMinRatioItem(Set<ItemStack> countIngredients,
@@ -280,7 +323,7 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 
 					MetaTileEntity mte = GregTechAPI.META_TILE_ENTITY_REGISTRY.getObjectById(wholeItemStack.getItemDamage());
 
-					//All MTEs tested should have tiers
+					//All MTEs tested should have tiers, this stops Multiblocks from working in the PA
 					if(mte instanceof TieredMetaTileEntity) {
 
 						RecipeMap<?> rmap = RecipeMap.getByName(recipeMapName);
@@ -341,6 +384,7 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			IMultipleTankHandler importFluids = getInputTank();
 			IMultipleTankHandler exportFluids = getOutputTank();
 
+			//Format: EU/t, duration
 			int[] resultOverclock = calculateOverclock(recipe.getEUt(), voltageTier, recipe.getDuration());
 			int totalEUt = resultOverclock[0] * resultOverclock[1] * this.numberOfOperations;
 
