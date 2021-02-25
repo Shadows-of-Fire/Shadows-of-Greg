@@ -1,7 +1,9 @@
 package gregicadditions.machines;
 
-import gregicadditions.*;
+import gregicadditions.GAConfig;
 import gregicadditions.recipes.*;
+import gregtech.api.GTValues;
+import gregtech.api.GregTechAPI;
 import gregtech.api.capability.*;
 import gregtech.api.capability.impl.*;
 import gregtech.api.metatileentity.*;
@@ -9,6 +11,7 @@ import gregtech.api.metatileentity.multiblock.*;
 import gregtech.api.multiblock.*;
 import gregtech.api.recipes.*;
 import gregtech.api.recipes.Recipe.*;
+import gregtech.api.recipes.builders.*;
 import gregtech.api.render.*;
 import gregtech.api.util.*;
 import gregtech.common.blocks.BlockMetalCasing.*;
@@ -67,107 +70,13 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 	}
 
 	protected static class ProcessingArrayWorkable extends MultiblockRecipeLogic {
-		int machineTierVoltage = 0;
+		long voltageTier;
 		int numberOfMachines = 0;
 		int numberOfOperations = 0;
 		ItemStack machineItemStack = null;
-		String machineName = "";
 
 		public ProcessingArrayWorkable(RecipeMapMultiblockController tileEntity) {
 			super(tileEntity);
-		}
-
-		// FIXME: there's gotta be a better way to do this
-		public RecipeMap<?> getRecipeMaps(String machineName) {
-			switch(machineName) {
-				case "macerator":
-					return RecipeMaps.MACERATOR_RECIPES;
-				case "cluster_mill":
-					return GARecipeMaps.CLUSTER_MILL_RECIPES;
-				case "lathe":
-					return RecipeMaps.LATHE_RECIPES;
-				case "extractor":
-					return RecipeMaps.EXTRACTOR_RECIPES;
-				case "fluid_extractor":
-					return RecipeMaps.FLUID_EXTRACTION_RECIPES;
-				case "alloy_smelter":
-					return RecipeMaps.ALLOY_SMELTER_RECIPES;
-				case "ore_washer":
-					return RecipeMaps.ORE_WASHER_RECIPES;
-				case "thermal_centrifuge":
-					return RecipeMaps.THERMAL_CENTRIFUGE_RECIPES;
-				case "centrifuge":
-					return RecipeMaps.CENTRIFUGE_RECIPES;
-				case "electrolyzer":
-					return RecipeMaps.ELECTROLYZER_RECIPES;
-				case "electric_furnace":
-					return RecipeMaps.FURNACE_RECIPES;
-				case "bender":
-					return RecipeMaps.BENDER_RECIPES;
-				case "arc_furnace":
-					return RecipeMaps.ARC_FURNACE_RECIPES;
-				case "autoclave":
-					return RecipeMaps.AUTOCLAVE_RECIPES;
-				case "assembler":
-					return RecipeMaps.ASSEMBLER_RECIPES;
-				case "brewery":
-					return RecipeMaps.BREWING_RECIPES;
-				case "canner":
-					return RecipeMaps.CANNER_RECIPES;
-				case "chemical_bath":
-					return RecipeMaps.CHEMICAL_BATH_RECIPES;
-				case "chemical_reactor":
-					return RecipeMaps.CHEMICAL_RECIPES;
-				case "compressor":
-					return RecipeMaps.COMPRESSOR_RECIPES;
-				case "cutter":
-					return RecipeMaps.CUTTER_RECIPES;
-				case "distillery":
-					return RecipeMaps.DISTILLATION_RECIPES;
-				case "electromagnetic_separator":
-					return RecipeMaps.ELECTROMAGNETIC_SEPARATOR_RECIPES;
-				case "fermenter":
-					return RecipeMaps.FERMENTING_RECIPES;
-				case "fluid_canner":
-					return RecipeMaps.FLUID_CANNER_RECIPES;
-				case "fluid_heater":
-					return RecipeMaps.FLUID_HEATER_RECIPES;
-				case "fluid_solidifier":
-					return RecipeMaps.FLUID_SOLIDFICATION_RECIPES;
-				case "forge_hammer":
-					return RecipeMaps.FORGE_HAMMER_RECIPES;
-				case "forming_press":
-					return RecipeMaps.FORMING_PRESS_RECIPES;
-				case "microwave":
-					return RecipeMaps.MICROWAVE_RECIPES;
-				case "mixer":
-					return RecipeMaps.MIXER_RECIPES;
-				case "packer":
-					return RecipeMaps.PACKER_RECIPES;
-				case "unpacker":
-					return RecipeMaps.UNPACKER_RECIPES;
-				case "plasma_arc_furnace":
-					return RecipeMaps.PLASMA_ARC_FURNACE_RECIPES;
-				case "polarizer":
-					return RecipeMaps.POLARIZER_RECIPES;
-				case "laser_engraver":
-					return RecipeMaps.LASER_ENGRAVER_RECIPES;
-				case "wiremill":
-					return RecipeMaps.WIREMILL_RECIPES;
-				case "mass_fab":
-					return GARecipeMaps.MASS_FAB_RECIPES;
-				case "replicator":
-					return GARecipeMaps.REPLICATOR_RECIPES;
-				case "sifter":
-					return RecipeMaps.SIFTER_RECIPES;
-				case "extruder":
-					return RecipeMaps.EXTRUDER_RECIPES;
-				case "bundler":
-					return GARecipeMaps.BUNDLER_RECIPES;
-				default:
-					return null;
-			}
-
 		}
 
 		@Override
@@ -175,14 +84,13 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 									IItemHandlerModifiable inputs,
 									IMultipleTankHandler fluidInputs) {
 
-			String machineName = findMachine(inputs);
-			RecipeMap<?> recipeMap = getRecipeMaps(machineName);
+			RecipeMap<?> recipeMap = findRecipeMap(inputs);
 
 			// No valid recipe map.
 			if(recipeMap == null)
 				return null;
 
-			Recipe recipe = recipeMap.findRecipe(machineTierVoltage,
+			Recipe recipe = recipeMap.findRecipe(voltageTier,
 												 inputs,
 												 fluidInputs,
 												 this.getMinTankCapacity(this.getOutputTank()));
@@ -356,31 +264,73 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 														  fluidStack.amount * numberOfOperations)));
 		}
 
-		protected String findMachine(IItemHandlerModifiable inputs) {
+		protected RecipeMap findRecipeMap(IItemHandlerModifiable inputs) {
 
 			for(int slot = 0; slot < inputs.getSlots(); slot++) {
 
-				// find tileentity
 				ItemStack wholeItemStack = inputs.getStackInSlot(slot);
 				String unlocalizedName = wholeItemStack.getItem().getUnlocalizedNameInefficiently(wholeItemStack);
+				String recipeMapName = findRecipeMapName(unlocalizedName);
 
-				if(unlocalizedName.contains("gregtech.machine") || unlocalizedName.contains("gtadditions.machine")) {
-					this.numberOfMachines = Math.min(16, wholeItemStack.getCount());
-					String trimmedName;
-					String voltage = unlocalizedName.substring(unlocalizedName.lastIndexOf(".") + 1);
-					trimmedName = unlocalizedName.substring(0, unlocalizedName.lastIndexOf("."));
 
-					//Checks if the tile entity is actually a machine
-					if(!GAEnums.voltageMap.containsKey(voltage))
-						continue;
+				//Use Unlocalized name checks to prevent false positives from any item with metadata
+				if((unlocalizedName.contains("gregtech.machine") || unlocalizedName.contains("gtadditions.machine")) &&
+						!findMachineInBlacklist(recipeMapName) &&
+						GregTechAPI.META_TILE_ENTITY_REGISTRY.getObjectById(wholeItemStack.getItemDamage()) != null) {
 
-					this.machineName = trimmedName.substring(trimmedName.lastIndexOf(".") + 1);
-					this.machineTierVoltage = GAEnums.voltageMap.get(voltage);
-					this.machineItemStack = wholeItemStack;
-					break;
+					MetaTileEntity mte = GregTechAPI.META_TILE_ENTITY_REGISTRY.getObjectById(wholeItemStack.getItemDamage());
+
+					//All MTEs tested should have tiers
+					if(mte instanceof TieredMetaTileEntity) {
+
+						RecipeMap<?> rmap = RecipeMap.getByName(recipeMapName);
+
+						//Find the RecipeMap of the MTE and ensure that the Processing Array only works on SimpleRecipeBuilders
+						//For some reason GTCE has specialized recipe maps for some machines, when it does not need them
+						if (rmap != null && (rmap.recipeBuilder() instanceof SimpleRecipeBuilder ||
+								rmap.recipeBuilder() instanceof IntCircuitRecipeBuilder ||
+								rmap.recipeBuilder() instanceof ArcFurnaceRecipeBuilder ||
+								rmap.recipeBuilder() instanceof CutterRecipeBuilder ||
+								rmap.recipeBuilder() instanceof UniversalDistillationRecipeBuilder)) {
+							//Find the voltage tier of the machine
+							this.voltageTier = GTValues.V[((TieredMetaTileEntity) mte).getTier()];
+							//Find the number of machines
+							this.numberOfMachines = Math.min(GAConfig.processingArray.processingArrayMachineLimit, wholeItemStack.getCount());
+							//The machine Item Stack. Is this needed if we remove the machine from being found in the ingredients?
+							this.machineItemStack = wholeItemStack;
+
+							return rmap;
+
+						}
+
+					}
 				}
 			}
-			return machineName;
+			return null;
+		}
+
+		public String findRecipeMapName(String unlocalizedName) {
+
+			String trimmedName = unlocalizedName.substring(0, unlocalizedName.lastIndexOf("."));
+			trimmedName = trimmedName.substring(trimmedName.lastIndexOf(".") + 1);
+
+			//For some reason, the Cutting saw's machine name does not match the recipe map's unlocalized name, so correct it
+			//Same with the Electric Furnace
+			if(trimmedName.equals("cutter")) {
+				trimmedName = "cutting_saw";
+			}
+			else if(trimmedName.equals("electric_furnace")) {
+				trimmedName = "furnace";
+			}
+
+			return trimmedName;
+		}
+
+		public boolean findMachineInBlacklist(String unlocalizedName) {
+
+			String[] blacklist = GAConfig.processingArray.machineBlackList;
+
+			return Arrays.asList(blacklist).contains(unlocalizedName);
 		}
 
 		@Override
@@ -391,7 +341,7 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			IMultipleTankHandler importFluids = getInputTank();
 			IMultipleTankHandler exportFluids = getOutputTank();
 
-			int[] resultOverclock = calculateOverclock(recipe.getEUt(), machineTierVoltage, recipe.getDuration());
+			int[] resultOverclock = calculateOverclock(recipe.getEUt(), voltageTier, recipe.getDuration());
 			int totalEUt = resultOverclock[0] * resultOverclock[1] * this.numberOfOperations;
 
 			boolean enoughPower;
@@ -445,7 +395,7 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 
 		@Override
 		protected void setupRecipe(Recipe recipe) {
-			int[] resultOverclock = calculateOverclock(recipe.getEUt(), machineTierVoltage, recipe.getDuration());
+			int[] resultOverclock = calculateOverclock(recipe.getEUt(), voltageTier, recipe.getDuration());
 			this.progressTime = 1;
 			setMaxProgress(resultOverclock[1]);
 			this.recipeEUt = resultOverclock[0] * this.numberOfOperations;
