@@ -179,7 +179,7 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 
 				//Skips empty slots in the input inventory, and slots that don't contain a recipe ingredient
 				//This means that the machine stack and non Consumed inputs are not added to the Ingredients list
-				if(wholeItemStack.isEmpty() || itemStackList.stream().anyMatch(stack -> areItemStacksEqual(stack, wholeItemStack))) {
+				if(wholeItemStack.isEmpty() || !itemStackList.stream().anyMatch(stack -> areItemStacksEqual(stack, wholeItemStack))) {
 					continue;
 				}
 
@@ -455,12 +455,13 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			boolean dirty = checkRecipeInputsDirty(importInventory, importFluids);
 			if(dirty || forceRecipeRecheck) {
 				//Check if the machine that the PA is operating on has changed
-				if (!areItemStacksEqual(machineItemStack, findValidMachine(importInventory))) {
+				ItemStack newMachineStack = findValidMachine(importInventory);
+				if (newMachineStack == null || this.machineItemStack == null || !areItemStacksEqual(machineItemStack, newMachineStack)) {
 					previousRecipe = null;
 				}
-				this.forceRecipeRecheck = false;
 			}
-			else if(previousRecipe != null &&
+
+			if(previousRecipe != null &&
 					previousRecipe.matches(false, importInventory, importFluids)) {
 				currentRecipe = previousRecipe;
 			}
@@ -472,11 +473,14 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 				if(currentRecipe != null) {
 					this.previousRecipe = currentRecipe;
 				}
+
+				this.forceRecipeRecheck = false;
 			}
 
 			//Attempts to run the current recipe, if it is not null
-			if(currentRecipe != null && setupAndConsumeRecipeInputs(currentRecipe))
+			if(currentRecipe != null && setupAndConsumeRecipeInputs(currentRecipe)) {
 				setupRecipe(currentRecipe);
+			}
 		}
 
 		@Override
