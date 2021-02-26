@@ -489,7 +489,7 @@ gregtech.multiblock.fusion_reactor.heat=Heat: %d
 # Processing Array
 recipemap.processing_array.name=Processing Array
 gtadditions.machine.processing_array.name=Processing Array
-gregtech.multiblock.processing_array.description=The Processing Array combines up to 16 single block machines in a single multiblock, effectively easing automation.
+gregtech.multiblock.processing_array.description=The Processing Array combines up to %d single block machine(s) in a single multiblock, effectively easing automation.
 
 # Assembly Line
 recipemap.assembly_line.name=Assembly Line

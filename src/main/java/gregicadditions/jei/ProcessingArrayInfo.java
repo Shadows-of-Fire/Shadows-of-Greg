@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 
+import gregicadditions.GAConfig;
 import gregicadditions.machines.GATileEntities;
 import gregtech.api.GTValues;
 import gregtech.api.metatileentity.multiblock.MultiblockControllerBase;
@@ -50,7 +51,7 @@ public class ProcessingArrayInfo extends MultiblockInfoPage {
 
 	@Override
 	public String[] getDescription() {
-		return new String[] { I18n.format("gregtech.multiblock.processing_array.description") };
+		return new String[] { I18n.format("gregtech.multiblock.processing_array.description", GAConfig.processingArray.processingArrayMachineLimit) };
 	}
 
 }
