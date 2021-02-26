@@ -345,6 +345,47 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			return null;
 		}
 
+		//A similar method to findRecipeMap, but instead returns the MTE the PA will be using for recipes.
+		//Using for checking if the recipe could have changed.
+		protected ItemStack findValidMachine(IItemHandlerModifiable inputs) {
+
+			for(int slot = 0; slot < inputs.getSlots(); slot++) {
+
+				ItemStack wholeItemStack = inputs.getStackInSlot(slot);
+				String unlocalizedName = wholeItemStack.getItem().getUnlocalizedNameInefficiently(wholeItemStack);
+				String recipeMapName = findRecipeMapName(unlocalizedName);
+
+
+				//Use Unlocalized name checks to prevent false positives from any item with metadata
+				if((unlocalizedName.contains("gregtech.machine") || unlocalizedName.contains("gtadditions.machine")) &&
+						!findMachineInBlacklist(recipeMapName) &&
+						GregTechAPI.META_TILE_ENTITY_REGISTRY.getObjectById(wholeItemStack.getItemDamage()) != null) {
+
+					MetaTileEntity mte = GregTechAPI.META_TILE_ENTITY_REGISTRY.getObjectById(wholeItemStack.getItemDamage());
+
+					//All MTEs tested should have tiers, this stops Multiblocks from working in the PA
+					if(mte instanceof TieredMetaTileEntity) {
+
+						RecipeMap<?> rmap = RecipeMap.getByName(recipeMapName);
+
+						//Find the RecipeMap of the MTE and ensure that the Processing Array only works on SimpleRecipeBuilders
+						//For some reason GTCE has specialized recipe maps for some machines, when it does not need them
+						if (rmap != null && (rmap.recipeBuilder() instanceof SimpleRecipeBuilder ||
+								rmap.recipeBuilder() instanceof IntCircuitRecipeBuilder ||
+								rmap.recipeBuilder() instanceof ArcFurnaceRecipeBuilder ||
+								rmap.recipeBuilder() instanceof CutterRecipeBuilder ||
+								rmap.recipeBuilder() instanceof UniversalDistillationRecipeBuilder)) {
+
+							return wholeItemStack;
+
+						}
+
+					}
+				}
+			}
+			return null;
+		}
+
 		public String findRecipeMapName(String unlocalizedName) {
 
 			String trimmedName = unlocalizedName.substring(0, unlocalizedName.lastIndexOf("."));
@@ -413,19 +454,27 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 
 			boolean dirty = checkRecipeInputsDirty(importInventory, importFluids);
 			if(dirty || forceRecipeRecheck) {
+				//Check if the machine that the PA is operating on has changed
+				if (!areItemStacksEqual(machineItemStack, findValidMachine(importInventory))) {
+					previousRecipe = null;
+				}
 				this.forceRecipeRecheck = false;
-
-				// else, try searching new recipe for given inputs
-				currentRecipe = findRecipe(maxVoltage, importInventory, importFluids);
-
-				if(currentRecipe != null)
-					this.previousRecipe = currentRecipe;
-
-			} else if(previousRecipe != null &&
-				previousRecipe.matches(false, importInventory, importFluids)) {
-				// if previous recipe still matches inputs, try to use it
+			}
+			else if(previousRecipe != null &&
+					previousRecipe.matches(false, importInventory, importFluids)) {
 				currentRecipe = previousRecipe;
 			}
+			else {
+				//If the previous recipe was null, or does not match the current recipe, search for a new recipe
+				currentRecipe = findRecipe(maxVoltage, importInventory, importFluids);
+
+				//Update the previous recipe
+				if(currentRecipe != null) {
+					this.previousRecipe = currentRecipe;
+				}
+			}
+
+			//Attempts to run the current recipe, if it is not null
 			if(currentRecipe != null && setupAndConsumeRecipeInputs(currentRecipe))
 				setupRecipe(currentRecipe);
 		}
