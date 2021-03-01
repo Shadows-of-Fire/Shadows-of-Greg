@@ -461,6 +461,7 @@ gtadditions.machine.bundler.uv.tooltip=Lapinotron 9000
 
 # Machine Access Interface
 gtadditions.machine.machine_holder.name=Machine Access Interface
+gtadditions.machine.machine_holder.tooltip=Specialized Access Bus required for the Processing Array to hold the machines the Processing Array is operating on. Only holds valid machines.
 
 # Pump
 gtadditions.machine.pump.iv.name=Advanced Pump IV
