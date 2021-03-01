@@ -459,6 +459,8 @@ gtadditions.machine.bundler.zpm.tooltip=Lapinotron 6000
 gtadditions.machine.bundler.uv.name=Elite Bundler III
 gtadditions.machine.bundler.uv.tooltip=Lapinotron 9000
 
+# Machine Access Interface
+gtadditions.machine.machine_holder.name=Machine Access Interface
 
 # Pump
 gtadditions.machine.pump.iv.name=Advanced Pump IV

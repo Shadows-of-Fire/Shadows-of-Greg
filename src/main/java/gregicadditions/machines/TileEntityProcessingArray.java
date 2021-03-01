@@ -1,5 +1,6 @@
 package gregicadditions.machines;
 
+import gregicadditions.GACapabilities;
 import gregicadditions.GAConfig;
 import gregicadditions.recipes.*;
 import gregtech.api.GTValues;
@@ -9,6 +10,7 @@ import gregtech.api.capability.impl.*;
 import gregtech.api.metatileentity.*;
 import gregtech.api.metatileentity.multiblock.*;
 import gregtech.api.multiblock.*;
+import gregtech.api.multiblock.BlockWorldState;
 import gregtech.api.recipes.*;
 import gregtech.api.recipes.Recipe.*;
 import gregtech.api.recipes.builders.*;
@@ -23,6 +25,7 @@ import net.minecraftforge.fluids.*;
 import net.minecraftforge.items.*;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 
@@ -45,8 +48,10 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 		return FactoryBlockPattern.start()
 								  .aisle("XXX", "XXX", "XXX")
 								  .aisle("XXX", "X#X", "XXX")
-								  .aisle("XXX", "XSX", "XXX")
+								  .aisle("XMX", "XSX", "XXX")
 								  .setAmountAtLeast('L', 12)
+								  .setAmountAtMost('M', 1)
+								  .where('M', machineHolderPredicate())
 								  .where('L', statePredicate(getCasingState()))
 								  .where('S', selfPredicate())
 								  .where('X',
@@ -57,6 +62,12 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 
 	public IBlockState getCasingState() {
 		return MetaBlocks.METAL_CASING.getState(MetalCasingType.TUNGSTENSTEEL_ROBUST);
+	}
+
+	public Predicate<BlockWorldState> machineHolderPredicate() {
+		return tilePredicate((state, tile) ->
+			tile instanceof IMultiblockAbilityPart && ((IMultiblockAbilityPart) tile).getAbility().equals(GACapabilities.PA_MACHINE_CONTAINER)
+		);
 	}
 
 	@Override
@@ -84,7 +95,23 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 									IItemHandlerModifiable inputs,
 									IMultipleTankHandler fluidInputs) {
 
-			RecipeMap<?> recipeMap = findRecipeMap(inputs);
+			this.machineItemStack = findMachineStack();
+			if(machineItemStack == null) {
+				return null;
+			}
+
+			MetaTileEntity mte = GregTechAPI.META_TILE_ENTITY_REGISTRY.getObjectById(machineItemStack.getItemDamage());
+			if(mte == null) {
+				return null;
+			}
+
+			//Find the voltage tier of the machine. The machine input bus can only accept ITieredMTEs, so this cast is safe
+			this.voltageTier = GTValues.V[((ITieredMetaTileEntity) mte).getTier()];
+			//Find the number of machines
+			this.numberOfMachines = Math.min(GAConfig.processingArray.processingArrayMachineLimit, machineItemStack.getCount());
+
+
+			RecipeMap<?> recipeMap = findRecipeMapAndCheckValid(machineItemStack);
 
 			// No valid recipe map.
 			if(recipeMap == null)
@@ -151,61 +178,27 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 		}
 
 		protected static Set<ItemStack> findIngredients(IItemHandlerModifiable inputs, Recipe recipe) {
-			Set<ItemStack> countedIngredients = new HashSet<>();
-
-			//Convert the CountableIngredient recipe Inputs to an ItemStack list. This is safe because at this point, the recipe
-			//is already known not to be null
-			List<ItemStack> itemStackList = new ArrayList<>();
-			recipe.getInputs().forEach(ingredient -> {
-				int count = ingredient.getCount();
-				ItemStack itemStack = null;
-				int meta = 0;
-				ItemStack[] matching = ingredient.getIngredient().getMatchingStacks();
-				if (matching.length > 0) {
-					for (ItemStack stack : matching) {
-						if (stack != null) {
-							itemStack = stack;
-							meta = stack.getMetadata();
-							break;
-						}
-					}
-					itemStackList.add(new ItemStack(itemStack.getItem(), count, meta));
-				}
-			});
-
-			//Iterate over the input inventory, to match items in the input inventory to the recipe items
+			Set<ItemStack> countIngredients = new HashSet<>();
 			for(int slot = 0; slot < inputs.getSlots(); slot++) {
 				ItemStack wholeItemStack = inputs.getStackInSlot(slot);
 
-				//Skips empty slots in the input inventory, and slots that don't contain a recipe ingredient
-				//This means that the machine stack and non Consumed inputs are not added to the Ingredients list
-				if(wholeItemStack.isEmpty() || !itemStackList.stream().anyMatch(stack -> areItemStacksEqual(stack, wholeItemStack))) {
+				// skip empty slots
+				if(wholeItemStack.isEmpty())
 					continue;
-				}
 
-				//If there is nothing in the ingredient list, add the current item
-				if(countedIngredients.isEmpty()) {
-					countedIngredients.add(wholeItemStack.copy());
-				}
-				//Increment count of current items, or add new items
-				else {
-					Iterator<ItemStack> ciIterator = countedIngredients.iterator();
-
-					while(ciIterator.hasNext()) {
-						ItemStack stack = ciIterator.next();
-
-						if(countedIngredients.contains(stack)) {
-							stack.setCount(stack.getCount() + wholeItemStack.getCount());
-						}
-						else {
-							countedIngredients.add(stack.copy());
-						}
-
+				boolean found = false;
+				for(ItemStack i : countIngredients)
+					if(ItemStack.areItemsEqual(i, wholeItemStack)) {
+						i.setCount(i.getCount() + wholeItemStack.getCount());
+						found = true;
+						break;
 					}
-				}
+
+				if(!found)
+					countIngredients.add(wholeItemStack.copy());
 
 			}
-			return countedIngredients;
+			return countIngredients;
 		}
 
 		protected int getMinRatioItem(Set<ItemStack> countIngredients,
@@ -300,89 +293,32 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 														  fluidStack.amount * numberOfOperations)));
 		}
 
-		protected RecipeMap findRecipeMap(IItemHandlerModifiable inputs) {
+		//Finds the Recipe Map of the passed Machine Stack and checks if it is a valid Recipe Map
+		protected RecipeMap findRecipeMapAndCheckValid(ItemStack machineStack) {
 
-			for(int slot = 0; slot < inputs.getSlots(); slot++) {
-
-				ItemStack wholeItemStack = inputs.getStackInSlot(slot);
-				String unlocalizedName = wholeItemStack.getItem().getUnlocalizedNameInefficiently(wholeItemStack);
-				String recipeMapName = findRecipeMapName(unlocalizedName);
+			String unlocalizedName = machineStack.getItem().getUnlocalizedNameInefficiently(machineStack);
+			String recipeMapName = findRecipeMapName(unlocalizedName);
 
 
-				//Use Unlocalized name checks to prevent false positives from any item with metadata
-				if((unlocalizedName.contains("gregtech.machine") || unlocalizedName.contains("gtadditions.machine")) &&
-						!findMachineInBlacklist(recipeMapName) &&
-						GregTechAPI.META_TILE_ENTITY_REGISTRY.getObjectById(wholeItemStack.getItemDamage()) != null) {
+			//Check the machine against the Config blacklist
+			if(!findMachineInBlacklist(recipeMapName)) {
 
-					MetaTileEntity mte = GregTechAPI.META_TILE_ENTITY_REGISTRY.getObjectById(wholeItemStack.getItemDamage());
+				RecipeMap<?> rmap = RecipeMap.getByName(recipeMapName);
 
-					//All MTEs tested should have tiers, this stops Multiblocks from working in the PA
-					if(mte instanceof TieredMetaTileEntity) {
+				//Find the RecipeMap of the MTE and ensure that the Processing Array only works on SimpleRecipeBuilders
+				//For some reason GTCE has specialized recipe maps for some machines, when it does not need them
+				if (rmap != null && (rmap.recipeBuilder() instanceof SimpleRecipeBuilder ||
+						rmap.recipeBuilder() instanceof IntCircuitRecipeBuilder ||
+						rmap.recipeBuilder() instanceof ArcFurnaceRecipeBuilder ||
+						rmap.recipeBuilder() instanceof CutterRecipeBuilder ||
+						rmap.recipeBuilder() instanceof UniversalDistillationRecipeBuilder)) {
 
-						RecipeMap<?> rmap = RecipeMap.getByName(recipeMapName);
+					return rmap;
 
-						//Find the RecipeMap of the MTE and ensure that the Processing Array only works on SimpleRecipeBuilders
-						//For some reason GTCE has specialized recipe maps for some machines, when it does not need them
-						if (rmap != null && (rmap.recipeBuilder() instanceof SimpleRecipeBuilder ||
-								rmap.recipeBuilder() instanceof IntCircuitRecipeBuilder ||
-								rmap.recipeBuilder() instanceof ArcFurnaceRecipeBuilder ||
-								rmap.recipeBuilder() instanceof CutterRecipeBuilder ||
-								rmap.recipeBuilder() instanceof UniversalDistillationRecipeBuilder)) {
-							//Find the voltage tier of the machine
-							this.voltageTier = GTValues.V[((TieredMetaTileEntity) mte).getTier()];
-							//Find the number of machines
-							this.numberOfMachines = Math.min(GAConfig.processingArray.processingArrayMachineLimit, wholeItemStack.getCount());
-							//The machine Item Stack. Is this needed if we remove the machine from being found in the ingredients?
-							this.machineItemStack = wholeItemStack;
-
-							return rmap;
-
-						}
-
-					}
 				}
+
 			}
-			return null;
-		}
 
-		//A similar method to findRecipeMap, but instead returns the MTE the PA will be using for recipes.
-		//Using for checking if the recipe could have changed.
-		protected ItemStack findValidMachine(IItemHandlerModifiable inputs) {
-
-			for(int slot = 0; slot < inputs.getSlots(); slot++) {
-
-				ItemStack wholeItemStack = inputs.getStackInSlot(slot);
-				String unlocalizedName = wholeItemStack.getItem().getUnlocalizedNameInefficiently(wholeItemStack);
-				String recipeMapName = findRecipeMapName(unlocalizedName);
-
-
-				//Use Unlocalized name checks to prevent false positives from any item with metadata
-				if((unlocalizedName.contains("gregtech.machine") || unlocalizedName.contains("gtadditions.machine")) &&
-						!findMachineInBlacklist(recipeMapName) &&
-						GregTechAPI.META_TILE_ENTITY_REGISTRY.getObjectById(wholeItemStack.getItemDamage()) != null) {
-
-					MetaTileEntity mte = GregTechAPI.META_TILE_ENTITY_REGISTRY.getObjectById(wholeItemStack.getItemDamage());
-
-					//All MTEs tested should have tiers, this stops Multiblocks from working in the PA
-					if(mte instanceof TieredMetaTileEntity) {
-
-						RecipeMap<?> rmap = RecipeMap.getByName(recipeMapName);
-
-						//Find the RecipeMap of the MTE and ensure that the Processing Array only works on SimpleRecipeBuilders
-						//For some reason GTCE has specialized recipe maps for some machines, when it does not need them
-						if (rmap != null && (rmap.recipeBuilder() instanceof SimpleRecipeBuilder ||
-								rmap.recipeBuilder() instanceof IntCircuitRecipeBuilder ||
-								rmap.recipeBuilder() instanceof ArcFurnaceRecipeBuilder ||
-								rmap.recipeBuilder() instanceof CutterRecipeBuilder ||
-								rmap.recipeBuilder() instanceof UniversalDistillationRecipeBuilder)) {
-
-							return wholeItemStack;
-
-						}
-
-					}
-				}
-			}
 			return null;
 		}
 
@@ -408,6 +344,34 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			String[] blacklist = GAConfig.processingArray.machineBlackList;
 
 			return Arrays.asList(blacklist).contains(unlocalizedName);
+		}
+
+		public ItemStack findMachineStack() {
+			RecipeMapMultiblockController controller = (RecipeMapMultiblockController) this.metaTileEntity;
+			List<IMultiblockPart> parts = controller.getMultiblockParts();
+			//This should never be null, since it is required for the structure to form.
+			MetaTileEntityMachineHolder machineHolder = null;
+			for (IMultiblockPart part : parts) {
+				if (part instanceof MetaTileEntityMachineHolder) {
+					machineHolder = (MetaTileEntityMachineHolder) part;
+					break;
+				}
+			}
+
+			if(machineHolder == null) {
+				return null;
+			}
+
+			IItemHandlerModifiable machineInventory = machineHolder.getMachineInventory();
+
+			//The machine holder block is always only 1 slot
+			ItemStack machine =  machineInventory.getStackInSlot(0);
+
+			if(findRecipeMapAndCheckValid(machine) != null) {
+				return machine;
+			}
+
+			return null;
 		}
 
 		@Override
@@ -452,10 +416,11 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			IItemHandlerModifiable importInventory = getInputInventory();
 			IMultipleTankHandler importFluids = getInputTank();
 
+			ItemStack newMachineStack = findMachineStack();
+
 			boolean dirty = checkRecipeInputsDirty(importInventory, importFluids);
 			if(dirty || forceRecipeRecheck) {
 				//Check if the machine that the PA is operating on has changed
-				ItemStack newMachineStack = findValidMachine(importInventory);
 				if (newMachineStack == null || this.machineItemStack == null || !areItemStacksEqual(machineItemStack, newMachineStack)) {
 					previousRecipe = null;
 				}
