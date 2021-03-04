@@ -105,7 +105,7 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 				return null;
 			}
 
-			//Find the voltage tier of the machine. The machine input bus can only accept ITieredMTEs, so this cast is safe
+			//Find the voltage tier of the machine.
 			this.voltageTier = GTValues.V[((ITieredMetaTileEntity) mte).getTier()];
 			//Find the number of machines
 			this.numberOfMachines = Math.min(GAConfig.processingArray.processingArrayMachineLimit, machineItemStack.getCount());
@@ -126,7 +126,7 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			if(recipe == null)
 				return null;
 
-			Set<ItemStack> ingredientStacks = findIngredients(inputs, recipe);
+			Set<ItemStack> ingredientStacks = findIngredients(inputs);
 			Map<String, Integer> fluidStacks = findFluid(fluidInputs);
 
 			int itemMultiplier = getMinRatioItem(ingredientStacks, recipe, this.numberOfMachines);
@@ -177,12 +177,12 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			}
 		}
 
-		protected static Set<ItemStack> findIngredients(IItemHandlerModifiable inputs, Recipe recipe) {
+		protected static Set<ItemStack> findIngredients(IItemHandlerModifiable inputs) {
 			Set<ItemStack> countIngredients = new HashSet<>();
 			for(int slot = 0; slot < inputs.getSlots(); slot++) {
 				ItemStack wholeItemStack = inputs.getStackInSlot(slot);
 
-				// skip empty slots
+				//Skip empty slots
 				if(wholeItemStack.isEmpty())
 					continue;
 
@@ -314,11 +314,8 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 						rmap.recipeBuilder() instanceof UniversalDistillationRecipeBuilder)) {
 
 					return rmap;
-
 				}
-
 			}
-
 			return null;
 		}
 
