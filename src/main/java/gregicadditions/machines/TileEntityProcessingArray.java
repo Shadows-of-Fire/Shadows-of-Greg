@@ -18,6 +18,7 @@ import gregtech.api.render.*;
 import gregtech.api.util.*;
 import gregtech.common.blocks.BlockMetalCasing.*;
 import gregtech.common.blocks.*;
+import gregtech.common.metatileentities.electric.MetaTileEntityMacerator;
 import net.minecraft.block.state.*;
 import net.minecraft.item.*;
 import net.minecraft.util.*;
@@ -85,6 +86,7 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 		int numberOfMachines = 0;
 		int numberOfOperations = 0;
 		ItemStack machineItemStack = null;
+		ItemStack oldMachineStack = null;
 
 		public ProcessingArrayWorkable(RecipeMapMultiblockController tileEntity) {
 			super(tileEntity);
@@ -159,7 +161,11 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 												  .EUt(recipe.getEUt())
 												  .duration(recipe.getDuration());
 
-			copyChancedItemOutputs(newRecipe, recipe, minMultiplier);
+			//Don't allow MV or LV macerators to have chanced outputs, because they do not have the slots for chanced outputs
+			if(!(mte instanceof MetaTileEntityMacerator && (((MetaTileEntityMacerator) mte).getTier() == 1 || ((MetaTileEntityMacerator) mte).getTier() == 2))) {
+				copyChancedItemOutputs(newRecipe, recipe, minMultiplier);
+			}
+
 			this.numberOfOperations = minMultiplier;
 			return newRecipe.build().getResult();
 		}
@@ -406,6 +412,11 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 				recipe.matches(true, importInventory, importFluids);
 		}
 
+		protected boolean didMachinesChange(ItemStack newMachineStack, ItemStack oldMachineStack) {
+
+			return newMachineStack != null && oldMachineStack != null && !ItemStack.areItemStacksEqual(oldMachineStack, newMachineStack);
+		}
+
 		@Override
 		protected void trySearchNewRecipe() {
 			long maxVoltage = getMaxVoltage();
@@ -418,8 +429,9 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			boolean dirty = checkRecipeInputsDirty(importInventory, importFluids);
 			if(dirty || forceRecipeRecheck) {
 				//Check if the machine that the PA is operating on has changed
-				if (newMachineStack == null || this.machineItemStack == null || !areItemStacksEqual(machineItemStack, newMachineStack)) {
+				if(didMachinesChange(newMachineStack, oldMachineStack)) {
 					previousRecipe = null;
+					oldMachineStack = null;
 				}
 			}
 
@@ -441,6 +453,7 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 
 			//Attempts to run the current recipe, if it is not null
 			if(currentRecipe != null && setupAndConsumeRecipeInputs(currentRecipe)) {
+				oldMachineStack = machineItemStack;
 				setupRecipe(currentRecipe);
 			}
 		}
