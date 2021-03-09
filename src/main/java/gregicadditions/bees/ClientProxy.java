@@ -15,6 +15,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import static gregicadditions.GregicAdditions.isForestryBeesDisabled;
+
 @Mod.EventBusSubscriber(Side.CLIENT)
 public class ClientProxy extends CommonProxy {
 	@Override
@@ -26,13 +28,15 @@ public class ClientProxy extends CommonProxy {
 	public void postInit() {
 
 		ItemColors itemColors = Minecraft.getMinecraft().getItemColors();
-		if (GAConfig.GTBees.EnableGTCEBees && Loader.isModLoaded("forestry")) itemColors.registerItemColorHandler(ColoredItemItemColor.INSTANCE, GTCombs.combItem);
+		if (!isForestryBeesDisabled())
+			itemColors.registerItemColorHandler(ColoredItemItemColor.INSTANCE, GTCombs.combItem);
 		super.postInit();
 	}
 
 	@SubscribeEvent
 	public static void registerModels(ModelRegistryEvent event) {
-		if (GAConfig.GTBees.EnableGTCEBees && Loader.isModLoaded("forestry")) GTCombs.combItem.registerModel(GTCombs.combItem, ForestryAPI.modelManager);
+		if (!isForestryBeesDisabled())
+			GTCombs.combItem.registerModel(GTCombs.combItem, ForestryAPI.modelManager);
 	}
 
 	@SideOnly(Side.CLIENT)
