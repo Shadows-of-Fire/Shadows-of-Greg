@@ -6,7 +6,9 @@ import forestry.api.core.ForestryAPI;
 import forestry.api.recipes.ICentrifugeRecipe;
 import forestry.api.recipes.ISqueezerRecipe;
 import forestry.api.recipes.RecipeManagers;
+import forestry.core.config.Constants;
 import forestry.core.items.ItemFluidContainerForestry;
+import forestry.modules.ForestryModuleUids;
 import gregicadditions.GAConfig;
 import gregicadditions.GregicAdditions;
 import gregtech.api.recipes.Recipe;
@@ -31,7 +33,7 @@ public class CommonProxy {
 	}
 
 	public void postInit() {
-		if (!GAConfig.GTBees.EnableGTCEBees || !Loader.isModLoaded("forestry") || !ForestryAPI.enabledModules.contains(new ResourceLocation("forestry","apiculture"))) return;
+		if (!GAConfig.GTBees.EnableGTCEBees || !Loader.isModLoaded("forestry") || !ForestryAPI.enabledModules.contains(new ResourceLocation(Constants.MOD_ID, ForestryModuleUids.APICULTURE))) return;
 		if (GAConfig.GTBees.GenerateCentrifugeRecipes) for (ICentrifugeRecipe recipe : RecipeManagers.centrifugeManager.recipes()) {
 			SimpleRecipeBuilder builder = RecipeMaps.CENTRIFUGE_RECIPES.recipeBuilder();
 			builder.inputs(recipe.getInput().copy());
