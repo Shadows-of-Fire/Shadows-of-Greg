@@ -67,12 +67,10 @@ public class GAMetaItems {
 		}
 
 		if(GAConfig.GT6.addDoubleIngots) {
-			temp[1] = OrePrefix.valueOf("plateDouble");
+			temp[1] = OrePrefix.valueOf("ingotDouble");
 		}
 
-		if(GAConfig.GT6.addRounds) {
-			temp[2] = OrePrefix.valueOf("round");
-		}
+		temp[2] = OrePrefix.valueOf("round");
 
 		return temp;
 	}
