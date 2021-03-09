@@ -1,12 +1,9 @@
 package gregicadditions.bees;
 
-import forestry.api.core.ForestryAPI;
 import forestry.api.recipes.ICentrifugeRecipe;
 import forestry.api.recipes.ISqueezerRecipe;
 import forestry.api.recipes.RecipeManagers;
-import forestry.core.config.Constants;
 import forestry.core.items.ItemFluidContainerForestry;
-import forestry.modules.ForestryModuleUids;
 import gregicadditions.GAConfig;
 import gregicadditions.GregicAdditions;
 import gregtech.api.recipes.Recipe;
@@ -15,9 +12,7 @@ import gregtech.api.recipes.builders.SimpleRecipeBuilder;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -25,17 +20,13 @@ import net.minecraftforge.registries.IForgeRegistry;
 
 import java.util.Collections;
 
+import static gregicadditions.GregicAdditions.isForestryBeesDisabled;
+
 @Mod.EventBusSubscriber(modid = GregicAdditions.MODID)
 public class CommonProxy {
 
 	public void preInit() {
 
-	}
-
-	private static boolean isForestryBeesDisabled() {
-		return !GAConfig.GTBees.EnableGTCEBees ||
-			!Loader.isModLoaded(Constants.MOD_ID) ||
-			!ForestryAPI.enabledModules.contains(new ResourceLocation(Constants.MOD_ID, ForestryModuleUids.APICULTURE));
 	}
 
 	public void postInit() {
