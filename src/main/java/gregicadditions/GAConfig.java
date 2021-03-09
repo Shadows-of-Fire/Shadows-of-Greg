@@ -1,7 +1,12 @@
 package gregicadditions;
 
 import net.minecraftforge.common.config.Config;
+import net.minecraftforge.common.config.ConfigManager;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+@Mod.EventBusSubscriber(modid = GregicAdditions.MODID)
 @Config(modid = GregicAdditions.MODID)
 public class GAConfig {
 
@@ -35,7 +40,7 @@ public class GAConfig {
 
 		@Config.Comment("Set this to false to disable Drums")
 		@Config.Name("Should Drums be registered?")
-		public boolean registerDums = true;
+		public boolean registerDrums = true;
 
 		@Config.Comment("Set this to false to disable the support for Forestry Electron Tubes")
 		@Config.Name("Should Electrodes be registered?")
@@ -72,7 +77,7 @@ public class GAConfig {
 
 		@Config.Comment("Set to false to enable Log>Charcoal smelting recipes")
 		@Config.Name("All Log to Charcoal smelting recipes will be removed")
-		public boolean DisableLogToCharcoalSmeltg = true;
+		public boolean DisableLogToCharcoalSmelting = true;
 
 		@Config.Comment("Set to false to disable generated wood sawing recipes")
 		@Config.Name("A saw is required to get 4 Planks per Log")
@@ -177,6 +182,8 @@ public class GAConfig {
 	public static GTBees GTBees = new GTBees();
 
 	public static class GTBees {
+
+		@Config.RequiresMcRestart
 		@Config.Comment("Enable/Disable all GT Bees features")
 		public boolean EnableGTCEBees = true;
 
@@ -187,7 +194,7 @@ public class GAConfig {
 		public boolean GenerateExtractorRecipes = true;
 
 		@Config.Comment("Add Autoclave recipes for the Combs")
-		public boolean AutoclaverRecipes = true;
+		public boolean AutoclaveRecipes = true;
 
 		@Config.Comment("Add Chemical Reactor recipes for the Combs")
 		public boolean ReactorRecipes = true;
@@ -201,6 +208,7 @@ public class GAConfig {
 
 	public static class GregsConstruct {
 
+		@Config.RequiresMcRestart
 		@Config.Comment("Enable/Disable all GregsConstruct features")
 		public boolean EnableGregsConstruct = true;
 
@@ -246,4 +254,12 @@ public class GAConfig {
 		@Config.Name("Air Collector have IV and LuV version")
 		public boolean highTierCollector = true;
 	}
+
+	@SubscribeEvent
+	static void configChanged(final ConfigChangedEvent.OnConfigChangedEvent event) {
+		if(GregicAdditions.MODID.equals(event.getModID())) {
+			ConfigManager.sync(GregicAdditions.MODID, Config.Type.INSTANCE);
+		}
+	}
+
 }
