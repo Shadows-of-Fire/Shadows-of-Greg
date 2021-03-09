@@ -1,7 +1,5 @@
 package gregicadditions.bees;
 
-import java.util.Collections;
-
 import forestry.api.core.ForestryAPI;
 import forestry.api.recipes.ICentrifugeRecipe;
 import forestry.api.recipes.ISqueezerRecipe;
@@ -25,6 +23,8 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 
+import java.util.Collections;
+
 @Mod.EventBusSubscriber(modid = GregicAdditions.MODID)
 public class CommonProxy {
 
@@ -32,8 +32,15 @@ public class CommonProxy {
 
 	}
 
+	private static boolean isForestryBeesDisabled() {
+		return !GAConfig.GTBees.EnableGTCEBees ||
+			!Loader.isModLoaded(Constants.MOD_ID) ||
+			!ForestryAPI.enabledModules.contains(new ResourceLocation(Constants.MOD_ID, ForestryModuleUids.APICULTURE));
+	}
+
 	public void postInit() {
-		if (!GAConfig.GTBees.EnableGTCEBees || !Loader.isModLoaded("forestry") || !ForestryAPI.enabledModules.contains(new ResourceLocation(Constants.MOD_ID, ForestryModuleUids.APICULTURE))) return;
+		if (isForestryBeesDisabled())
+			return;
 		if (GAConfig.GTBees.GenerateCentrifugeRecipes) for (ICentrifugeRecipe recipe : RecipeManagers.centrifugeManager.recipes()) {
 			SimpleRecipeBuilder builder = RecipeMaps.CENTRIFUGE_RECIPES.recipeBuilder();
 			builder.inputs(recipe.getInput().copy());
@@ -62,14 +69,16 @@ public class CommonProxy {
 
 	@SubscribeEvent
 	public static void registerItems(RegistryEvent.Register<Item> event) {
-		if (!GAConfig.GTBees.EnableGTCEBees || !Loader.isModLoaded("forestry") || !ForestryAPI.enabledModules.contains(new ResourceLocation("forestry","apiculture"))) return;
+		if (isForestryBeesDisabled())
+			return;
 		IForgeRegistry<Item> registry = event.getRegistry();
 		registry.register(GTCombs.combItem);
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public static void registerRecipes(RegistryEvent.Register<IRecipe> event) {
-		if (!GAConfig.GTBees.EnableGTCEBees || !Loader.isModLoaded("forestry") || !ForestryAPI.enabledModules.contains(new ResourceLocation("forestry","apiculture"))) return;
+		if (isForestryBeesDisabled())
+			return;
 		ForestryMachineRecipes.init();
 	}
 }
