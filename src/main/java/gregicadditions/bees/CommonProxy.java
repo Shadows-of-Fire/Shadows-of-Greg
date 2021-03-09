@@ -30,8 +30,6 @@ public class CommonProxy {
 	}
 
 	public void postInit() {
-		if (isForestryBeesDisabled())
-			return;
 		if (GAConfig.GTBees.GenerateCentrifugeRecipes) for (ICentrifugeRecipe recipe : RecipeManagers.centrifugeManager.recipes()) {
 			SimpleRecipeBuilder builder = RecipeMaps.CENTRIFUGE_RECIPES.recipeBuilder();
 			builder.inputs(recipe.getInput().copy());

@@ -78,7 +78,8 @@ public class GregicAdditions {
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
 		GARecipeAddition.generatedRecipes();
-		if (GAConfig.GTBees.EnableGTCEBees && Loader.isModLoaded("forestry")) proxy.postInit();
+		if (!isForestryBeesDisabled())
+			proxy.postInit();
 	}
 
 	@SubscribeEvent

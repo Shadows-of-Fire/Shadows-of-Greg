@@ -26,10 +26,8 @@ public class ClientProxy extends CommonProxy {
 
 	@Override
 	public void postInit() {
-
 		ItemColors itemColors = Minecraft.getMinecraft().getItemColors();
-		if (!isForestryBeesDisabled())
-			itemColors.registerItemColorHandler(ColoredItemItemColor.INSTANCE, GTCombs.combItem);
+		itemColors.registerItemColorHandler(ColoredItemItemColor.INSTANCE, GTCombs.combItem);
 		super.postInit();
 	}
 
