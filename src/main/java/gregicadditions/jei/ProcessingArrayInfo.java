@@ -36,7 +36,7 @@ public class ProcessingArrayInfo extends MultiblockInfoPage {
 				.aisle("MXX", "S#E", "XXX")
 				.aisle("XOX", "XXX", "XXX")
 				.where('S', GATileEntities.PROCESSING_ARRAY, EnumFacing.WEST)
-				.where('M', GATileEntities.MACHINE_HOLDER, EnumFacing.WEST)
+				.where('M', GATileEntities.MACHINE_ACCESS_INTERFACE, EnumFacing.WEST)
 				.where('X', MetaBlocks.METAL_CASING.getState(MetalCasingType.TUNGSTENSTEEL_ROBUST))
 				.where('#', Blocks.AIR.getDefaultState())
 				.where('I', MetaTileEntities.ITEM_IMPORT_BUS[GTValues.LV], EnumFacing.NORTH)

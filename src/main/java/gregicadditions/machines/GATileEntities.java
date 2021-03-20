@@ -83,7 +83,7 @@ public class GATileEntities {
 	public static MetaTileEntityPump[] PUMP = new MetaTileEntityPump[8];
 	public static MetaTileEntityAirCollector[] AIR_COLLECTOR = new MetaTileEntityAirCollector[8];
 
-	public static MetaTileEntityMachineHolder MACHINE_HOLDER;
+	public static MetaTileEntityMachineHolder MACHINE_ACCESS_INTERFACE;
 
 	public static void init() {
 
@@ -427,7 +427,7 @@ public class GATileEntities {
 		}
 
 
-		MACHINE_HOLDER = GregTechAPI.registerMetaTileEntity(2213, new MetaTileEntityMachineHolder(location("machine_holder")));
+		MACHINE_ACCESS_INTERFACE = GregTechAPI.registerMetaTileEntity(2213, new MetaTileEntityMachineHolder(location("machine_holder")));
 
 
 		// 2214 - 2221
