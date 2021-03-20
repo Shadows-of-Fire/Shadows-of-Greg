@@ -342,6 +342,9 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			else if(trimmedName.equals("electric_furnace")) {
 				trimmedName = "furnace";
 			}
+			else if(trimmedName.equals("ore_washer")) {
+				trimmedName = "orewasher";
+			}
 
 			return trimmedName;
 		}
