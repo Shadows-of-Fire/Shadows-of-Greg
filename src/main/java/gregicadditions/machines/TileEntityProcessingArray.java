@@ -351,30 +351,19 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 
 		public ItemStack findMachineStack() {
 			RecipeMapMultiblockController controller = (RecipeMapMultiblockController) this.metaTileEntity;
-			List<IMultiblockPart> parts = controller.getMultiblockParts();
-			//This should never be null, since it is required for the structure to form.
-			MetaTileEntityMachineHolder machineHolder = null;
-			for (IMultiblockPart part : parts) {
-				if (part instanceof MetaTileEntityMachineHolder) {
-					machineHolder = (MetaTileEntityMachineHolder) part;
-					break;
-				}
-			}
 
-			if(machineHolder == null) {
+			//The Processing Array is limited to 1 Machine Holder per multiblock, and only has 1 slot
+			ItemStack machine = controller.getAbilities(GACapabilities.PA_MACHINE_CONTAINER).get(0).getStackInSlot(0);
+
+			if(machine.isEmpty()) {
 				return null;
 			}
-
-			IItemHandlerModifiable machineInventory = machineHolder.getMachineInventory();
-
-			//The machine holder block is always only 1 slot
-			ItemStack machine =  machineInventory.getStackInSlot(0);
-
-			if(findRecipeMapAndCheckValid(machine) != null) {
+			else if(findRecipeMapAndCheckValid(machine) != null) {
 				return machine;
 			}
-
-			return null;
+			else {
+				return null;
+			}
 		}
 
 		@Override
