@@ -19,13 +19,11 @@ import java.util.List;
 
 public class MetaTileEntityMachineHolder extends MetaTileEntityItemBus implements IMultiblockAbilityPart<IItemHandlerModifiable> {
 
-    private final MachineImportItemHandler machineStackHandler;
     protected IItemHandlerModifiable machineItemHandler;
 
     public MetaTileEntityMachineHolder(ResourceLocation metaTileEntityId) {
         super(metaTileEntityId, 0, false);
-        machineStackHandler = new MachineImportItemHandler();
-        machineItemHandler = createImportItemHandler();
+        machineItemHandler = new MachineImportItemHandler();
         initializeInventory();
     }
 
@@ -60,7 +58,7 @@ public class MetaTileEntityMachineHolder extends MetaTileEntityItemBus implement
 
     @Override
     protected IItemHandlerModifiable createImportItemHandler() {
-        return machineStackHandler;
+        return machineItemHandler;
     }
 
     private static class MachineImportItemHandler extends ItemStackHandler {
