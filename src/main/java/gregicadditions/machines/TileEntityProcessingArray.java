@@ -302,6 +302,10 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 		//Finds the Recipe Map of the passed Machine Stack and checks if it is a valid Recipe Map
 		protected RecipeMap findRecipeMapAndCheckValid(ItemStack machineStack) {
 
+			if(machineStack == null || machineStack.isEmpty()) {
+				return null;
+			}
+
 			String unlocalizedName = machineStack.getItem().getUnlocalizedNameInefficiently(machineStack);
 			String recipeMapName = findRecipeMapName(unlocalizedName);
 
@@ -352,18 +356,10 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 		public ItemStack findMachineStack() {
 			RecipeMapMultiblockController controller = (RecipeMapMultiblockController) this.metaTileEntity;
 
-			//The Processing Array is limited to 1 Machine Holder per multiblock, and only has 1 slot
+			//The Processing Array is limited to 1 Machine Interface per multiblock, and only has 1 slot
 			ItemStack machine = controller.getAbilities(GACapabilities.PA_MACHINE_CONTAINER).get(0).getStackInSlot(0);
 
-			if(machine.isEmpty()) {
-				return null;
-			}
-			else if(findRecipeMapAndCheckValid(machine) != null) {
-				return machine;
-			}
-			else {
-				return null;
-			}
+			return findRecipeMapAndCheckValid(machine) == null ? null : machine;
 		}
 
 		@Override
