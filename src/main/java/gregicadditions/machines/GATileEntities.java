@@ -427,7 +427,7 @@ public class GATileEntities {
 		}
 
 
-		MACHINE_ACCESS_INTERFACE = GregTechAPI.registerMetaTileEntity(2213, new MetaTileEntityMachineHolder(location("machine_holder")));
+		MACHINE_ACCESS_INTERFACE = GregTechAPI.registerMetaTileEntity(2213, new MetaTileEntityMachineHolder(location("machine_access_interface")));
 
 
 		// 2214 - 2221
