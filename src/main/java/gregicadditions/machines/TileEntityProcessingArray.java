@@ -49,15 +49,16 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 		return FactoryBlockPattern.start()
 								  .aisle("XXX", "XXX", "XXX")
 								  .aisle("XXX", "X#X", "XXX")
-								  .aisle("XMX", "XSX", "XXX")
+								  .aisle("XXX", "XSX", "XXX")
 								  .setAmountAtLeast('L', 12)
-								  .setAmountAtMost('M', 1)
+								  .setAmountLimit('M', 1, 1)
 								  .where('M', machineHolderPredicate())
 								  .where('L', statePredicate(getCasingState()))
 								  .where('S', selfPredicate())
 								  .where('X',
 										 statePredicate(getCasingState())
-											 .or(abilityPartPredicate(ALLOWED_ABILITIES)))
+											 .or(abilityPartPredicate(ALLOWED_ABILITIES))
+								    		 .or(machineHolderPredicate()))
 								  .where('#', isAirPredicate()).build();
 	}
 
