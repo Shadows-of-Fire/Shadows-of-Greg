@@ -82,6 +82,10 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 		return new TileEntityProcessingArray(metaTileEntityId);
 	}
 
+	protected MultiblockRecipeLogic getWorkable() {
+		return recipeMapWorkable;
+	}
+
 	protected static class ProcessingArrayWorkable extends MultiblockRecipeLogic {
 		long voltageTier;
 		int numberOfMachines = 0;
