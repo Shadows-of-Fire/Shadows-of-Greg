@@ -405,13 +405,13 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 				recipe.matches(true, importInventory, importFluids);
 		}
 
-		protected boolean didMachinesChange(ItemStack newMachineStack, ItemStack oldMachineStack) {
+		protected boolean didMachinesChange(ItemStack newMachineStack) {
 
-			if(newMachineStack == null || oldMachineStack == null) {
+			if(newMachineStack == null || this.oldMachineStack == null) {
 				return true;
 			}
 
-			return !ItemStack.areItemStacksEqual(oldMachineStack, newMachineStack);
+			return !ItemStack.areItemStacksEqual(this.oldMachineStack, newMachineStack);
 		}
 
 		@Override
@@ -426,7 +426,7 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			boolean dirty = checkRecipeInputsDirty(importInventory, importFluids);
 			if(dirty || forceRecipeRecheck) {
 				//Check if the machine that the PA is operating on has changed
-				if(newMachineStack == null || didMachinesChange(newMachineStack, oldMachineStack)) {
+				if(didMachinesChange(newMachineStack)) {
 					previousRecipe = null;
 					oldMachineStack = null;
 				}
