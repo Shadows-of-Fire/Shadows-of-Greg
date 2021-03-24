@@ -407,13 +407,17 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 
 		protected boolean didMachinesChange(ItemStack newMachineStack, ItemStack oldMachineStack) {
 
-			return newMachineStack != null && oldMachineStack != null && !ItemStack.areItemStacksEqual(oldMachineStack, newMachineStack);
+			if(newMachineStack == null || oldMachineStack == null) {
+				return true;
+			}
+
+			return !ItemStack.areItemStacksEqual(oldMachineStack, newMachineStack);
 		}
 
 		@Override
 		protected void trySearchNewRecipe() {
 			long maxVoltage = getMaxVoltage();
-			Recipe currentRecipe = null;
+			Recipe currentRecipe;
 			IItemHandlerModifiable importInventory = getInputInventory();
 			IMultipleTankHandler importFluids = getInputTank();
 
@@ -422,7 +426,7 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			boolean dirty = checkRecipeInputsDirty(importInventory, importFluids);
 			if(dirty || forceRecipeRecheck) {
 				//Check if the machine that the PA is operating on has changed
-				if(didMachinesChange(newMachineStack, oldMachineStack)) {
+				if(newMachineStack == null || didMachinesChange(newMachineStack, oldMachineStack)) {
 					previousRecipe = null;
 					oldMachineStack = null;
 				}
@@ -435,10 +439,12 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			else {
 				//If the previous recipe was null, or does not match the current recipe, search for a new recipe
 				currentRecipe = findRecipe(maxVoltage, importInventory, importFluids);
+				oldMachineStack = null;
 
 				//Update the previous recipe
 				if(currentRecipe != null) {
 					this.previousRecipe = currentRecipe;
+					newMachineStack = machineItemStack;
 				}
 
 				this.forceRecipeRecheck = false;
@@ -446,7 +452,7 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 
 			//Attempts to run the current recipe, if it is not null
 			if(currentRecipe != null && setupAndConsumeRecipeInputs(currentRecipe)) {
-				oldMachineStack = machineItemStack;
+				oldMachineStack = newMachineStack;
 				setupRecipe(currentRecipe);
 			}
 		}
