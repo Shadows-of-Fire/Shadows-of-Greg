@@ -537,7 +537,6 @@ public class GARecipeAddition {
 		ModHandler.removeRecipes(new ItemStack(Blocks.TNT));
 		ModHandler.removeRecipes(MetaItems.DYNAMITE.getStackForm());
 		RecipeMaps.CHEMICAL_RECIPES.recipeBuilder().duration(160).EUt(4).inputs(new ItemStack(Items.PAPER), new ItemStack(Items.STRING)).fluidInputs(Materials.Glyceryl.getFluid(500)).outputs(MetaItems.DYNAMITE.getStackForm()).buildAndRegister();
-		RecipeMaps.CHEMICAL_RECIPES.recipeBuilder().duration(160).EUt(4).inputs(new ItemStack(Items.PAPER), new ItemStack(Items.STRING)).fluidInputs(Materials.Glyceryl.getFluid(500)).outputs(MetaItems.DYNAMITE.getStackForm()).buildAndRegister();
 
 		//Lapotron Crystal Recipes
 		for (MaterialStack m : lapisLike) {
