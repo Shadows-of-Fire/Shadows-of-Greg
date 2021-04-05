@@ -1,6 +1,5 @@
 package gregicadditions;
 
-import java.util.HashMap;
 import java.util.function.Predicate;
 
 import gregtech.api.GTValues;

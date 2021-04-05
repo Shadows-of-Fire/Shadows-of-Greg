@@ -42,10 +42,6 @@ public class MetaTileEntityMachineHolder extends MetaTileEntityItemBus implement
         abilityList.add(machineItemHandler);
     }
 
-    protected IItemHandlerModifiable getMachineInventory() {
-        return machineItemHandler;
-    }
-
     @Override
     public IItemHandlerModifiable getImportItems() {
         return machineItemHandler;
