@@ -145,14 +145,14 @@ gtadditions.machine.cluster_mill.lv.name=Basic Cluster Mill
 gtadditions.machine.cluster_mill.mv.name=Advanced Cluster Mill
 gtadditions.machine.cluster_mill.hv.name=Advanced Cluster Mill II
 gtadditions.machine.cluster_mill.ev.name=Advanced Cluster Mill III
-gtadditions.machine.cluster_mill.iv.name=Elite Cluster Mill
-gtadditions.machine.cluster_mill.luv.name=Elite Cluster Mill I
+gtadditions.machine.cluster_mill.iv.name=Advanced Cluster Mill IV
+gtadditions.machine.cluster_mill.luv.name=Elite Cluster Mill
 gtadditions.machine.cluster_mill.zpm.name=Elite Cluster Mill II
 gtadditions.machine.cluster_mill.uv.name=Elite Cluster Mill III
 
 # Electric Furnace
-gtadditions.machine.electric_furnace.iv.name=Elite Electric Furnace
-gtadditions.machine.electric_furnace.luv.name=Elite Electric Furnace I
+gtadditions.machine.electric_furnace.iv.name=Advanced Electric Furnace IV
+gtadditions.machine.electric_furnace.luv.name=Elite Electric Furnace
 gtadditions.machine.electric_furnace.zpm.name=Elite Electric Furnace II
 gtadditions.machine.electric_furnace.uv.name=Elite Electric Furnace III
 
@@ -163,50 +163,50 @@ gtadditions.machine.macerator.zpm.name=Universal Pulverizer IV
 gtadditions.machine.macerator.uv.name=Universal Pulverizer V
 
 # Alloy Smelter
-gtadditions.machine.alloy_smelter.iv.name=Elite Alloy Smelter
-gtadditions.machine.alloy_smelter.luv.name=Elite Alloy Smelter I
+gtadditions.machine.alloy_smelter.iv.name=Advanced Alloy Smelter IV
+gtadditions.machine.alloy_smelter.luv.name=Elite Alloy Smelter
 gtadditions.machine.alloy_smelter.zpm.name=Elite Alloy Smelter II
 gtadditions.machine.alloy_smelter.uv.name=Elite Alloy Smelter III
 
 # Amplifabricator
-gtadditions.machine.amplifab.iv.name=Elite Amplifabricator
-gtadditions.machine.amplifab.luv.name=Elite Amplifabricator I
+gtadditions.machine.amplifab.iv.name=Advanced Amplifabricator IV
+gtadditions.machine.amplifab.luv.name=Elite Amplifabricator
 gtadditions.machine.amplifab.zpm.name=Elite Amplifabricator II
 gtadditions.machine.amplifab.uv.name=Elite Amplifabricator III
 
 # Arc Furnace
-gtadditions.machine.arc_furnace.iv.name=Elite Arc Furnace
-gtadditions.machine.arc_furnace.luv.name=Elite Arc Furnace I
+gtadditions.machine.arc_furnace.iv.name=Advanced Arc Furnace IV
+gtadditions.machine.arc_furnace.luv.name=Elite Arc Furnace
 gtadditions.machine.arc_furnace.zpm.name=Elite Arc Furnace II
 gtadditions.machine.arc_furnace.uv.name=Elite Arc Furnace III
 
 # Assembling Machine
-gregtech.machine.assembler.iv.name=Elite Assembling Machine
-gtadditions.machine.assembler.luv.name=Elite Assembling Machine I
+gregtech.machine.assembler.iv.name=Advanced Assembling Machine IV
+gtadditions.machine.assembler.luv.name=Elite Assembling Machine
 gtadditions.machine.assembler.zpm.name=Elite Assembling Machine II
 gtadditions.machine.assembler.uv.name=Elite Assembling Machine III
 
 # Autoclave
-gregtech.machine.autoclave.iv.name=Elite Autoclave
-gtadditions.machine.autoclave.luv.name=Elite Autoclave I
+gregtech.machine.autoclave.iv.name=Advanced Autoclave IV
+gtadditions.machine.autoclave.luv.name=Elite Autoclave
 gtadditions.machine.autoclave.zpm.name=Elite Autoclave II
 gtadditions.machine.autoclave.uv.name=Elite Autoclave III
 
 # Bender
-gtadditions.machine.bender.iv.name=Elite Bending Machine
-gtadditions.machine.bender.luv.name=Elite Bending Machine I
+gtadditions.machine.bender.iv.name=Advanced Bending Machine IV
+gtadditions.machine.bender.luv.name=Elite Bending Machine
 gtadditions.machine.bender.zpm.name=Elite Bending Machine II
 gtadditions.machine.bender.uv.name=Elite Bending Machine III
 
 # Brewery
-gtadditions.machine.brewery.iv.name=Elite Brewery
-gtadditions.machine.brewery.luv.name=Elite Brewery I
+gtadditions.machine.brewery.iv.name=Advanced Brewery IV
+gtadditions.machine.brewery.luv.name=Elite Brewery
 gtadditions.machine.brewery.zpm.name=Elite Brewery II
 gtadditions.machine.brewery.uv.name=Elite Brewery III
 
 # Canner
-gtadditions.machine.canner.iv.name=Elite Canning Machine
-gtadditions.machine.canner.luv.name=Elite Canning Machine I
+gtadditions.machine.canner.iv.name=Advanced Canning Machine IV
+gtadditions.machine.canner.luv.name=Elite Canning Machine
 gtadditions.machine.canner.zpm.name=Elite Canning Machine II
 gtadditions.machine.canner.uv.name=Elite Canning Machine III
 
@@ -217,65 +217,65 @@ gtadditions.machine.centrifuge.zpm.name=Turbo Centrifuge V
 gtadditions.machine.centrifuge.uv.name=Turbo Centrifuge VI
 
 # Chemical Bath
-gtadditions.machine.chemical_bath.iv.name=Elite Chemical Bath
-gtadditions.machine.chemical_bath.luv.name=Elite Chemical Bath I
+gtadditions.machine.chemical_bath.iv.name=Advanced Chemical Bath IV
+gtadditions.machine.chemical_bath.luv.name=Elite Chemical Bath
 gtadditions.machine.chemical_bath.zpm.name=Elite Chemical Bath II
 gtadditions.machine.chemical_bath.uv.name=Elite Chemical Bath III
 
 # Chemical Reactor
-gtadditions.machine.chemical_reactor.iv.name=Elite Chemical Reactor
-gtadditions.machine.chemical_reactor.luv.name=Elite Chemical Reactor I
+gtadditions.machine.chemical_reactor.iv.name=Advanced Chemical Reactor IV
+gtadditions.machine.chemical_reactor.luv.name=Elite Chemical Reactor
 gtadditions.machine.chemical_reactor.zpm.name=Elite Chemical Reactor II
 gtadditions.machine.chemical_reactor.uv.name=Elite Chemical Reactor III
 
 # Compressor
 gregtech.machine.compressor.ev.name=Advanced Compressor III
-gtadditions.machine.compressor.iv.name=Elite Compressor
-gtadditions.machine.compressor.luv.name=Elite Compressor I
+gtadditions.machine.compressor.iv.name=Advanced Compressor IV
+gtadditions.machine.compressor.luv.name=Elite Compressor
 gtadditions.machine.compressor.zpm.name=Elite Compressor II
 gtadditions.machine.compressor.uv.name=Elite Compressor III
 
 # Cutter
-gtadditions.machine.cutter.iv.name=Elite Cutting Machine
-gtadditions.machine.cutter.luv.name=Elite Cutting Machine I
+gtadditions.machine.cutter.iv.name=Advanced Cutting Machine IV
+gtadditions.machine.cutter.luv.name=Elite Cutting Machine
 gtadditions.machine.cutter.zpm.name=Elite Cutting Machine II
 gtadditions.machine.cutter.uv.name=Elite Cutting Machine III
 
 # Distillery
-gtadditions.machine.distillery.iv.name=Elite Distillery
-gtadditions.machine.distillery.luv.name=Elite Distillery I
+gtadditions.machine.distillery.iv.name=Advanced Distillery IV
+gtadditions.machine.distillery.luv.name=Elite Distillery
 gtadditions.machine.distillery.zpm.name=Elite Distillery II
 gtadditions.machine.distillery.uv.name=Elite Distillery III
 
 # Electrolyzer
 gregtech.machine.electrolyzer.ev.name=Advanced Electrolyzer III
-gtadditions.machine.electrolyzer.iv.name=Elite Electrolyzer
-gtadditions.machine.electrolyzer.luv.name=Elite Electrolyzer I
+gtadditions.machine.electrolyzer.iv.name=Advanced Electrolyzer IV
+gtadditions.machine.electrolyzer.luv.name=Elite Electrolyzer
 gtadditions.machine.electrolyzer.zpm.name=Elite Electrolyzer II
 gtadditions.machine.electrolyzer.uv.name=Elite Electrolyzer III
 
 # Electromagnetic Separator
-gtadditions.machine.electromagnetic_separator.iv.name=Elite Electromagnetic Separator
-gtadditions.machine.electromagnetic_separator.luv.name=Elite Electromagnetic Separator I
+gtadditions.machine.electromagnetic_separator.iv.name=Advanced Electromagnetic Separator IV
+gtadditions.machine.electromagnetic_separator.luv.name=Elite Electromagnetic Separator
 gtadditions.machine.electromagnetic_separator.zpm.name=Elite Electromagnetic Separator II
 gtadditions.machine.electromagnetic_separator.uv.name=Elite Electromagnetic Separator III
 
 # Extractor
 gregtech.machine.extractor.ev.name=Advanced Extractor III
-gtadditions.machine.extractor.iv.name=Elite Extractor
-gtadditions.machine.extractor.luv.name=Elite Extractor I
+gtadditions.machine.extractor.iv.name=Advanced Extractor IV
+gtadditions.machine.extractor.luv.name=Elite Extractor
 gtadditions.machine.extractor.zpm.name=Elite Extractor II
 gtadditions.machine.extractor.uv.name=Elite Extractor III
 
 # Extruder
-gtadditions.machine.extruder.iv.name=Elite Extruder
-gtadditions.machine.extruder.luv.name=Elite Extruder I
+gtadditions.machine.extruder.iv.name=Advanced Extruder IV
+gtadditions.machine.extruder.luv.name=Elite Extruder
 gtadditions.machine.extruder.zpm.name=Elite Extruder II
 gtadditions.machine.extruder.uv.name=Elite Extruder III
 
 # Fermenter
-gtadditions.machine.fermenter.iv.name=Elite Fermenter
-gtadditions.machine.fermenter.luv.name=Elite Fermenter I
+gtadditions.machine.fermenter.iv.name=Advanced Fermenter IV
+gtadditions.machine.fermenter.luv.name=Elite Fermenter
 gtadditions.machine.fermenter.zpm.name=Elite Fermenter II
 gtadditions.machine.fermenter.uv.name=Elite Fermenter III
 
@@ -286,104 +286,104 @@ gtadditions.machine.fluid_canner.zpm.name=Instant Fluid Canner III
 gtadditions.machine.fluid_canner.uv.name=Instant Fluid Canner IV
 
 # Fluid Extractor
-gtadditions.machine.fluid_extractor.iv.name=Elite Fluid Extractor
-gtadditions.machine.fluid_extractor.luv.name=Elite Fluid Extractor I
+gtadditions.machine.fluid_extractor.iv.name=Advanced Fluid Extractor IV
+gtadditions.machine.fluid_extractor.luv.name=Elite Fluid Extractor
 gtadditions.machine.fluid_extractor.zpm.name=Elite Fluid Extractor II
 gtadditions.machine.fluid_extractor.uv.name=Elite Fluid Extractor III
 
 # Fluid Heater
-gtadditions.machine.fluid_heater.iv.name=Elite Fluid Heater
-gtadditions.machine.fluid_heater.luv.name=Elite Fluid Heater I
+gtadditions.machine.fluid_heater.iv.name=Advanced Fluid Heater IV
+gtadditions.machine.fluid_heater.luv.name=Elite Fluid Heater
 gtadditions.machine.fluid_heater.zpm.name=Elite Fluid Heater II
 gtadditions.machine.fluid_heater.uv.name=Elite Fluid Heater III
 
 # Fluid Solidifier
-gtadditions.machine.fluid_solidifier.iv.name=Elite Fluid Solidifier
-gtadditions.machine.fluid_solidifier.luv.name=Elite Fluid Solidifier I
+gtadditions.machine.fluid_solidifier.iv.name=Advanced Fluid Solidifier IV
+gtadditions.machine.fluid_solidifier.luv.name=Elite Fluid Solidifier
 gtadditions.machine.fluid_solidifier.zpm.name=Elite Fluid Solidifier II
 gtadditions.machine.fluid_solidifier.uv.name=Elite Fluid Solidifier III
 
 # Forge Hammer
-gtadditions.machine.forge_hammer.iv.name=Elite Forge Hammer
-gtadditions.machine.forge_hammer.luv.name=Elite Forge Hammer I
+gtadditions.machine.forge_hammer.iv.name=Advanced Forge Hammer IV
+gtadditions.machine.forge_hammer.luv.name=Elite Forge Hammer
 gtadditions.machine.forge_hammer.zpm.name=Elite Forge Hammer II
 gtadditions.machine.forge_hammer.uv.name=Elite Forge Hammer III
 
 # Forming Press
-gtadditions.machine.forming_press.iv.name=Elite Forming Press
-gtadditions.machine.forming_press.luv.name=Elite Forming Press I
+gtadditions.machine.forming_press.iv.name=Advanced Forming Press IV
+gtadditions.machine.forming_press.luv.name=Elite Forming Press
 gtadditions.machine.forming_press.zpm.name=Elite Forming Press II
 gtadditions.machine.forming_press.uv.name=Elite Forming Press III
 
 # Lathe
-gtadditions.machine.lathe.iv.name=Elite Lathe
-gtadditions.machine.lathe.luv.name=Elite Lathe I
+gtadditions.machine.lathe.iv.name=Advanced Lathe IV
+gtadditions.machine.lathe.luv.name=Elite Lathe
 gtadditions.machine.lathe.zpm.name=Elite Lathe II
 gtadditions.machine.lathe.uv.name=Elite Lathe III
 
 # Microwave
-gtadditions.machine.microwave.iv.name=Elite Microwave
-gtadditions.machine.microwave.luv.name=Elite Microwave I
+gtadditions.machine.microwave.iv.name=Advanced Microwave IV
+gtadditions.machine.microwave.luv.name=Elite Microwave
 gtadditions.machine.microwave.zpm.name=Elite Microwave II
 gtadditions.machine.microwave.uv.name=Elite Microwave III
 
 # Mixer
-gtadditions.machine.mixer.iv.name=Elite Mixer
-gtadditions.machine.mixer.luv.name=Elite Mixer I
+gtadditions.machine.mixer.iv.name=Advanced Mixer IV
+gtadditions.machine.mixer.luv.name=Elite Mixer
 gtadditions.machine.mixer.zpm.name=Elite Mixer II
 gtadditions.machine.mixer.uv.name=Elite Mixer III
 
 # Ore Washer
-gtadditions.machine.ore_washer.iv.name=Elite Ore Washing Plant
-gtadditions.machine.ore_washer.luv.name=Elite Ore Washing Plant I
+gtadditions.machine.ore_washer.iv.name=Advanced Ore Washing Plant IV
+gtadditions.machine.ore_washer.luv.name=Elite Ore Washing Plant
 gtadditions.machine.ore_washer.zpm.name=Elite Ore Washing Plant II
 gtadditions.machine.ore_washer.uv.name=Elite Ore Washing Plant III
 
 # Packer
-gtadditions.machine.packer.iv.name=Elite Packager
-gtadditions.machine.packer.luv.name=Elite Packager I
+gtadditions.machine.packer.iv.name=Advanced Packager IV
+gtadditions.machine.packer.luv.name=Elite Packager
 gtadditions.machine.packer.zpm.name=Elite Packager II
 gtadditions.machine.packer.uv.name=Elite Packager III
 
 # Unpacker
-gtadditions.machine.unpacker.iv.name=Elite Unpackager
-gtadditions.machine.unpacker.luv.name=Elite Unpackager I
+gtadditions.machine.unpacker.iv.name=Advanced Unpackager IV
+gtadditions.machine.unpacker.luv.name=Elite Unpackager
 gtadditions.machine.unpacker.zpm.name=Elite Unpackager II
 gtadditions.machine.unpacker.uv.name=Elite Unpackager III
 
 # Plasma Arc Furnace
-gtadditions.machine.plasma_arc_furnace.iv.name=Elite Plasma Arc Furnace
-gtadditions.machine.plasma_arc_furnace.luv.name=Elite Plasma Arc Furnace I
+gtadditions.machine.plasma_arc_furnace.iv.name=Advanced Plasma Arc Furnace IV
+gtadditions.machine.plasma_arc_furnace.luv.name=Elite Plasma Arc Furnace
 gtadditions.machine.plasma_arc_furnace.zpm.name=Elite Plasma Arc Furnace II
 gtadditions.machine.plasma_arc_furnace.uv.name=Elite Plasma Arc Furnace III
 
 # Polarizer
-gtadditions.machine.polarizer.iv.name=Elite Polarizer
-gtadditions.machine.polarizer.luv.name=Elite Polarizer I
+gtadditions.machine.polarizer.iv.name=Advanced Polarizer IV
+gtadditions.machine.polarizer.luv.name=Elite Polarizer
 gtadditions.machine.polarizer.zpm.name=Elite Polarizer II
 gtadditions.machine.polarizer.uv.name=Elite Polarizer III
 
 # Laser Engraver
-gtadditions.machine.laser_engraver.iv.name=Elite Precision Laser Engraver
-gtadditions.machine.laser_engraver.luv.name=Elite Precision Laser Engraver I
+gtadditions.machine.laser_engraver.iv.name=Advanced Precision Laser Engraver IV
+gtadditions.machine.laser_engraver.luv.name=Elite Precision Laser Engraver
 gtadditions.machine.laser_engraver.zpm.name=Elite Precision Laser Engraver II
 gtadditions.machine.laser_engraver.uv.name=Elite Precision Laser Engraver III
 
 # Shifter
-gtadditions.machine.sifter.iv.name=Elite Sifting Machine
-gtadditions.machine.sifter.luv.name=Elite Sifting Machine I
+gtadditions.machine.sifter.iv.name=Advanced Sifting Machine IV
+gtadditions.machine.sifter.luv.name=Elite Sifting Machine
 gtadditions.machine.sifter.zpm.name=Elite Sifting Machine II
 gtadditions.machine.sifter.uv.name=Elite Sifting Machine III
 
 # Thermal Centrifuge
-gtadditions.machine.thermal_centrifuge.iv.name=Elite Thermal Centrifuge
-gtadditions.machine.thermal_centrifuge.luv.name=Elite Thermal Centrifuge I
+gtadditions.machine.thermal_centrifuge.iv.name=Advanced Thermal Centrifuge IV
+gtadditions.machine.thermal_centrifuge.luv.name=Elite Thermal Centrifuge
 gtadditions.machine.thermal_centrifuge.zpm.name=Elite Thermal Centrifuge II
 gtadditions.machine.thermal_centrifuge.uv.name=Elite Thermal Centrifuge III
 
 # Wiremill
-gtadditions.machine.wiremill.iv.name=Elite Wiremill
-gtadditions.machine.wiremill.luv.name=Elite Wiremill I
+gtadditions.machine.wiremill.iv.name=Advanced Wiremill IV
+gtadditions.machine.wiremill.luv.name=Elite Wiremill
 gtadditions.machine.wiremill.zpm.name=Elite Wiremill II
 gtadditions.machine.wiremill.uv.name=Elite Wiremill III
 
@@ -400,8 +400,8 @@ gtadditions.machine.mass_fab.lv.name=Basic Mass Fabricator
 gtadditions.machine.mass_fab.mv.name=Advanced Mass Fabricator
 gtadditions.machine.mass_fab.hv.name=Advanced Mass Fabricator II
 gtadditions.machine.mass_fab.ev.name=Advanced Mass Fabricator III
-gtadditions.machine.mass_fab.iv.name=Elite Mass Fabricator
-gtadditions.machine.mass_fab.luv.name=Elite Mass Fabricator I
+gtadditions.machine.mass_fab.iv.name=Advanced Mass Fabricator IV
+gtadditions.machine.mass_fab.luv.name=Elite Mass Fabricator
 gtadditions.machine.mass_fab.zpm.name=Elite Mass Fabricator II
 gtadditions.machine.mass_fab.uv.name=Elite Mass Fabricator III
 
@@ -410,8 +410,8 @@ gtadditions.machine.replicator.lv.name=Basic Replicator
 gtadditions.machine.replicator.mv.name=Advanced Replicator
 gtadditions.machine.replicator.hv.name=Advanced Replicator II
 gtadditions.machine.replicator.ev.name=Advanced Replicator III
-gtadditions.machine.replicator.iv.name=Elite Replicator
-gtadditions.machine.replicator.luv.name=Elite Replicator I
+gtadditions.machine.replicator.iv.name=Advanced Replicator IV
+gtadditions.machine.replicator.luv.name=Elite Replicator
 gtadditions.machine.replicator.zpm.name=Elite Replicator II
 gtadditions.machine.replicator.uv.name=Elite Replicator III
 
@@ -431,15 +431,15 @@ gtadditions.machine.bundler.uv.tooltip=Lapinotron 9000
 
 
 # Pump
-gtadditions.machine.pump.iv.name=Elite Pump
-gtadditions.machine.pump.luv.name=Elite Pump I
+gtadditions.machine.pump.iv.name=Advanced Pump IV
+gtadditions.machine.pump.luv.name=Elite Pump
 gtadditions.machine.pump.zpm.name=Elite Pump II
 gtadditions.machine.pump.uv.name=Elite Pump III
 
 # Air Collector
 gregtech.machine.air_collector.ev.name=Advanced Air Collector III
-gtadditions.machine.air_collector.iv.name=Elite Air Collector
-gtadditions.machine.air_collector.luv.name=Elite Air Collector I
+gtadditions.machine.air_collector.iv.name=Advanced Air Collector IV
+gtadditions.machine.air_collector.luv.name=Elite Air Collector
 
 
 ## Multiblocks
