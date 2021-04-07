@@ -158,9 +158,13 @@ gtadditions.machine.electric_furnace.uv.name=Elite Electric Furnace III
 
 # Macerator
 gtadditions.machine.macerator.iv.name=Universal Pulverizer II
+gtadditions.machine.macerator.iv.tooltip=Blend-O-Matic 9001
 gtadditions.machine.macerator.luv.name=Universal Pulverizer III
+gtadditions.machine.macerator.luv.tooltip=Blend-O-Matic 9002
 gtadditions.machine.macerator.zpm.name=Universal Pulverizer IV
+gtadditions.machine.macerator.zpm.tooltip=Blend-O-Matic 9003
 gtadditions.machine.macerator.uv.name=Universal Pulverizer V
+gtadditions.machine.macerator.uv.tooltip=Blend-O-Matic 9004
 
 # Alloy Smelter
 gtadditions.machine.alloy_smelter.iv.name=Advanced Alloy Smelter IV
@@ -212,9 +216,13 @@ gtadditions.machine.canner.uv.name=Elite Canning Machine III
 
 # Centrifuge
 gtadditions.machine.centrifuge.iv.name=Turbo Centrifuge III
+gtadditions.machine.centrifuge.iv.tooltip=Molecular Cyclone
 gtadditions.machine.centrifuge.luv.name=Turbo Centrifuge IV
+gtadditions.machine.centrifuge.luv.tooltip=Molecular Cyclone
 gtadditions.machine.centrifuge.zpm.name=Turbo Centrifuge V
+gtadditions.machine.centrifuge.zpm.tooltip=Molecular Cyclone
 gtadditions.machine.centrifuge.uv.name=Turbo Centrifuge VI
+gtadditions.machine.centrifuge.uv.tooltip=Molecular Cyclone
 
 # Chemical Bath
 gtadditions.machine.chemical_bath.iv.name=Advanced Chemical Bath IV
@@ -250,9 +258,13 @@ gtadditions.machine.distillery.uv.name=Elite Distillery III
 # Electrolyzer
 gregtech.machine.electrolyzer.ev.name=Advanced Electrolyzer III
 gtadditions.machine.electrolyzer.iv.name=Advanced Electrolyzer IV
+gtadditions.machine.electrolyzer.iv.tooltip=Molecular Disintegrator E-4905
 gtadditions.machine.electrolyzer.luv.name=Elite Electrolyzer
+gtadditions.machine.electrolyzer.luv.tooltip=Molecular Disintegrator E-4906
 gtadditions.machine.electrolyzer.zpm.name=Elite Electrolyzer II
+gtadditions.machine.electrolyzer.zpm.tooltip=Molecular Disintegrator E-4907
 gtadditions.machine.electrolyzer.uv.name=Elite Electrolyzer III
+gtadditions.machine.electrolyzer.uv.tooltip=Molecular Disintegrator E-4908
 
 # Electromagnetic Separator
 gtadditions.machine.electromagnetic_separator.iv.name=Advanced Electromagnetic Separator IV
@@ -335,9 +347,13 @@ gtadditions.machine.mixer.uv.name=Elite Mixer III
 
 # Ore Washer
 gtadditions.machine.ore_washer.iv.name=Advanced Ore Washing Plant IV
+gtadditions.machine.ore_washer.iv.tooltip=Repurposed Laundry-Washer I-360
 gtadditions.machine.ore_washer.luv.name=Elite Ore Washing Plant
+gtadditions.machine.ore_washer.luv.tooltip=Repurposed Laundry-Washer I-720
 gtadditions.machine.ore_washer.zpm.name=Elite Ore Washing Plant II
+gtadditions.machine.ore_washer.zpm.tooltip=Repurposed Laundry-Washer I-1080
 gtadditions.machine.ore_washer.uv.name=Elite Ore Washing Plant III
+gtadditions.machine.ore_washer.uv.tooltip=Repurposed Laundry-Washer I-1440
 
 # Packer
 gtadditions.machine.packer.iv.name=Advanced Packager IV
@@ -377,9 +393,13 @@ gtadditions.machine.sifter.uv.name=Elite Sifting Machine III
 
 # Thermal Centrifuge
 gtadditions.machine.thermal_centrifuge.iv.name=Advanced Thermal Centrifuge IV
+gtadditions.machine.thermal_centrifuge.iv.tooltip=Blaze Sweatshop T-6350
 gtadditions.machine.thermal_centrifuge.luv.name=Elite Thermal Centrifuge
+gtadditions.machine.thermal_centrifuge.luv.tooltip=Blaze Sweatshop T-6360
 gtadditions.machine.thermal_centrifuge.zpm.name=Elite Thermal Centrifuge II
+gtadditions.machine.thermal_centrifuge.zpm.tooltip=Blaze Sweatshop T-6370
 gtadditions.machine.thermal_centrifuge.uv.name=Elite Thermal Centrifuge III
+gtadditions.machine.thermal_centrifuge.uv.tooltip=Blaze Sweatshop T-6380
 
 # Wiremill
 gtadditions.machine.wiremill.iv.name=Advanced Wiremill IV
@@ -407,13 +427,21 @@ gtadditions.machine.mass_fab.uv.name=Elite Mass Fabricator III
 
 # Replicator
 gtadditions.machine.replicator.lv.name=Basic Replicator
+gtadditions.machine.replicator.lv.tooltip=Producing The Purest Of Elements
 gtadditions.machine.replicator.mv.name=Advanced Replicator
+gtadditions.machine.replicator.mv.tooltip=Producing The Purest Of Elements
 gtadditions.machine.replicator.hv.name=Advanced Replicator II
+gtadditions.machine.replicator.hv.tooltip=Producing The Purest Of Elements
 gtadditions.machine.replicator.ev.name=Advanced Replicator III
+gtadditions.machine.replicator.ev.tooltip=Producing The Purest Of Elements
 gtadditions.machine.replicator.iv.name=Advanced Replicator IV
+gtadditions.machine.replicator.iv.tooltip=Producing The Purest Of Elements
 gtadditions.machine.replicator.luv.name=Elite Replicator
+gtadditions.machine.replicator.luv.tooltip=Producing The Purest Of Elements
 gtadditions.machine.replicator.zpm.name=Elite Replicator II
+gtadditions.machine.replicator.zpm.tooltip=Producing The Purest Of Elements
 gtadditions.machine.replicator.uv.name=Elite Replicator III
+gtadditions.machine.replicator.uv.tooltip=Producing The Purest Of Elements
 
 # Bundler
 recipemap.bundler.name=Wire Bundling
