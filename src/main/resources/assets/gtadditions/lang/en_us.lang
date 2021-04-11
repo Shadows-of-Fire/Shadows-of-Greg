@@ -33,6 +33,7 @@ metaitem.wafer.naquadah.tooltip=Raw Circuit
 
 # Circuit Tooltips
 metaitem.circuit.basic.tooltip=A Basic Circuit
+metaitem.circuit.good.tooltip=A Good Circuit
 metaitem.circuit.advanced.tooltip=A Good Circuit
 metaitem.circuit.wetware_mainframe.tooltip=An Infinite Circuit
 metaitem.circuit.vacuum_tube.tooltip=A Very Simple Circuit
