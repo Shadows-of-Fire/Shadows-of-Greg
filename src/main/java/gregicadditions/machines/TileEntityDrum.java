@@ -120,23 +120,8 @@ public class TileEntityDrum extends MetaTileEntity {
 	public ICapabilityProvider initItemStackCapabilities(ItemStack itemStack) {
 		return new FluidHandlerItemStack(itemStack, tankSize) {
 			@Override
-			public FluidStack drain(FluidStack resource, boolean doDrain) {
-				FluidStack drained = super.drain(resource, doDrain);
-				this.removeTagWhenEmptied(doDrain);
-				return drained;
-			}
-
-			@Override
-			public FluidStack drain(int maxDrain, boolean doDrain) {
-				FluidStack drained = super.drain(maxDrain, doDrain);
-				this.removeTagWhenEmptied(doDrain);
-				return drained;
-			}
-
-			public void removeTagWhenEmptied(boolean doDrain) {
-				if(doDrain && this.getFluid() == null) {
-					this.container.setTagCompound(null);
-				}
+			protected void setContainerToEmpty() {
+				this.container.setTagCompound(null);
 			}
 		};
 	}
