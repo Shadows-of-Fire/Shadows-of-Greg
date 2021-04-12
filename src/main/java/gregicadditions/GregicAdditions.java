@@ -38,7 +38,7 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 
-@Mod(modid = GregicAdditions.MODID, name = GregicAdditions.NAME, version = GregicAdditions.VERSION, dependencies = "required-after:gregtech@[1.14.0.689,);after:forestry;after:tconstruct")
+@Mod(modid = GregicAdditions.MODID, name = GregicAdditions.NAME, version = GregicAdditions.VERSION, dependencies = "required-after:gregtech@[1.14.0.689,);after:forestry;after:tconstruct;after:crafttweaker;")
 public class GregicAdditions {
 	public static final String MODID = "gtadditions";
 	public static final String NAME = "Shadows of Greg";
@@ -77,8 +77,8 @@ public class GregicAdditions {
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
-		GARecipeAddition.generatedRecipes();
-		if (!isForestryBeesDisabled())
+
+		if (!isForestryBeesDisabled()) // TODO
 			proxy.postInit();
 	}
 
@@ -107,6 +107,7 @@ public class GregicAdditions {
 		GeneratorFuels.init();
 		GAMetaItems.registerOreDict();
 		GAMetaItems.registerRecipes();
+        GARecipeAddition.generatedRecipes();
 	}
 
 	private <T extends Block> ItemBlock createItemBlock(T block, Function<T, ItemBlock> producer) {
