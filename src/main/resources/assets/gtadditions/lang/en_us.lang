@@ -494,7 +494,7 @@ gregtech.multiblock.processing_array.description=The Processing Array combines u
 # Assembly Line
 recipemap.assembly_line.name=Assembly Line
 gtadditions.machine.assembly_line.name=Assembly Line
-gregtech.multiblock.assembly_line.description=The Assembly Line is a large multiblock structure consisting of 5 to 16 "slices". In theory, it's large Assembling Machine, used for creating advanced crafting components.
+gregtech.multiblock.assembly_line.description=The Assembly Line is a large multiblock structure consisting of 5 to 17 "slices". In theory, it's a large Assembling Machine, used for creating advanced crafting components.
 
 
 ## Tools
