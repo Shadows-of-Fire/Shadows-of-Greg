@@ -24,6 +24,7 @@ public class ClientProxy extends CommonProxy {
 	public void postInit() {
 		ItemColors itemColors = Minecraft.getMinecraft().getItemColors();
 		itemColors.registerItemColorHandler(ColoredItemItemColor.INSTANCE, GTCombs.combItem);
+		super.postInit();
 	}
 
 	@SubscribeEvent

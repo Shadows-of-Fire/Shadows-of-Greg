@@ -111,7 +111,6 @@ public class GregicAdditions {
         GARecipeAddition.generatedRecipes();
         if (!isForestryBeesDisabled()) {
             GTMachineCombRecipes.init();
-            ForestryMachineRecipes.init();
         }
 	}
 

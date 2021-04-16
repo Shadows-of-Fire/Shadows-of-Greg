@@ -1,47 +1,15 @@
 package gregicadditions.bees;
 
-import forestry.api.recipes.ICentrifugeRecipe;
-import forestry.api.recipes.ISqueezerRecipe;
-import forestry.api.recipes.RecipeManagers;
 import forestry.core.ModuleCore;
 import forestry.core.fluids.Fluids;
-import forestry.core.items.ItemFluidContainerForestry;
 import gregicadditions.GAConfig;
-import gregtech.api.recipes.Recipe;
 import gregtech.api.recipes.RecipeMaps;
-import gregtech.api.recipes.builders.SimpleRecipeBuilder;
 import gregtech.api.unification.OreDictUnifier;
 import gregtech.api.unification.material.Materials;
 import gregtech.api.unification.ore.OrePrefix;
-import net.minecraft.item.ItemStack;
-
-import java.util.Collections;
 
 public class GTMachineCombRecipes {
 	public static void init() {
-
-        if (GAConfig.GTBees.GenerateCentrifugeRecipes) for (ICentrifugeRecipe recipe : RecipeManagers.centrifugeManager.recipes()) {
-            SimpleRecipeBuilder builder = RecipeMaps.CENTRIFUGE_RECIPES.recipeBuilder();
-            builder.inputs(recipe.getInput().copy());
-            for (ItemStack stack : recipe.getAllProducts().keySet()) {
-                builder.chancedOutput(stack.copy(), (int) (recipe.getAllProducts().get(stack) * Recipe.getMaxChancedValue()), 1000);
-            }
-            builder.EUt(5);
-            builder.duration(128);
-            builder.buildAndRegister();
-        }
-
-        if (GAConfig.GTBees.GenerateExtractorRecipes) for (ISqueezerRecipe recipe : RecipeManagers.squeezerManager.recipes()) {
-            if (recipe.getResources().size() != 1 || recipe.getResources().get(0).getItem() instanceof ItemFluidContainerForestry) continue;
-            if (RecipeMaps.FLUID_EXTRACTION_RECIPES.findRecipe(Integer.MAX_VALUE, recipe.getResources(), Collections.emptyList(), Integer.MAX_VALUE) != null) continue;
-            SimpleRecipeBuilder builder = RecipeMaps.FLUID_EXTRACTION_RECIPES.recipeBuilder();
-            builder.inputs(recipe.getResources().get(0).copy());
-            if (!recipe.getRemnants().isEmpty()) builder.chancedOutput(recipe.getRemnants().copy(), (int) (recipe.getRemnantsChance() * Recipe.getMaxChancedValue()), 1000);
-            if (recipe.getFluidOutput() != null) builder.fluidOutputs(recipe.getFluidOutput());
-            builder.EUt(5);
-            builder.duration(128);
-            builder.buildAndRegister();
-        }
 
 		//Impregnated Recipes
 		if (GAConfig.GTBees.AssemblerRecipes) {
