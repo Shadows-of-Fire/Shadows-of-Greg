@@ -76,8 +76,8 @@ public class GregicAdditions {
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
-        if (!isForestryBeesDisabled())
-            proxy.postInit();
+		if (!isForestryBeesDisabled())
+			proxy.postInit();
 	}
 
 	@SubscribeEvent
@@ -92,9 +92,9 @@ public class GregicAdditions {
 		IForgeRegistry<Item> registry = event.getRegistry();
 		registry.register(createItemBlock(GAMetaBlocks.MUTLIBLOCK_CASING, VariantItemBlock::new));
 		registry.register(createItemBlock(GAMetaBlocks.TRANSPARENT_CASING, VariantItemBlock::new));
-        if (!isForestryBeesDisabled()) {
-            registry.register(GTCombs.combItem);
-        }
+		if (!isForestryBeesDisabled()) {
+			registry.register(GTCombs.combItem);
+		}
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOW)
@@ -108,10 +108,10 @@ public class GregicAdditions {
 		GeneratorFuels.init();
 		GAMetaItems.registerOreDict();
 		GAMetaItems.registerRecipes();
-        GARecipeAddition.generatedRecipes();
-        if (!isForestryBeesDisabled()) {
-            GTMachineCombRecipes.init();
-        }
+		GARecipeAddition.generatedRecipes();
+		if (!isForestryBeesDisabled()) {
+			GTMachineCombRecipes.init();
+		}
 	}
 
 	private <T extends Block> ItemBlock createItemBlock(T block, Function<T, ItemBlock> producer) {

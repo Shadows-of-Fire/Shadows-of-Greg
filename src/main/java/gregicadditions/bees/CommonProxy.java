@@ -7,6 +7,6 @@ import net.minecraftforge.fml.common.Mod;
 public class CommonProxy {
 
 	public void postInit() {
-        ForestryMachineRecipes.init();
+		ForestryMachineRecipes.init();
 	}
 }
