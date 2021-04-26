@@ -7,6 +7,7 @@ import gregtech.api.GTValues;
 import gregtech.api.GregTechAPI;
 import gregtech.api.capability.*;
 import gregtech.api.capability.impl.*;
+import gregtech.api.gui.Widget;
 import gregtech.api.metatileentity.*;
 import gregtech.api.metatileentity.multiblock.*;
 import gregtech.api.multiblock.*;
@@ -21,12 +22,18 @@ import gregtech.common.blocks.*;
 import gregtech.common.metatileentities.electric.MetaTileEntityMacerator;
 import net.minecraft.block.state.*;
 import net.minecraft.item.*;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.*;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fluids.*;
 import net.minecraftforge.items.*;
 
 import java.util.*;
 import java.util.function.Predicate;
+
+import static gregtech.api.gui.widgets.AdvancedTextWidget.withButton;
+import static gregtech.api.gui.widgets.AdvancedTextWidget.withHoverTextTranslate;
 
 public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 
@@ -37,6 +44,8 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 		MultiblockAbility.EXPORT_FLUIDS,
 		MultiblockAbility.INPUT_ENERGY
 	};
+
+	protected boolean isDistinct = false;
 
 	public TileEntityProcessingArray(ResourceLocation metaTileEntityId) {
 		super(metaTileEntityId, GARecipeMaps.PROCESSING_ARRAY_RECIPES);
@@ -86,12 +95,48 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 		return recipeMapWorkable;
 	}
 
+	@Override
+	protected void addDisplayText(List<ITextComponent> textList) {
+		super.addDisplayText(textList);
+
+		ITextComponent buttonText = new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct");
+		buttonText.appendText(" ");
+		ITextComponent button = withButton((isDistinct ?
+				new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct.yes") :
+				new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct.no")), "distinct");
+		withHoverTextTranslate(button, "gtadditions.multiblock.processing_array.distinct.info");
+		buttonText.appendSibling(button);
+		textList.add(buttonText);
+	}
+
+	@Override
+	protected void handleDisplayClick(String componentData, Widget.ClickData clickData) {
+		super.handleDisplayClick(componentData, clickData);
+		isDistinct = !isDistinct;
+	}
+
+	@Override
+	public NBTTagCompound writeToNBT(NBTTagCompound data) {
+		super.writeToNBT(data);
+		data.setBoolean("Distinct", isDistinct);
+		return data;
+	}
+
+	@Override
+	public void readFromNBT(NBTTagCompound data) {
+		super.readFromNBT(data);
+		isDistinct = data.getBoolean("Distinct");
+	}
+
 	protected static class ProcessingArrayWorkable extends MultiblockRecipeLogic {
 		long voltageTier;
 		int numberOfMachines = 0;
 		int numberOfOperations = 0;
 		ItemStack machineItemStack = null;
 		ItemStack oldMachineStack = null;
+		// Fields used for distinct mode
+		protected int lastRecipeIndex = 0;
+		protected ItemStack[][] lastItemInputsMatrix;
 
 		public ProcessingArrayWorkable(RecipeMapMultiblockController tileEntity) {
 			super(tileEntity);
@@ -186,6 +231,11 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 
 				newRecipe.chancedOutput(itemStack, chance, boost);
 			}
+		}
+
+		protected List<IItemHandlerModifiable> getInputBuses() {
+			RecipeMapMultiblockController controller = (RecipeMapMultiblockController) metaTileEntity;
+			return controller.getAbilities(MultiblockAbility.IMPORT_ITEMS);
 		}
 
 		protected static Set<ItemStack> findIngredients(IItemHandlerModifiable inputs) {
@@ -416,6 +466,15 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 
 		@Override
 		protected void trySearchNewRecipe() {
+			if(metaTileEntity instanceof TileEntityProcessingArray && ((TileEntityProcessingArray) metaTileEntity).isDistinct) {
+				trySearchNewRecipeDistinct();
+			}
+			else {
+				trySearchNewRecipeCombined();
+			}
+		}
+
+		private void trySearchNewRecipeCombined() {
 			long maxVoltage = getMaxVoltage();
 			Recipe currentRecipe;
 			IItemHandlerModifiable importInventory = getInputInventory();
@@ -456,6 +515,127 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 				setupRecipe(currentRecipe);
 			}
 		}
+
+		// ------------------------------ Distinct Bus Logic -----------------------------------------------
+		// Distinct bus logic thanks to dan
+
+		private void trySearchNewRecipeDistinct() {
+			long maxVoltage = getMaxVoltage();
+			Recipe currentRecipe = null;
+			List<IItemHandlerModifiable> importInventory = getInputBuses();
+			IMultipleTankHandler importFluids = getInputTank();
+			ItemStack newMachineStack = findMachineStack();
+			RecipeMapMultiblockController controller = (RecipeMapMultiblockController) this.metaTileEntity;
+			IItemHandlerModifiable machineBus = controller.getAbilities(GACapabilities.PA_MACHINE_CONTAINER).get(0);
+
+			//Check to see if the machine stack has changed first
+			//TODO Could this machine bus specific check be used in the combined code?
+			boolean machineDirty = checkRecipeInputsDirty(machineBus, importFluids);
+			if(machineDirty || forceRecipeRecheck) {
+				//Check if the machine that the PA is operating on has changed
+				//Is this check needed if machineDirty is true?
+				if(didMachinesChange(newMachineStack)) {
+					previousRecipe = null;
+					oldMachineStack = null;
+				}
+			}
+
+			//Check if the previous recipe is null, to avoid having to iterate the distinct inputs
+			if(previousRecipe != null && previousRecipe.matches(false, importInventory.get(lastRecipeIndex), importFluids)) {
+				currentRecipe = previousRecipe;
+				if(setupAndConsumeRecipeInputs(currentRecipe, lastRecipeIndex)) {
+					setupRecipe(currentRecipe);
+					return;
+				}
+			}
+
+			//If the machine stack changed, or the previous recipe is null, check for a new recipe
+			for (int i = 0; i < importInventory.size(); i++) {
+				IItemHandlerModifiable bus = importInventory.get(i);
+				boolean dirty = checkRecipeInputsDirty(bus, importFluids, i);
+				if (dirty || forceRecipeRecheck) {
+					this.forceRecipeRecheck = false;
+					currentRecipe = findRecipe(maxVoltage, bus, importFluids);
+					if (currentRecipe != null) {
+						this.previousRecipe = currentRecipe;
+					}
+				}
+				if(currentRecipe != null && setupAndConsumeRecipeInputs(currentRecipe, i)) {
+					lastRecipeIndex = i;
+					setupRecipe(currentRecipe);
+					break;
+				}
+			}
+		}
+
+		// Replacing this for optimization reasons
+		protected boolean checkRecipeInputsDirty(IItemHandler inputs, IMultipleTankHandler fluidInputs, int index) {
+			boolean shouldRecheckRecipe = false;
+
+			if (lastItemInputsMatrix == null || lastItemInputsMatrix.length != getInputBuses().size()) {
+				lastItemInputsMatrix = new ItemStack[getInputBuses().size()][];
+			}
+			if (lastItemInputsMatrix[index] == null || lastItemInputsMatrix[index].length != inputs.getSlots()) {
+				this.lastItemInputsMatrix[index] = new ItemStack[inputs.getSlots()];
+				Arrays.fill(lastItemInputsMatrix[index], ItemStack.EMPTY);
+			}
+			if (lastFluidInputs == null || lastFluidInputs.length != fluidInputs.getTanks()) {
+				this.lastFluidInputs = new FluidStack[fluidInputs.getTanks()];
+			}
+			for (int i = 0; i < lastItemInputsMatrix[index].length; i++) {
+				ItemStack currentStack = inputs.getStackInSlot(i);
+				ItemStack lastStack = lastItemInputsMatrix[index][i];
+				if (!areItemStacksEqual(currentStack, lastStack)) {
+					this.lastItemInputsMatrix[index][i] = currentStack.isEmpty() ? ItemStack.EMPTY : currentStack.copy();
+					shouldRecheckRecipe = true;
+				} else if (currentStack.getCount() != lastStack.getCount()) {
+					lastStack.setCount(currentStack.getCount());
+					shouldRecheckRecipe = true;
+				}
+			}
+			for (int i = 0; i < lastFluidInputs.length; i++) {
+				FluidStack currentStack = fluidInputs.getTankAt(i).getFluid();
+				FluidStack lastStack = lastFluidInputs[i];
+				if ((currentStack == null && lastStack != null) ||
+						(currentStack != null && !currentStack.isFluidEqual(lastStack))) {
+					this.lastFluidInputs[i] = currentStack == null ? null : currentStack.copy();
+					shouldRecheckRecipe = true;
+				} else if (currentStack != null && lastStack != null &&
+						currentStack.amount != lastStack.amount) {
+					lastStack.amount = currentStack.amount;
+					shouldRecheckRecipe = true;
+				}
+			}
+			return shouldRecheckRecipe;
+		}
+
+
+		protected boolean setupAndConsumeRecipeInputs(Recipe recipe, int index) {
+			RecipeMapMultiblockController controller = (RecipeMapMultiblockController) metaTileEntity;
+			if (controller.checkRecipe(recipe, false)) {
+
+				int[] resultOverclock = calculateOverclock(recipe.getEUt(), recipe.getDuration());
+				int totalEUt = resultOverclock[0] * resultOverclock[1];
+				IItemHandlerModifiable importInventory = getInputBuses().get(index);
+				IItemHandlerModifiable exportInventory = getOutputInventory();
+				IMultipleTankHandler importFluids = getInputTank();
+				IMultipleTankHandler exportFluids = getOutputTank();
+				boolean setup = (totalEUt >= 0 ? getEnergyStored() >= (totalEUt > getEnergyCapacity() / 2 ? resultOverclock[0] : totalEUt) :
+						(getEnergyStored() - resultOverclock[0] <= getEnergyCapacity())) &&
+						MetaTileEntity.addItemsToItemHandler(exportInventory, true, recipe.getAllItemOutputs(exportInventory.getSlots())) &&
+						MetaTileEntity.addFluidsToFluidHandler(exportFluids, true, recipe.getFluidOutputs()) &&
+						recipe.matches(true, importInventory, importFluids);
+
+				if (setup) {
+					controller.checkRecipe(recipe, true);
+					return true;
+				}
+			}
+			return false;
+		}
+
+
+		// ------------------------------- End Distinct Bus Logic ------------------------------------------------
 
 		@Override
 		protected void setupRecipe(Recipe recipe) {

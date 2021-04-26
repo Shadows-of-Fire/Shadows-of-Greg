@@ -493,6 +493,10 @@ gregtech.multiblock.fusion_reactor.heat=Heat: %d
 recipemap.processing_array.name=Processing Array
 gtadditions.machine.processing_array.name=Processing Array
 gregtech.multiblock.processing_array.description=The Processing Array combines up to %d single block machine(s) in a single multiblock, effectively easing automation.
+gtadditions.multiblock.processing_array.distinct=Distinct Buses:
+gtadditions.multiblock.processing_array.distinct.yes=§aYes
+gtadditions.multiblock.processing_array.distinct.no=§cNo
+gtadditions.multiblock.universal.processing_array.info=If enabled, each bus will be treated as fully distinct from eachother for recipe lookup. Useful for example for Extruder Shapes, Laser Lenses, etc..
 
 # Assembly Line
 recipemap.assembly_line.name=Assembly Line
