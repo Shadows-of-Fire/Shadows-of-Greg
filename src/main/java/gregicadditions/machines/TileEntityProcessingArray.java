@@ -545,11 +545,13 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 				currentRecipe = previousRecipe;
 				if(setupAndConsumeRecipeInputs(currentRecipe, lastRecipeIndex)) {
 					setupRecipe(currentRecipe);
+					oldMachineStack = newMachineStack;
 					return;
 				}
 			}
 
 			//If the machine stack changed, or the previous recipe is null, check for a new recipe
+			oldMachineStack = null;
 			for (int i = 0; i < importInventory.size(); i++) {
 				IItemHandlerModifiable bus = importInventory.get(i);
 				boolean dirty = checkRecipeInputsDirty(bus, importFluids, i);
@@ -557,12 +559,14 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 					this.forceRecipeRecheck = false;
 					currentRecipe = findRecipe(maxVoltage, bus, importFluids);
 					if (currentRecipe != null) {
+						newMachineStack = machineItemStack;
 						this.previousRecipe = currentRecipe;
 					}
 				}
 				if(currentRecipe != null && setupAndConsumeRecipeInputs(currentRecipe, i)) {
 					lastRecipeIndex = i;
 					setupRecipe(currentRecipe);
+					oldMachineStack = newMachineStack;
 					break;
 				}
 			}
