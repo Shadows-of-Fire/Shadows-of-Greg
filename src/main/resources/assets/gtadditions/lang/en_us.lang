@@ -42,7 +42,7 @@ metaitem.circuit.advanced_parts.tooltip=A Basic Circuit
 # Item Tooltips
 metaitem.compressed.fireclay.tooltip=Brick-Shaped
 metaitem.stemcells.tooltip=Raw Intelligence
-metaitem.component.glass.fiber.tooltip=B(SiO2)7
+metaitem.component.glass.fiber.tooltip=B(SiO₂)₇
 metaitem.component.petri.dish.tooltip=For Cultivating Cells
 
 
