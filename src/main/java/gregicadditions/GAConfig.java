@@ -250,10 +250,6 @@ public class GAConfig {
 
 		@Config.Name("Should higher tier Bundlers be registered?")
 		public boolean highTierBundler = true;
-
-		@Config.Comment("Set this to true to enable some debug logging. Not useful for normal play")
-		@Config.Name("Enable Debug Logging")
-		public boolean doDebugLogging = false;
 	}
 
 	@SubscribeEvent

@@ -125,10 +125,10 @@ public class GAMachineRecipeRemoval {
 			names.add(s.getDisplayName() + " x " + s.getCount());
 		}
 
-		if(map.removeRecipe(map.findRecipe(Long.MAX_VALUE, inputs, Collections.emptyList(), Integer.MAX_VALUE)) && GAConfig.Misc.doDebugLogging) {
-			GregicAdditions.LOGGER.info("Removed Recipe for Item Input(s): " + names);
+		if(map.removeRecipe(map.findRecipe(Long.MAX_VALUE, inputs, Collections.emptyList(), Integer.MAX_VALUE))) {
+			GregicAdditions.LOGGER.debug("Removed Recipe for Item Input(s): " + names);
 		}
-		else if(GAConfig.Misc.doDebugLogging) {
+		else {
 			GregicAdditions.LOGGER.warn("Failed to Remove Recipe for Item Input(s): " + names);
 		}
 	}
@@ -141,10 +141,10 @@ public class GAMachineRecipeRemoval {
 			names.add(s.getFluid().getName() + " x " + s.amount);
 		}
 
-		if(map.removeRecipe(map.findRecipe(Long.MAX_VALUE, Collections.emptyList(), inputs, Integer.MAX_VALUE)) && GAConfig.Misc.doDebugLogging) {
-			GregicAdditions.LOGGER.info("Removed Recipe for Fluid Input(s): " + names);
+		if(map.removeRecipe(map.findRecipe(Long.MAX_VALUE, Collections.emptyList(), inputs, Integer.MAX_VALUE))) {
+			GregicAdditions.LOGGER.debug("Removed Recipe for Fluid Input(s): " + names);
 		}
-		else if(GAConfig.Misc.doDebugLogging) {
+		else {
 			GregicAdditions.LOGGER.warn("Failed to Remove Recipe for Fluid Input(s): " + names);
 		}
 	}
@@ -164,11 +164,11 @@ public class GAMachineRecipeRemoval {
 			fluidNames.add(s.getFluid().getName() + " x " + s.amount);
 		}
 
-		if(map.removeRecipe(map.findRecipe(Long.MAX_VALUE, itemIn, fluidIn, Integer.MAX_VALUE)) && GAConfig.Misc.doDebugLogging) {
-			GregicAdditions.LOGGER.info("Removed Recipe for inputs: Items: " + itemNames + " Fluids: " + fluidNames);
+		if(map.removeRecipe(map.findRecipe(Long.MAX_VALUE, itemIn, fluidIn, Integer.MAX_VALUE))) {
+			GregicAdditions.LOGGER.debug("Removed Recipe for inputs: Items: " + itemNames + " Fluids: " + fluidNames);
 		}
-		else if(GAConfig.Misc.doDebugLogging) {
-			GregicAdditions.LOGGER.info("Failed to Remove Recipe for inputs: Items: " + itemNames + " Fluids: " + fluidNames);
+		else {
+			GregicAdditions.LOGGER.warn("Failed to Remove Recipe for inputs: Items: " + itemNames + " Fluids: " + fluidNames);
 		}
 	}
 
