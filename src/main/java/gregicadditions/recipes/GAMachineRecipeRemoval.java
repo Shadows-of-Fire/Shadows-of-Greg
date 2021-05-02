@@ -125,10 +125,10 @@ public class GAMachineRecipeRemoval {
 			names.add(s.getDisplayName() + " x " + s.getCount());
 		}
 
-		if(map.removeRecipe(map.findRecipe(Long.MAX_VALUE, inputs, Collections.emptyList(), Integer.MAX_VALUE))) {
+		if(map.removeRecipe(map.findRecipe(Long.MAX_VALUE, inputs, Collections.emptyList(), Integer.MAX_VALUE)) && GAConfig.Misc.doDebugLogging) {
 			GregicAdditions.LOGGER.info("Removed Recipe for Item Input(s): " + names);
 		}
-		else {
+		else if(GAConfig.Misc.doDebugLogging) {
 			GregicAdditions.LOGGER.warn("Failed to Remove Recipe for Item Input(s): " + names);
 		}
 	}
@@ -141,10 +141,10 @@ public class GAMachineRecipeRemoval {
 			names.add(s.getFluid().getName() + " x " + s.amount);
 		}
 
-		if(map.removeRecipe(map.findRecipe(Long.MAX_VALUE, Collections.emptyList(), inputs, Integer.MAX_VALUE))) {
+		if(map.removeRecipe(map.findRecipe(Long.MAX_VALUE, Collections.emptyList(), inputs, Integer.MAX_VALUE)) && GAConfig.Misc.doDebugLogging) {
 			GregicAdditions.LOGGER.info("Removed Recipe for Fluid Input(s): " + names);
 		}
-		else {
+		else if(GAConfig.Misc.doDebugLogging) {
 			GregicAdditions.LOGGER.warn("Failed to Remove Recipe for Fluid Input(s): " + names);
 		}
 	}
@@ -164,10 +164,10 @@ public class GAMachineRecipeRemoval {
 			fluidNames.add(s.getFluid().getName() + " x " + s.amount);
 		}
 
-		if(map.removeRecipe(map.findRecipe(Long.MAX_VALUE, itemIn, fluidIn, Integer.MAX_VALUE))) {
+		if(map.removeRecipe(map.findRecipe(Long.MAX_VALUE, itemIn, fluidIn, Integer.MAX_VALUE)) && GAConfig.Misc.doDebugLogging) {
 			GregicAdditions.LOGGER.info("Removed Recipe for inputs: Items: " + itemNames + " Fluids: " + fluidNames);
 		}
-		else {
+		else if(GAConfig.Misc.doDebugLogging) {
 			GregicAdditions.LOGGER.info("Failed to Remove Recipe for inputs: Items: " + itemNames + " Fluids: " + fluidNames);
 		}
 	}
