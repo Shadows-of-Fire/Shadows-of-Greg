@@ -90,10 +90,7 @@ public class GAMachineRecipeRemoval {
 		//Fix Brick Exploit
 		removeRecipesByInputs(RecipeMaps.MACERATOR_RECIPES, new ItemStack(Items.BRICK));
 
-		//Remove GTCE Circuit recipes
 		removeRecipesByInputs(RecipeMaps.ASSEMBLER_RECIPES, MetaItems.ENERGY_LAPOTRONIC_ORB2.getStackForm(8), OreDictUnifier.get(OrePrefix.plate, Materials.Darmstadtium, 16));
-		//TODO This fails
-		removeRecipeByName("gregtech:primitive_circuit");
 
 		//Remove GT5 Ash Centrifuging
 		removeRecipesByInputs(RecipeMaps.CENTRIFUGE_RECIPES, OreDictUnifier.get(OrePrefix.dust, Materials.DarkAsh, 2));
