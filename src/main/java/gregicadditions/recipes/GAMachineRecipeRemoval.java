@@ -7,7 +7,6 @@ import java.util.List;
 import gregicadditions.GAConfig;
 import gregicadditions.GregicAdditions;
 import gregtech.api.GTValues;
-import gregtech.api.recipes.ModHandler;
 import gregtech.api.recipes.Recipe;
 import gregtech.api.recipes.RecipeBuilder;
 import gregtech.api.recipes.RecipeMap;
@@ -15,14 +14,12 @@ import gregtech.api.recipes.RecipeMaps;
 import gregtech.api.recipes.ingredients.IntCircuitIngredient;
 import gregtech.api.unification.OreDictUnifier;
 import gregtech.api.unification.material.MarkerMaterials;
-import gregtech.api.unification.material.MarkerMaterials.Color;
 import gregtech.api.unification.material.Materials;
 import gregtech.api.unification.material.type.DustMaterial;
 import gregtech.api.unification.material.type.FluidMaterial;
 import gregtech.api.unification.material.type.IngotMaterial;
 import gregtech.api.unification.material.type.Material;
 import gregtech.api.unification.ore.OrePrefix;
-import gregtech.api.unification.stack.MaterialStack;
 import gregtech.api.util.GTUtility;
 import gregtech.common.blocks.BlockMachineCasing;
 import gregtech.common.blocks.MetaBlocks;
@@ -30,15 +27,14 @@ import gregtech.common.items.MetaItems;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
+
+import static gregicadditions.recipes.helpers.HelperMethods.removeRecipeByName;
 
 import static gregtech.loaders.oreprocessing.WireRecipeHandler.INSULATION_MATERIALS;
 
 
 public class GAMachineRecipeRemoval {
-
-	private static final MaterialStack[] solderingList = { new MaterialStack(Materials.Tin, 2L), new MaterialStack(Materials.SolderingAlloy, 1L), new MaterialStack(Materials.Lead, 4L) };
 
 	private static final FluidStack[] cableFluids = { Materials.Rubber.getFluid(144), Materials.StyreneButadieneRubber.getFluid(108), Materials.SiliconeRubber.getFluid(72) };
 
@@ -53,7 +49,7 @@ public class GAMachineRecipeRemoval {
 
 			//Remove Old Wrench Recipes
 			if (m instanceof IngotMaterial && !m.hasFlag(DustMaterial.MatFlags.NO_SMASHING) && GAConfig.GT6.ExpensiveWrenches) {
-				ModHandler.removeRecipeByName(new ResourceLocation(String.format("gregtech:wrench_%s", m.toString())));
+				removeRecipeByName(String.format("gregtech:wrench_%s", m.toString()));
 			}
 
 			//Remove EV+ Cable Recipes
@@ -96,7 +92,8 @@ public class GAMachineRecipeRemoval {
 
 		//Remove GTCE Circuit recipes
 		removeRecipesByInputs(RecipeMaps.ASSEMBLER_RECIPES, MetaItems.ENERGY_LAPOTRONIC_ORB2.getStackForm(8), OreDictUnifier.get(OrePrefix.plate, Materials.Darmstadtium, 16));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:primitive_circuit"));
+		//TODO This fails
+		removeRecipeByName("gregtech:primitive_circuit");
 
 		//Remove GT5 Ash Centrifuging
 		removeRecipesByInputs(RecipeMaps.CENTRIFUGE_RECIPES, OreDictUnifier.get(OrePrefix.dust, Materials.DarkAsh, 2));
