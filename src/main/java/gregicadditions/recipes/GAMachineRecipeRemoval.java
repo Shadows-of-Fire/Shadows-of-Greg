@@ -3,7 +3,6 @@ package gregicadditions.recipes;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import gregicadditions.GAConfig;
 import gregicadditions.GregicAdditions;
@@ -28,18 +27,18 @@ import gregtech.api.util.GTUtility;
 import gregtech.common.blocks.BlockMachineCasing;
 import gregtech.common.blocks.MetaBlocks;
 import gregtech.common.items.MetaItems;
-import gregtech.loaders.oreprocessing.WireRecipeHandler;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 
+import static gregtech.loaders.oreprocessing.WireRecipeHandler.INSULATION_MATERIALS;
+
+
 public class GAMachineRecipeRemoval {
 
 	private static final MaterialStack[] solderingList = { new MaterialStack(Materials.Tin, 2L), new MaterialStack(Materials.SolderingAlloy, 1L), new MaterialStack(Materials.Lead, 4L) };
-
-	public static final Map<FluidMaterial, Integer> cableCoveringList =  WireRecipeHandler.INSULATION_MATERIALS;
 
 	public static void init() {
 		for (Material m : Material.MATERIAL_REGISTRY) {
@@ -59,10 +58,10 @@ public class GAMachineRecipeRemoval {
 			if (GAConfig.GT5U.CablesGT5U) {
 				if(m instanceof IngotMaterial) {
 					if(((IngotMaterial) m).cableProperties != null && ((IngotMaterial) m).cableProperties.voltage >= GTValues.EV) {
-						for(FluidMaterial insulationMaterial : cableCoveringList.keySet()) {
+						for(FluidMaterial insulationMaterial : INSULATION_MATERIALS.keySet()) {
 
 							int cableTier = GTUtility.getTierByVoltage(((IngotMaterial) m).cableProperties.voltage);
-							int insulationTier = cableCoveringList.get(insulationMaterial);
+							int insulationTier = INSULATION_MATERIALS.get(insulationMaterial);
 							if(cableTier > insulationTier) {
 								continue;
 							}
