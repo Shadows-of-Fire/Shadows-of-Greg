@@ -496,7 +496,7 @@ gregtech.multiblock.processing_array.description=The Processing Array combines u
 gtadditions.multiblock.processing_array.distinct=Distinct Buses:
 gtadditions.multiblock.processing_array.distinct.yes=§aYes
 gtadditions.multiblock.processing_array.distinct.no=§cNo
-gtadditions.multiblock.universal.processing_array.info=If enabled, each bus will be treated as fully distinct from eachother for recipe lookup. Useful for example for Extruder Shapes, Laser Lenses, etc..
+gtadditions.multiblock.processing_array.distinct.info=If enabled, each bus will be treated as fully distinct from each other for recipe lookup. Useful for example for Extruder Shapes, Laser Lenses, etc..
 
 # Assembly Line
 recipemap.assembly_line.name=Assembly Line
