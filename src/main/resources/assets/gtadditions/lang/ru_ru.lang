@@ -497,6 +497,7 @@ gtadditions.multiblock.processing_array.distinct=Distinct Buses:
 gtadditions.multiblock.processing_array.distinct.yes=§aYes
 gtadditions.multiblock.processing_array.distinct.no=§cNo
 gtadditions.multiblock.processing_array.distinct.info=If enabled, each bus will be treated as fully distinct from each other for recipe lookup. Useful for example for Extruder Shapes, Laser Lenses, etc..
+gtadditions.multiblock.processing_array.locked=§cMachine Hatch Locked
 
 # Assembly Line
 recipemap.assembly_line.name=Assembly Line
