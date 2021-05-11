@@ -119,10 +119,10 @@ public class GARecipeAddition {
 			ModHandler.addShapedRecipe("chain_boots", new ItemStack(Items.CHAINMAIL_BOOTS), "R R", "RhR", 'R', "ringIron");
 		}
 		for (Material m : Material.MATERIAL_REGISTRY) {
-			if (!OreDictUnifier.get(OrePrefix.ring, m).isEmpty() && !OreDictUnifier.get(OrePrefix.stick, m).isEmpty() && m != Materials.Rubber && m != Materials.StyreneButadieneRubber && m != Materials.SiliconeRubber && GAConfig.GT6.BendingRings && GAConfig.GT6.BendingCylinders) {
+			/*if (!OreDictUnifier.get(OrePrefix.ring, m).isEmpty() && !OreDictUnifier.get(OrePrefix.stick, m).isEmpty() && m != Materials.Rubber && m != Materials.StyreneButadieneRubber && m != Materials.SiliconeRubber && GAConfig.GT6.BendingRings && GAConfig.GT6.BendingCylinders) {
 				removeCraftingRecipes(OreDictUnifier.get(OrePrefix.ring, m));
 				ModHandler.addShapedRecipe("rod_to_ring_" + m.toString(), OreDictUnifier.get(OrePrefix.ring, m), "hS", " C", 'S', OreDictUnifier.get(OrePrefix.stick, m), 'C', "craftingToolBendingCylinderSmall");
-			}
+			}*/
 			if (!OreDictUnifier.get(OrePrefix.valueOf("plateCurved"), m).isEmpty() && GAConfig.GT6.BendingCurvedPlates && GAConfig.GT6.BendingCylinders) {
 				ModHandler.addShapedRecipe("curved_plate_" + m.toString(), OreDictUnifier.get(OrePrefix.valueOf("plateCurved"), m), "h", "P", "C", 'P', new UnificationEntry(OrePrefix.plate, m), 'C', "craftingToolBendingCylinder");
 				ModHandler.addShapedRecipe("flatten_plate_" + m.toString(), OreDictUnifier.get(OrePrefix.plate, m), "h", "C", 'C', new UnificationEntry(OrePrefix.valueOf("plateCurved"), m));
@@ -133,7 +133,9 @@ public class GARecipeAddition {
 				ModHandler.addShapedRecipe("ga_rotor_" + m.toString(), OreDictUnifier.get(OrePrefix.rotor, m), "ChC", "SRf", "CdC", 'C', OreDictUnifier.get(OrePrefix.valueOf("plateCurved"), m), 'S', OreDictUnifier.get(OrePrefix.screw, m), 'R', OreDictUnifier.get(OrePrefix.ring, m));
 				RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder().duration(240).EUt(24).inputs(OreDictUnifier.get(OrePrefix.valueOf("plateCurved"), m, 4), OreDictUnifier.get(OrePrefix.ring, m)).fluidInputs(Materials.SolderingAlloy.getFluid(32)).outputs(OreDictUnifier.get(OrePrefix.rotor, m)).buildAndRegister();
 			}
-			if (!OreDictUnifier.get(OrePrefix.foil, m).isEmpty()) {
+
+
+			/*if (!OreDictUnifier.get(OrePrefix.foil, m).isEmpty()) {
 				if (GAConfig.GT6.BendingFoils && GAConfig.GT6.BendingCylinders) {
 					ModHandler.addShapedRecipe("foil_" + m.toString(), OreDictUnifier.get(OrePrefix.foil, m, 2), "hPC", 'P', new UnificationEntry(OrePrefix.plate, m), 'C', "craftingToolBendingCylinder");
 				}
@@ -143,12 +145,12 @@ public class GARecipeAddition {
 				else {
 					RecipeMaps.BENDER_RECIPES.recipeBuilder().EUt(24).duration((int) m.getMass()).circuitMeta(4).input(OrePrefix.plate, m).outputs(OreDictUnifier.get(OrePrefix.foil, m, 4)).buildAndRegister();
 				}
-			}
+			} */
 
-			if (!OreDictUnifier.get(OrePrefix.valueOf("round"), m).isEmpty()) {
+			/*if (!OreDictUnifier.get(OrePrefix.valueOf("round"), m).isEmpty()) {
 				ModHandler.addShapedRecipe("round" + m.toString(), OreDictUnifier.get(OrePrefix.valueOf("round"), m), "fN", "N ", 'N', OreDictUnifier.get(OrePrefix.nugget, m));
 				RecipeMaps.LATHE_RECIPES.recipeBuilder().EUt(8).duration(100).inputs(OreDictUnifier.get(OrePrefix.nugget, m)).outputs(OreDictUnifier.get(OrePrefix.valueOf("round"), m)).buildAndRegister();
-			}
+			} */
 
 
 			if (GAConfig.GT6.BendingPipes && GAConfig.GT6.BendingCylinders && GAConfig.GT6.addCurvedPlates) {
@@ -229,12 +231,12 @@ public class GARecipeAddition {
 			}
 
 			//GT6 Plate Recipe
-			if (m instanceof IngotMaterial && !OreDictUnifier.get(OrePrefix.plate, m).isEmpty() && !OreDictUnifier.get(OrePrefix.valueOf("ingotDouble"), m).isEmpty() && GAConfig.GT6.PlateDoubleIngot) {
+			/*if (m instanceof IngotMaterial && !OreDictUnifier.get(OrePrefix.plate, m).isEmpty() && !OreDictUnifier.get(OrePrefix.valueOf("ingotDouble"), m).isEmpty() && GAConfig.GT6.PlateDoubleIngot) {
 				removeCraftingRecipes(OreDictUnifier.get(OrePrefix.plate, m));
 				//TODO, I think this fails for plastic stuff
 				ModHandler.addShapedRecipe("ingot_double_" + m.toString(), OreDictUnifier.get(OrePrefix.valueOf("ingotDouble"), m), "h", "I", "I", 'I', new UnificationEntry(OrePrefix.ingot, m));
 				ModHandler.addShapedRecipe("double_ingot_to_plate_" + m.toString(), OreDictUnifier.get(OrePrefix.plate, m), "h", "I", 'I', OreDictUnifier.get(OrePrefix.valueOf("ingotDouble"), m));
-			}
+			} */
 		}
 
 		//Pipes
@@ -496,14 +498,6 @@ public class GARecipeAddition {
 		removeCraftingRecipes(new ItemStack(Blocks.TNT));
 		removeCraftingRecipes(MetaItems.DYNAMITE.getStackForm());
 		RecipeMaps.CHEMICAL_RECIPES.recipeBuilder().duration(160).EUt(4).inputs(new ItemStack(Items.PAPER), new ItemStack(Items.STRING)).fluidInputs(Materials.Glyceryl.getFluid(500)).outputs(MetaItems.DYNAMITE.getStackForm()).buildAndRegister();
-
-		//Dust Packing
-		for (Material m : Material.MATERIAL_REGISTRY) {
-			if (!OreDictUnifier.get(OrePrefix.dust, m).isEmpty() && GAConfig.Misc.PackagerDustRecipes) {
-				RecipeMaps.PACKER_RECIPES.recipeBuilder().duration(100).EUt(4).input(OrePrefix.dustSmall, m, 4).notConsumable(GAMetaItems.SCHEMATIC_DUST.getStackForm()).outputs(OreDictUnifier.get(OrePrefix.dust, m)).buildAndRegister();
-				RecipeMaps.PACKER_RECIPES.recipeBuilder().duration(100).EUt(4).input(OrePrefix.dustTiny, m, 9).notConsumable(GAMetaItems.SCHEMATIC_DUST.getStackForm()).outputs(OreDictUnifier.get(OrePrefix.dust, m)).buildAndRegister();
-			}
-		}
 
 		//Schematic Recipes
 		RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder()

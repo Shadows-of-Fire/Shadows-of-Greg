@@ -3,6 +3,7 @@ package gregicadditions.item;
 import java.util.List;
 
 import gregicadditions.GAConfig;
+import gregicadditions.GAEnums;
 import gregicadditions.GregicAdditions;
 import gregtech.api.items.metaitem.MetaItem;
 import gregtech.api.unification.ore.OrePrefix;
@@ -58,18 +59,18 @@ public class GAMetaItems {
 		tool.setRegistryName("ga_meta_tool");
 	}
 
-	public static OrePrefix[] gatherRegisteredPrefixes() {
+	private static OrePrefix[] gatherRegisteredPrefixes() {
 		OrePrefix[] temp = new OrePrefix[32];
 
 		if(GAConfig.GT6.addCurvedPlates) {
-			temp[0] = OrePrefix.valueOf("plateCurved");
+			temp[0] = GAEnums.GAOrePrefix.plateCurved;
 		}
 
 		if(GAConfig.GT6.addDoubleIngots) {
-			temp[1] = OrePrefix.valueOf("ingotDouble");
+			temp[1] = GAEnums.GAOrePrefix.ingotDouble;
 		}
 
-		temp[2] = OrePrefix.valueOf("round");
+		temp[2] = GAEnums.GAOrePrefix.round;
 
 		return temp;
 	}

@@ -1,21 +1,12 @@
 package gregicadditions.recipes;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import gregicadditions.GAConfig;
-import gregicadditions.GregicAdditions;
 import gregtech.api.GTValues;
-import gregtech.api.recipes.Recipe;
-import gregtech.api.recipes.RecipeBuilder;
-import gregtech.api.recipes.RecipeMap;
 import gregtech.api.recipes.RecipeMaps;
 import gregtech.api.recipes.ingredients.IntCircuitIngredient;
 import gregtech.api.unification.OreDictUnifier;
 import gregtech.api.unification.material.MarkerMaterials;
 import gregtech.api.unification.material.Materials;
-import gregtech.api.unification.material.type.DustMaterial;
 import gregtech.api.unification.material.type.FluidMaterial;
 import gregtech.api.unification.material.type.IngotMaterial;
 import gregtech.api.unification.material.type.Material;
@@ -29,7 +20,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
-import static gregicadditions.recipes.helpers.HelperMethods.removeRecipeByName;
+import static gregicadditions.recipes.helpers.HelperMethods.removeRecipesByInputs;
 
 import static gregtech.loaders.oreprocessing.WireRecipeHandler.INSULATION_MATERIALS;
 
@@ -43,14 +34,9 @@ public class GAMachineRecipeRemoval {
 		for (Material m : Material.MATERIAL_REGISTRY) {
 
 			//Foil recipes
-			if(m instanceof IngotMaterial && m.hasFlag("GENERATE_FOIL")) {
+			/*if(m instanceof IngotMaterial && m.hasFlag("GENERATE_FOIL")) {
 				removeRecipesByInputs(RecipeMaps.BENDER_RECIPES, OreDictUnifier.get(OrePrefix.plate, m), IntCircuitIngredient.getIntegratedCircuit(0));
-			}
-
-			//Remove Old Wrench Recipes
-			if (m instanceof IngotMaterial && !m.hasFlag(DustMaterial.MatFlags.NO_SMASHING) && GAConfig.GT6.ExpensiveWrenches) {
-				removeRecipeByName(String.format("gregtech:wrench_%s", m.toString()));
-			}
+			} */
 
 			//Remove EV+ Cable Recipes
 			//Since the cables are EV+ tier, they are only covered with SBR and SR
@@ -140,67 +126,5 @@ public class GAMachineRecipeRemoval {
 
 	}
 
-	private static <R extends RecipeBuilder<R>> void removeRecipesByInputs(RecipeMap<R> map, ItemStack... itemInputs) {
-		List<ItemStack> inputs = new ArrayList<>();
-		List<String> names = new ArrayList<>();
-		for (ItemStack s : itemInputs) {
-			inputs.add(s);
-			names.add(String.format("%s x %d", s.getDisplayName(), s.getCount()));
-		}
 
-		if(map.removeRecipe(map.findRecipe(Long.MAX_VALUE, inputs, Collections.emptyList(), Integer.MAX_VALUE))) {
-			GregicAdditions.LOGGER.debug("Removed Recipe for Item Input(s): {}", names);
-		}
-		else {
-			GregicAdditions.LOGGER.warn("Failed to Remove Recipe for Item Input(s): {}", names);
-		}
-	}
-
-	private static <R extends RecipeBuilder<R>> void removeRecipesByInputs(RecipeMap<R> map, FluidStack... fluidInputs) {
-		List<FluidStack> inputs = new ArrayList<>();
-		List<String> names = new ArrayList<>();
-		for (FluidStack s : fluidInputs) {
-			inputs.add(s);
-			names.add(String.format("%s x %d", s.getFluid().getName(), s.amount));
-		}
-
-		if(map.removeRecipe(map.findRecipe(Long.MAX_VALUE, Collections.emptyList(), inputs, Integer.MAX_VALUE))) {
-			GregicAdditions.LOGGER.debug("Removed Recipe for Fluid Input(s): {}", names);
-		}
-		else {
-			GregicAdditions.LOGGER.warn("Failed to Remove Recipe for Fluid Input(s): {}", names);
-		}
-	}
-
-	private static <R extends RecipeBuilder<R>> void removeRecipesByInputs(RecipeMap<R> map, ItemStack[] itemInputs, FluidStack[] fluidInputs) {
-		List<ItemStack> itemIn = new ArrayList<>();
-		List<String> fluidNames = new ArrayList<>();
-		List<String> itemNames = new ArrayList<>();
-		for (ItemStack s : itemInputs) {
-			itemIn.add(s);
-			itemNames.add(s.getDisplayName() + " x " + s.getCount());
-		}
-
-		List<FluidStack> fluidIn = new ArrayList<>();
-		for (FluidStack s : fluidInputs) {
-			fluidIn.add(s);
-			fluidNames.add(s.getFluid().getName() + " x " + s.amount);
-		}
-
-		if(map.removeRecipe(map.findRecipe(Long.MAX_VALUE, itemIn, fluidIn, Integer.MAX_VALUE))) {
-			GregicAdditions.LOGGER.debug("Removed Recipe for inputs: Items: {} Fluids: {}", itemNames, fluidNames);
-		}
-		else {
-			GregicAdditions.LOGGER.warn("Failed to Remove Recipe for inputs: Items: {} Fluids: {}", itemNames, fluidNames);
-		}
-	}
-
-	private static <R extends RecipeBuilder<R>> void removeAllRecipes(RecipeMap<R> map) {
-
-		List<Recipe> recipes = new ArrayList<>();
-		recipes.addAll(map.getRecipeList());
-
-		for (Recipe r : recipes)
-			map.removeRecipe(r);
-	}
 }
