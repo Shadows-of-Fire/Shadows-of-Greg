@@ -12,7 +12,6 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -21,6 +20,11 @@ import java.util.List;
  */
 public class HelperMethods {
 
+    /**
+     * Wrapper method for removing Crafting Table recipes by recipe Name
+     * Wrapped to provide logging on if the removal fails or succeeds
+     * @param recipeName The name of the recipe as a String, including modid
+     */
     public static void removeRecipeByName(String recipeName) {
         ResourceLocation recipe = new ResourceLocation(recipeName);
 
@@ -34,7 +38,7 @@ public class HelperMethods {
     }
 
     /**
-     * Wrapper method for removing Crafting Table Recipes.
+     * Wrapper method for removing Crafting Table Recipes by output.
      * Wrapped to provide logging on if the removal failed or succeeds.
      *
      * @param output The ItemStack output of the Crafting Table recipe
@@ -64,59 +68,39 @@ public class HelperMethods {
         }
     }
 
-    public static <R extends RecipeBuilder<R>> void removeRecipesByInputs(RecipeMap<R> map, ItemStack... itemInputs) {
-        List<ItemStack> inputs = new ArrayList<>();
-        List<String> names = new ArrayList<>();
-        for (ItemStack s : itemInputs) {
-            inputs.add(s);
-            names.add(s.getDisplayName() + " x " + s.getCount());
-        }
-
-        if(map.removeRecipe(map.findRecipe(Long.MAX_VALUE, inputs, Collections.emptyList(), Integer.MAX_VALUE))) {
-            GregicAdditions.LOGGER.info("Removed Recipe for Item Input(s): " + names);
-        }
-        else {
-            GregicAdditions.LOGGER.warn("Failed to Remove Recipe for Item Input(s): " + names);
-        }
+    public static <R extends RecipeBuilder<R>> boolean removeRecipesByInputs(RecipeMap<R> map, ItemStack... itemInputs) {
+        return removeRecipesByInputs(map, itemInputs, new FluidStack[0]);
     }
 
-    public static <R extends RecipeBuilder<R>> void removeRecipesByInputs(RecipeMap<R> map, FluidStack... fluidInputs) {
-        List<FluidStack> inputs = new ArrayList<>();
-        List<String> names = new ArrayList<>();
-        for (FluidStack s : fluidInputs) {
-            inputs.add(s);
-            names.add(s.getFluid().getName() + " x " + s.amount);
-        }
-
-        if(map.removeRecipe(map.findRecipe(Long.MAX_VALUE, Collections.emptyList(), inputs, Integer.MAX_VALUE))) {
-            GregicAdditions.LOGGER.info("Removed Recipe for Fluid Input(s): " + names);
-        }
-        else {
-            GregicAdditions.LOGGER.warn("Failed to Remove Recipe for Fluid Input(s): " + names);
-        }
+    public static <R extends RecipeBuilder<R>> boolean removeRecipesByInputs(RecipeMap<R> map, FluidStack... fluidInputs) {
+        return removeRecipesByInputs(map, new ItemStack[0], fluidInputs);
     }
 
-    public static <R extends RecipeBuilder<R>> void removeRecipesByInputs(RecipeMap<R> map, ItemStack[] itemInputs, FluidStack[] fluidInputs) {
-        List<ItemStack> itemIn = new ArrayList<>();
+    public static <R extends RecipeBuilder<R>> boolean removeRecipesByInputs(RecipeMap<R> map, ItemStack[] itemInputs, FluidStack[] fluidInputs) {
         List<String> fluidNames = new ArrayList<>();
         List<String> itemNames = new ArrayList<>();
+
+        List<ItemStack> itemIn = new ArrayList<>();
         for (ItemStack s : itemInputs) {
             itemIn.add(s);
-            itemNames.add(s.getDisplayName() + " x " + s.getCount());
+            itemNames.add(String.format("%s x %d", s.getDisplayName(), s.getCount()));
         }
 
         List<FluidStack> fluidIn = new ArrayList<>();
         for (FluidStack s : fluidInputs) {
             fluidIn.add(s);
-            fluidNames.add(s.getFluid().getName() + " x " + s.amount);
+            fluidNames.add(String.format("%s x %d", s.getFluid().getName(), s.amount));
         }
 
-        if(map.removeRecipe(map.findRecipe(Long.MAX_VALUE, itemIn, fluidIn, Integer.MAX_VALUE))) {
-            GregicAdditions.LOGGER.info("Removed Recipe for inputs: Items: " + itemNames + " Fluids: " + fluidNames);
+        boolean wasRemoved = map.removeRecipe(map.findRecipe(Long.MAX_VALUE, itemIn, fluidIn, Integer.MAX_VALUE));
+        if(wasRemoved) {
+            GregicAdditions.LOGGER.info(String.format("Removed Recipe for inputs: Items: %s Fluids: %s", itemNames, fluidNames));
         }
         else {
-            GregicAdditions.LOGGER.warn("Failed to Remove Recipe for inputs: Items: " + itemNames + " Fluids: " + fluidNames);
+            GregicAdditions.LOGGER.warn(String.format("Failed to Remove Recipe for inputs: Items: %s Fluids: %s", itemNames, fluidNames));
         }
+
+        return wasRemoved;
     }
 
     /**
@@ -136,6 +120,11 @@ public class HelperMethods {
         GregicAdditions.LOGGER.debug("Removed all recipes for Recipe Map {}", map.getUnlocalizedName());
     }
 
+    /**
+     * Removes an energy generation recipe from the passed FuelRecipeMap
+     * @param map The FuelRecipeMap to remove the generation recipe from
+     * @param fluidStack The Fuel FluidStack
+     */
     public static void removeFuelRecipe(FuelRecipeMap map, FluidStack fluidStack) {
         if(map.removeRecipe(map.findRecipe(Integer.MAX_VALUE, fluidStack))) {
             GregicAdditions.LOGGER.debug("Removed Generator Recipe for {} for Fluid: {}", map.getUnlocalizedName(), fluidStack.getLocalizedName());

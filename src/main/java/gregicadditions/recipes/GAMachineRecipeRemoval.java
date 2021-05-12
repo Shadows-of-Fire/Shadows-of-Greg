@@ -1,17 +1,12 @@
 package gregicadditions.recipes;
 
 import gregicadditions.GAConfig;
-import gregtech.api.GTValues;
 import gregtech.api.recipes.RecipeMaps;
 import gregtech.api.recipes.ingredients.IntCircuitIngredient;
 import gregtech.api.unification.OreDictUnifier;
 import gregtech.api.unification.material.MarkerMaterials;
 import gregtech.api.unification.material.Materials;
-import gregtech.api.unification.material.type.FluidMaterial;
-import gregtech.api.unification.material.type.IngotMaterial;
-import gregtech.api.unification.material.type.Material;
 import gregtech.api.unification.ore.OrePrefix;
-import gregtech.api.util.GTUtility;
 import gregtech.common.blocks.BlockMachineCasing;
 import gregtech.common.blocks.MetaBlocks;
 import gregtech.common.items.MetaItems;
@@ -22,21 +17,18 @@ import net.minecraftforge.fluids.FluidStack;
 
 import static gregicadditions.recipes.helpers.HelperMethods.removeRecipesByInputs;
 
-import static gregtech.loaders.oreprocessing.WireRecipeHandler.INSULATION_MATERIALS;
-
-
 public class GAMachineRecipeRemoval {
 
 	private static final FluidStack[] cableFluids = { Materials.Rubber.getFluid(144), Materials.StyreneButadieneRubber.getFluid(108), Materials.SiliconeRubber.getFluid(72) };
 
 
 	public static void init() {
-		for (Material m : Material.MATERIAL_REGISTRY) {
+		/*for (Material m : Material.MATERIAL_REGISTRY) {
 
 			//Foil recipes
-			/*if(m instanceof IngotMaterial && m.hasFlag("GENERATE_FOIL")) {
+			if(m instanceof IngotMaterial && m.hasFlag("GENERATE_FOIL")) {
 				removeRecipesByInputs(RecipeMaps.BENDER_RECIPES, OreDictUnifier.get(OrePrefix.plate, m), IntCircuitIngredient.getIntegratedCircuit(0));
-			} */
+			}
 
 			//Remove EV+ Cable Recipes
 			//Since the cables are EV+ tier, they are only covered with SBR and SR
@@ -65,7 +57,7 @@ public class GAMachineRecipeRemoval {
 					}
 				}
 			}
-		}
+		} */
 
 		//Remove Old Bucket Recipe
 		if (GAConfig.GT6.BendingCurvedPlates && GAConfig.GT6.addCurvedPlates) {

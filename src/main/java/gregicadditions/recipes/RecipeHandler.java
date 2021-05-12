@@ -4,14 +4,26 @@ package gregicadditions.recipes;
 import gregicadditions.GAConfig;
 import gregicadditions.GAEnums;
 import gregicadditions.item.GAMetaItems;
+import gregtech.api.GTValues;
 import gregtech.api.items.toolitem.ToolMetaItem;
 import gregtech.api.recipes.ModHandler;
+import gregtech.api.recipes.ingredients.IntCircuitIngredient;
 import gregtech.api.unification.OreDictUnifier;
+import gregtech.api.unification.material.Materials;
 import gregtech.api.unification.material.type.DustMaterial;
+import gregtech.api.unification.material.type.FluidMaterial;
 import gregtech.api.unification.material.type.IngotMaterial;
 import gregtech.api.unification.ore.OrePrefix;
+import gregtech.api.unification.stack.MaterialStack;
 import gregtech.api.unification.stack.UnificationEntry;
+import gregtech.api.util.GTUtility;
 import gregtech.common.items.MetaItems;
+import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.FluidStack;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.IntStream;
 
 import static gregicadditions.GAEnums.GAOrePrefix.ingotDouble;
 import static gregicadditions.GAEnums.GAOrePrefix.plateCurved;
@@ -19,13 +31,14 @@ import static gregicadditions.GregicAdditions.MODID;
 import static gregicadditions.item.GAMetaItems.BENDING_CYLINDER;
 import static gregicadditions.item.GAMetaItems.SMALL_BENDING_CYLINDER;
 import static gregicadditions.recipes.helpers.HelperMethods.*;
-import static gregtech.api.recipes.RecipeMaps.PACKER_RECIPES;
-import static gregtech.api.recipes.RecipeMaps.UNPACKER_RECIPES;
-import static gregtech.api.recipes.RecipeMaps.BENDER_RECIPES;
-import static gregtech.api.recipes.RecipeMaps.LATHE_RECIPES;
 import static gregicadditions.recipes.GARecipeMaps.CLUSTER_MILL_RECIPES;
+import static gregtech.api.GTValues.L;
+import static gregtech.api.GTValues.M;
+import static gregtech.api.recipes.RecipeMaps.*;
+import static gregtech.api.recipes.RecipeMaps.ASSEMBLER_RECIPES;
 import static gregtech.api.recipes.ingredients.IntCircuitIngredient.getIntegratedCircuit;
 import static gregtech.api.unification.material.type.DustMaterial.MatFlags.NO_SMASHING;
+import static gregtech.loaders.oreprocessing.WireRecipeHandler.INSULATION_MATERIALS;
 import static gregtech.api.unification.ore.OrePrefix.*;
 
 
@@ -33,6 +46,16 @@ import static gregtech.api.unification.ore.OrePrefix.*;
  * Primary Recipe Registration Class
  */
 public class RecipeHandler {
+
+    private static final List<OrePrefix> WIRE_DOUBLING_ORDER = new ArrayList<OrePrefix>(){{
+        add(wireGtSingle);
+        add(wireGtDouble);
+        add(wireGtQuadruple);
+        add(wireGtOctal);
+        add(wireGtHex);
+    }};
+    private static final MaterialStack[] cableDusts = { new MaterialStack(Materials.Polydimethylsiloxane, 1), new MaterialStack(Materials.PolyvinylChloride, 1) };
+
 
     public static void register() {
         ingot.addProcessingHandler(IngotMaterial.class, RecipeHandler::processIngot);
@@ -46,15 +69,19 @@ public class RecipeHandler {
             nugget.addProcessingHandler(IngotMaterial.class, RecipeHandler::processNugget);
         }
 
-        if (GAConfig.GT6.PlateDoubleIngot && GAConfig.GT6.addDoubleIngots) {
+        if(GAConfig.GT6.PlateDoubleIngot && GAConfig.GT6.addDoubleIngots) {
             plate.addProcessingHandler(IngotMaterial.class, RecipeHandler::processDoubleIngot);
         }
-        if (GAConfig.GT6.BendingCurvedPlates && GAConfig.GT6.BendingCylinders) {
+        if(GAConfig.GT6.BendingCurvedPlates && GAConfig.GT6.BendingCylinders) {
             plateCurved.addProcessingHandler(IngotMaterial.class, RecipeHandler::processPlateCurved);
         }
-        if (GAConfig.GT6.BendingRings && GAConfig.GT6.BendingCylinders) {
+        if(GAConfig.GT6.BendingRings && GAConfig.GT6.BendingCylinders) {
             //TODO, Rubber Blacklist is covered by No Smashing, check what else is affected
             ring.addProcessingHandler(IngotMaterial.class, RecipeHandler::processRing);
+        }
+
+        for(OrePrefix wirePrefix : WIRE_DOUBLING_ORDER) {
+            wirePrefix.addProcessingHandler(IngotMaterial.class, RecipeHandler::processWireGt);
         }
     }
 
@@ -315,6 +342,12 @@ public class RecipeHandler {
         }
     }
 
+    /**
+     * Double Ingot Material Handler. Generates:
+     *
+     * + Double Ingot Recipes if enabled
+     * + Plates from Double Ingots if enabled
+     */
     private static void processDoubleIngot(OrePrefix plate, IngotMaterial material) {
         //TODO, does this need the flag check if Double Ingots are generated with the flag?
         if (!material.hasFlag(NO_SMASHING)) {
@@ -328,6 +361,128 @@ public class RecipeHandler {
             ModHandler.addShapedRecipe(String.format("double_ingot_to_plate_%s", material.toString()), OreDictUnifier.get(plate, material),
                     "h", "I",
                     'I', new UnificationEntry(ingotDouble, material));
+        }
+    }
+
+    private static void processWireGt(OrePrefix wireGt, IngotMaterial material) {
+
+        //Check done here instead of in the register method so that Bundler Recipes can also be included
+        if(GAConfig.GT5U.CablesGT5U) {
+
+            //Only Process recipes on applicable cables with voltages greater than EV
+            //TODO, apply this to all cables but LV and ULV, or remove the check for LV and ULV in the adding recipes section. Check GT5U
+            if (material.cableProperties == null || material.cableProperties.voltage < GTValues.EV) {
+                return;
+            }
+
+            OrePrefix cablePrefix = valueOf("cable" + wireGt.name().substring(4));
+            ItemStack cableStack = OreDictUnifier.get(cablePrefix, material);
+
+
+            //Removing the existing Recipes
+            for (FluidMaterial insulationMaterial : INSULATION_MATERIALS.keySet()) {
+
+                // Try to remove 1 recipe with the Fluid type. If it fails, then exit
+                boolean wasRemoved = removeRecipesByInputs(ASSEMBLER_RECIPES, new ItemStack[]{OreDictUnifier.get(wireGt, material), getIntegratedCircuit(24)}, new FluidStack[]{insulationMaterial.getFluid(L * (int) (wireGt.materialAmount / M) * 2)});
+                if (!wasRemoved)
+                    continue;
+
+                removeRecipesByInputs(ASSEMBLER_RECIPES,
+                        new ItemStack[]{OreDictUnifier.get(wireGt, material, (int) (wireGt.materialAmount / M) * 2), getIntegratedCircuit(24 + WIRE_DOUBLING_ORDER.indexOf(wireGt))},
+                        new FluidStack[]{insulationMaterial.getFluid(L * (int) (wireGt.materialAmount / M) * 2)});
+
+            /*removeRecipesByInputs(ASSEMBLER_RECIPES, new ItemStack[]{OreDictUnifier.get(wireGtSingle, material, 2), getIntegratedCircuit(25)}, new FluidStack[]{insulationMaterial.getFluid(288)});
+            removeRecipesByInputs(ASSEMBLER_RECIPES, new ItemStack[]{OreDictUnifier.get(wireGtSingle, material, 4), getIntegratedCircuit(26)}, new FluidStack[]{insulationMaterial.getFluid(576)});
+            removeRecipesByInputs(ASSEMBLER_RECIPES, new ItemStack[]{OreDictUnifier.get(wireGtSingle, material, 8), getIntegratedCircuit(27)}, new FluidStack[]{insulationMaterial.getFluid(1152)});
+            removeRecipesByInputs(ASSEMBLER_RECIPES, new ItemStack[]{OreDictUnifier.get(wireGtSingle, material, 16), getIntegratedCircuit(28)}, new FluidStack[]{insulationMaterial.getFluid(2304)});
+            removeRecipesByInputs(ASSEMBLER_RECIPES, new ItemStack[]{OreDictUnifier.get(wireGtDouble, material), getIntegratedCircuit(24)}, new FluidStack[]{insulationMaterial.getFluid(288)});
+            removeRecipesByInputs(ASSEMBLER_RECIPES, new ItemStack[]{OreDictUnifier.get(wireGtQuadruple, material), getIntegratedCircuit(24)}, new FluidStack[]{insulationMaterial.getFluid(576)});
+            removeRecipesByInputs(ASSEMBLER_RECIPES, new ItemStack[]{OreDictUnifier.get(wireGtOctal, material), getIntegratedCircuit(24)}, new FluidStack[]{insulationMaterial.getFluid(1152)});
+            removeRecipesByInputs(ASSEMBLER_RECIPES, new ItemStack[]{OreDictUnifier.get(wireGtHex, material), getIntegratedCircuit(24)}, new FluidStack[]{insulationMaterial.getFluid(2304)}); */
+            }
+
+            //Adding the new Recipes
+            //Exempt the LV and ULV cables from the harder recipes
+            if (!(material.cableProperties.voltage <= GTValues.LV)) {
+                for (FluidMaterial insulationMaterial : INSULATION_MATERIALS.keySet()) {
+                    int cableTier = GTUtility.getTierByVoltage(material.cableProperties.voltage);
+                    int insulationTier = INSULATION_MATERIALS.get(insulationMaterial);
+                    int fluidAmount = Math.max(36, 144 / (1 + (insulationTier - cableTier) / 2));
+
+                    //If the cable is IV tier or above, Add additional recipes with material foils
+                    if (material.cableProperties.voltage >= GTValues.IV) {
+
+                        //TODO Check Fluid amounts against pre-refactor amounts
+                        //TODO Check Foil Amounts against pre-refactor amounts
+                        ASSEMBLER_RECIPES.recipeBuilder()
+                                .input(wireGt, material)
+                                .input(foil, material, (int) (wireGt.materialAmount / M) * 2)
+                                .fluidInputs(insulationMaterial.getFluid((int) (fluidAmount * (wireGt.materialAmount / M) * 2)))
+                                .circuitMeta(24)
+                                .outputs(cableStack)
+                                .duration(150).EUt(8).buildAndRegister();
+
+                        ASSEMBLER_RECIPES.recipeBuilder()
+                                .input(wireGt, material)
+                                .input(foil, Materials.PolyphenyleneSulfide, (int) (wireGt.materialAmount / M) * 2)
+                                .fluidInputs(insulationMaterial.getFluid((int) (fluidAmount * (wireGt.materialAmount / M) * 2)))
+                                .circuitMeta(24)
+                                .outputs(cableStack)
+                                .duration(150).EUt(8).buildAndRegister();
+
+                        for (MaterialStack dustStack : cableDusts) {
+
+                            ASSEMBLER_RECIPES.recipeBuilder()
+                                    .input(wireGt, material)
+                                    .input(foil, material, (int) (wireGt.materialAmount / M) * 2)
+                                    .input(dustSmall, dustStack.material, (int) (wireGt.materialAmount / M) * 2)
+                                    .fluidInputs(insulationMaterial.getFluid((int) (fluidAmount * wireGt.materialAmount / M)))
+                                    .outputs(cableStack)
+                                    .duration(150).EUt(8).buildAndRegister();
+
+                            ASSEMBLER_RECIPES.recipeBuilder()
+                                    .input(wireGt, material)
+                                    .input(dustSmall, dustStack.material, (int) (wireGt.materialAmount / M) * 2)
+                                    .input(foil, Materials.PolyphenyleneSulfide, (int) (wireGt.materialAmount / M) * 2)
+                                    .fluidInputs(insulationMaterial.getFluid((int) (fluidAmount * wireGt.materialAmount / M)))
+                                    .outputs(cableStack)
+                                    .duration(150).EUt(8).buildAndRegister();
+
+                        }
+                    }
+                    //EV only cables, recipes do not get the material foils
+                    else {
+
+                        ASSEMBLER_RECIPES.recipeBuilder()
+                                .input(wireGt, material)
+                                .fluidInputs(insulationMaterial.getFluid((int) (fluidAmount * (wireGt.materialAmount / M) * 2)))
+                                .circuitMeta(24)
+                                .outputs(cableStack)
+                                .duration(150).EUt(8).buildAndRegister();
+
+                        for (MaterialStack dustStack : cableDusts) {
+
+                            ASSEMBLER_RECIPES.recipeBuilder()
+                                    .input(wireGt, material)
+                                    .input(dustSmall, dustStack.material, (int) (wireGt.materialAmount / M) * 2)
+                                    .fluidInputs(insulationMaterial.getFluid((int) (fluidAmount * wireGt.materialAmount / M)))
+                                    .outputs(cableStack)
+                                    .duration(150).EUt(8).buildAndRegister();
+                        }
+                    }
+                }
+            }
+        }
+
+        for(int startTier = 0; startTier < 4; startTier++) {
+            final int current = startTier; // yay lambdas
+            IntStream.range(1, 5 - startTier).forEach(tier -> {
+                GARecipeMaps.BUNDLER_RECIPES.recipeBuilder()
+                        .inputs(OreDictUnifier.get(WIRE_DOUBLING_ORDER.get(current), material, 1 << tier))
+                        .notConsumable(new IntCircuitIngredient(tier))
+                        .outputs(OreDictUnifier.get(WIRE_DOUBLING_ORDER.get(current + tier), material, 1))
+                        .buildAndRegister();
+            });
         }
     }
 }

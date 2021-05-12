@@ -161,8 +161,8 @@ public class GARecipeAddition {
 				ModHandler.addShapedRecipe("pipe_ga_small_wood", OreDictUnifier.get(OrePrefix.pipeSmall, Materials.Wood, 6), "PsP", "PCP", "PhP", 'P', "plankWood", 'C', "craftingToolBendingCylinder");
 			}
 
-			// Bundler
-			if(!OreDictUnifier.get(OrePrefix.wireGtSingle, m).isEmpty()) {
+			// Bundler //TODO move this to the cables Recipe Handler
+			/*if(!OreDictUnifier.get(OrePrefix.wireGtSingle, m).isEmpty()) {
 
 				OrePrefix[] wirePrefixes = new OrePrefix[]{ OrePrefix.wireGtSingle, OrePrefix.wireGtDouble,
 															OrePrefix.wireGtQuadruple, OrePrefix.wireGtOctal,
@@ -178,10 +178,11 @@ public class GARecipeAddition {
 													.buildAndRegister();
 					});
 				}
-			}
+			} */
 
+			//TODO, Move this to the cables RecipeHandler
 			//Cables
-			if (m instanceof IngotMaterial && !OreDictUnifier.get(OrePrefix.cableGtSingle, m).isEmpty() && m != Materials.RedAlloy && m != Materials.Cobalt && m != Materials.Zinc && m != Materials.SolderingAlloy && m != Materials.Tin && m != Materials.Lead && GAConfig.GT5U.CablesGT5U) {
+			/*if (m instanceof IngotMaterial && !OreDictUnifier.get(OrePrefix.cableGtSingle, m).isEmpty() && m != Materials.RedAlloy && m != Materials.Cobalt && m != Materials.Zinc && m != Materials.SolderingAlloy && m != Materials.Tin && m != Materials.Lead && GAConfig.GT5U.CablesGT5U) {
 				for (MaterialStack stackFluid : cableFluids) {
 					IngotMaterial fluid = (IngotMaterial) stackFluid.material;
 					int multiplier = (int) stackFluid.amount;
@@ -228,7 +229,7 @@ public class GARecipeAddition {
 						}
 					}
 				}
-			}
+			} */
 
 			//GT6 Plate Recipe
 			/*if (m instanceof IngotMaterial && !OreDictUnifier.get(OrePrefix.plate, m).isEmpty() && !OreDictUnifier.get(OrePrefix.valueOf("ingotDouble"), m).isEmpty() && GAConfig.GT6.PlateDoubleIngot) {
@@ -644,8 +645,9 @@ public class GARecipeAddition {
 
 	}
 
+	//TODO, see if this can be broken down at all
 	public static void generatedRecipes() {
-		List<ResourceLocation> recipesToRemove = new ArrayList<>();
+		List<String> recipesToRemove = new ArrayList<>();
 
 		for (IRecipe recipe : CraftingManager.REGISTRY) {
 			if (recipe.getIngredients().size() == 9) {
@@ -658,7 +660,7 @@ public class GARecipeAddition {
 						}
 					}
 					if (match) {
-						if (GAConfig.GT5U.Remove3x3BlockRecipes) recipesToRemove.add(recipe.getRegistryName());
+						if (GAConfig.GT5U.Remove3x3BlockRecipes) recipesToRemove.add(String.format("%s:%s", recipe.getRegistryName().getNamespace(), recipe.getRegistryName().getPath()));
 						if (GAConfig.GT5U.GenerateCompressorRecipes) RecipeMaps.COMPRESSOR_RECIPES.recipeBuilder().duration(400).EUt(2).inputs(CountableIngredient.from(recipe.getIngredients().get(0).getMatchingStacks()[0], recipe.getIngredients().size())).outputs(recipe.getRecipeOutput()).buildAndRegister();
 					}
 				}
@@ -672,7 +674,7 @@ public class GARecipeAddition {
 							break;
 						}
 					}
-					if (match && !recipesToRemove.contains(recipe.getRegistryName()) && !GAMetaItems.hasPrefix(recipe.getRecipeOutput(), "dust", "dustTiny") && recipe.getRecipeOutput().getCount() == 1 && GAConfig.Misc.Packager3x3Recipes) {
+					if (match && !recipesToRemove.contains(String.format("%s:%s", recipe.getRegistryName().getNamespace(), recipe.getRegistryName().getPath())) && !GAMetaItems.hasPrefix(recipe.getRecipeOutput(), "dust", "dustTiny") && recipe.getRecipeOutput().getCount() == 1 && GAConfig.Misc.Packager3x3Recipes) {
 						RecipeMaps.PACKER_RECIPES.recipeBuilder().duration(100).EUt(4).inputs(CountableIngredient.from(recipe.getIngredients().get(0).getMatchingStacks()[0], recipe.getIngredients().size())).notConsumable(GAMetaItems.SCHEMATIC_3X3.getStackForm()).outputs(recipe.getRecipeOutput()).buildAndRegister();
 					}
 				}
@@ -686,7 +688,7 @@ public class GARecipeAddition {
 							break;
 						}
 					}
-					if (match && !recipesToRemove.contains(recipe.getRegistryName()) && !GAMetaItems.hasPrefix(recipe.getRecipeOutput(), "dust", "dustSmall") && recipe.getRecipeOutput().getCount() == 1 && GAConfig.Misc.Packager2x2Recipes) {
+					if (match && !recipesToRemove.contains(String.format("%s:%s", recipe.getRegistryName().getNamespace(), recipe.getRegistryName().getPath())) && !GAMetaItems.hasPrefix(recipe.getRecipeOutput(), "dust", "dustSmall") && recipe.getRecipeOutput().getCount() == 1 && GAConfig.Misc.Packager2x2Recipes) {
 						RecipeMaps.PACKER_RECIPES.recipeBuilder().duration(100).EUt(4).inputs(CountableIngredient.from(recipe.getIngredients().get(0).getMatchingStacks()[0], recipe.getIngredients().size())).notConsumable(GAMetaItems.SCHEMATIC_2X2.getStackForm()).outputs(recipe.getRecipeOutput()).buildAndRegister();
 					}
 				}
@@ -699,21 +701,22 @@ public class GARecipeAddition {
 						break;
 					}
 				}
-				if (GAConfig.GT5U.RemoveBlockUncraftingRecipes) recipesToRemove.add(recipe.getRegistryName());
+				if (GAConfig.GT5U.RemoveBlockUncraftingRecipes) recipesToRemove.add(String.format("%s:%s", recipe.getRegistryName().getNamespace(), recipe.getRegistryName().getPath()));
 				if (!isIngot) {
 					RecipeMaps.FORGE_HAMMER_RECIPES.recipeBuilder().duration(100).EUt(24).inputs(recipe.getIngredients().get(0).getMatchingStacks()[0]).outputs(recipe.getRecipeOutput()).buildAndRegister();
 				}
 			}
 			if (recipe.getIngredients().size() == 1 && recipe.getIngredients().get(0).getMatchingStacks().length > 0 && recipe.getRecipeOutput().getCount() == 9) {
-				if (!recipesToRemove.contains(recipe.getRegistryName()) && GAConfig.Misc.Unpackager3x3Recipes) {
+				if (!recipesToRemove.contains(String.format("%s:%s", recipe.getRegistryName().getNamespace(), recipe.getRegistryName().getPath())) && GAConfig.Misc.Unpackager3x3Recipes) {
 					RecipeMaps.UNPACKER_RECIPES.recipeBuilder().duration(100).EUt(8).inputs(recipe.getIngredients().get(0).getMatchingStacks()[0]).inputs(new CountableIngredient(new IntCircuitIngredient(1), 0)).outputs(recipe.getRecipeOutput()).buildAndRegister();
 				}
 			}
 		}
 
-		for (ResourceLocation r : recipesToRemove)
-			//TODO, figure out how to replace this
-			ModHandler.removeRecipeByName(r);
+		//TODO, check that this mess is good with the change to Strings
+		for (String r : recipesToRemove) {
+			removeRecipeByName(r);
+		}
 		recipesToRemove.clear();
 
 		if (GAConfig.GT5U.GenerateCompressorRecipes) {
@@ -724,26 +727,30 @@ public class GARecipeAddition {
 		}
 
 		//Generate Plank Recipes
-		for (IRecipe recipe : CraftingManager.REGISTRY) {
-			if (recipe.getRecipeOutput().isEmpty()) continue;
-			for (int i : OreDictionary.getOreIDs(recipe.getRecipeOutput())) {
-				if (OreDictionary.getOreName(i).equals("plankWood") && recipe.getIngredients().size() == 1 && recipe.getRecipeOutput().getCount() == 4) {
-					if (GAConfig.GT5U.GeneratedSawingRecipes) {
-						//TODO, figure out how to replace this for logging
-						ModHandler.removeRecipeByName(recipe.getRegistryName());
+		for(IRecipe recipe : CraftingManager.REGISTRY) {
+			if(recipe.getRecipeOutput().isEmpty()) {
+				continue;
+			}
+			for(int i : OreDictionary.getOreIDs(recipe.getRecipeOutput())) {
+				if(OreDictionary.getOreName(i).equals("plankWood") && recipe.getIngredients().size() == 1 && recipe.getRecipeOutput().getCount() == 4) {
+					if(GAConfig.GT5U.GeneratedSawingRecipes) {
+						//TODO, Check that this removal actually works
+						removeRecipeByName(String.format("%s:%s", recipe.getRegistryName().getNamespace(), recipe.getRegistryName().getPath()));
 						ModHandler.addShapelessRecipe("log_to_4_" + recipe.getRecipeOutput().toString(), GTUtility.copyAmount(4, recipe.getRecipeOutput()), recipe.getIngredients().get(0).getMatchingStacks()[0], ToolDictNames.craftingToolSaw);
 						ModHandler.addShapelessRecipe("log_to_2_" + recipe.getRecipeOutput().toString(), GTUtility.copyAmount(2, recipe.getRecipeOutput()), recipe.getIngredients().get(0).getMatchingStacks()[0]);
 					}
 					RecipeMaps.CUTTER_RECIPES.recipeBuilder().duration(200).EUt(8).inputs(recipe.getIngredients().get(0).getMatchingStacks()[0]).fluidInputs(Materials.Lubricant.getFluid(1)).outputs(GTUtility.copyAmount(6, recipe.getRecipeOutput()), OreDictUnifier.get(OrePrefix.dust, Materials.Wood, 2)).buildAndRegister();
 				}
-				if (OreDictionary.getOreName(i).equals("slabWood") && recipe.getRecipeOutput().getCount() == 6) {
+				if(OreDictionary.getOreName(i).equals("slabWood") && recipe.getRecipeOutput().getCount() == 6) {
 					RecipeMaps.CUTTER_RECIPES.recipeBuilder().duration(50).EUt(4).inputs(recipe.getIngredients().get(0).getMatchingStacks()[0]).outputs(GTUtility.copyAmount(2, recipe.getRecipeOutput())).buildAndRegister();
 				}
 			}
 		}
 
 		//Disable Wood To Charcoal Recipes
-		List<ItemStack> allWoodLogs = OreDictionary.getOres("logWood").stream().flatMap(stack -> ModHandler.getAllSubItems(stack).stream()).collect(Collectors.toList());
+		//TODO check if there is any difference between the two formats
+		List<ItemStack> allWoodLogs = OreDictionary.getOres("logWood");
+		//List<ItemStack> allWoodLogs = OreDictionary.getOres("logWood").stream().flatMap(stack -> ModHandler.getAllSubItems(stack).stream()).collect(Collectors.toList());
 
 		for (ItemStack stack : allWoodLogs) {
 			ItemStack smeltingOutput = ModHandler.getSmeltingOutput(stack);
