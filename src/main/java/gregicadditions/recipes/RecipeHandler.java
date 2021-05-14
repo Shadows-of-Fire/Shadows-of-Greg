@@ -438,6 +438,10 @@ public class RecipeHandler {
             for(FluidMaterial insulationMaterial : INSULATION_MATERIALS.keySet()) {
                 int cableTier = GTUtility.getTierByVoltage(material.cableProperties.voltage);
                 int insulationTier = INSULATION_MATERIALS.get(insulationMaterial);
+                if(cableTier > insulationTier) {
+                    continue;
+                }
+
                 int fluidAmount = Math.max(36, 144 / (1 + (insulationTier - cableTier) / 2));
 
                 //If the cable is IV tier or above, Add additional recipes with material foils

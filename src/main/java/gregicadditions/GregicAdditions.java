@@ -96,7 +96,7 @@ public class GregicAdditions {
 	}
 
 	@SubscribeEvent
-	public static void registerOrePrefix(RegistryEvent.Register<IRecipe> event) {
+	public void registerOrePrefix(RegistryEvent.Register<IRecipe> event) {
 		LOGGER.info("Registering ore prefix...");
 
 		// Register GTCE Material Handlers
@@ -108,13 +108,6 @@ public class GregicAdditions {
 
 		// Run GTCE Material Handlers
 		OrePrefix.runMaterialHandlers();
-
-		// Run some early recipe addition
-		// These do not need to be here, but since they do not remove
-		// any recipes, they are fine to be run early
-		//ForestryCompat.init();
-		//FuelHandler.init();
-
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOW)
