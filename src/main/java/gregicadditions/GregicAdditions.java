@@ -103,7 +103,7 @@ public class GregicAdditions {
 		RecipeHandler.register();
 
 		// Register OreDictionary Entries
-		GAMetaItems.registerOreDict();
+		//GAMetaItems.registerOreDict();
 		//GAMetaBlocks.registerOreDict();
 
 		// Run GTCE Material Handlers

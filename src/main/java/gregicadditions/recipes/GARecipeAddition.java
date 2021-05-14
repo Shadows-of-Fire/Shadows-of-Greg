@@ -2,8 +2,6 @@ package gregicadditions.recipes;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
-import java.util.stream.Collectors;
 
 import forestry.core.ModuleCore;
 import forestry.core.items.EnumElectronTube;
@@ -43,7 +41,6 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.oredict.OreDictionary;
 
@@ -52,8 +49,6 @@ import static gregicadditions.recipes.helpers.HelperMethods.*;
 public class GARecipeAddition {
 
 	private static final MaterialStack[] cableFluids = { new MaterialStack(Materials.Rubber, 144), new MaterialStack(Materials.StyreneButadieneRubber, 108), new MaterialStack(Materials.SiliconeRubber, 72) };
-
-	private static final MaterialStack[] cableDusts = { new MaterialStack(Materials.Polydimethylsiloxane, 1), new MaterialStack(Materials.PolyvinylChloride, 1) };
 
 	private static final MaterialStack[] firstMetal = { new MaterialStack(Materials.Iron, 1), new MaterialStack(Materials.Nickel, 1), new MaterialStack(Materials.Invar, 2), new MaterialStack(Materials.Steel, 2), new MaterialStack(Materials.StainlessSteel, 3), new MaterialStack(Materials.Titanium, 3), new MaterialStack(Materials.Tungsten, 4), new MaterialStack(Materials.TungstenSteel, 5) };
 
@@ -123,16 +118,16 @@ public class GARecipeAddition {
 				removeCraftingRecipes(OreDictUnifier.get(OrePrefix.ring, m));
 				ModHandler.addShapedRecipe("rod_to_ring_" + m.toString(), OreDictUnifier.get(OrePrefix.ring, m), "hS", " C", 'S', OreDictUnifier.get(OrePrefix.stick, m), 'C', "craftingToolBendingCylinderSmall");
 			}*/
-			if (!OreDictUnifier.get(OrePrefix.valueOf("plateCurved"), m).isEmpty() && GAConfig.GT6.BendingCurvedPlates && GAConfig.GT6.BendingCylinders) {
+			/*if (!OreDictUnifier.get(OrePrefix.valueOf("plateCurved"), m).isEmpty() && GAConfig.GT6.BendingCurvedPlates && GAConfig.GT6.BendingCylinders) {
 				ModHandler.addShapedRecipe("curved_plate_" + m.toString(), OreDictUnifier.get(OrePrefix.valueOf("plateCurved"), m), "h", "P", "C", 'P', new UnificationEntry(OrePrefix.plate, m), 'C', "craftingToolBendingCylinder");
 				ModHandler.addShapedRecipe("flatten_plate_" + m.toString(), OreDictUnifier.get(OrePrefix.plate, m), "h", "C", 'C', new UnificationEntry(OrePrefix.valueOf("plateCurved"), m));
 				RecipeMaps.BENDER_RECIPES.recipeBuilder().EUt(24).duration((int) m.getMass()).input(OrePrefix.plate, m).circuitMeta(0).outputs(OreDictUnifier.get(OrePrefix.valueOf("plateCurved"), m)).buildAndRegister();
-			}
-			if (!OreDictUnifier.get(OrePrefix.rotor, m).isEmpty() && !OreDictUnifier.get(OrePrefix.valueOf("plateCurved"), m).isEmpty() && GAConfig.GT6.BendingRotors && GAConfig.GT6.BendingCylinders) {
+			} */
+			/*if (!OreDictUnifier.get(OrePrefix.rotor, m).isEmpty() && !OreDictUnifier.get(OrePrefix.valueOf("plateCurved"), m).isEmpty() && GAConfig.GT6.BendingRotors && GAConfig.GT6.BendingCylinders) {
 				removeCraftingRecipes(OreDictUnifier.get(OrePrefix.rotor, m));
 				ModHandler.addShapedRecipe("ga_rotor_" + m.toString(), OreDictUnifier.get(OrePrefix.rotor, m), "ChC", "SRf", "CdC", 'C', OreDictUnifier.get(OrePrefix.valueOf("plateCurved"), m), 'S', OreDictUnifier.get(OrePrefix.screw, m), 'R', OreDictUnifier.get(OrePrefix.ring, m));
 				RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder().duration(240).EUt(24).inputs(OreDictUnifier.get(OrePrefix.valueOf("plateCurved"), m, 4), OreDictUnifier.get(OrePrefix.ring, m)).fluidInputs(Materials.SolderingAlloy.getFluid(32)).outputs(OreDictUnifier.get(OrePrefix.rotor, m)).buildAndRegister();
-			}
+			} */
 
 
 			/*if (!OreDictUnifier.get(OrePrefix.foil, m).isEmpty()) {
@@ -153,6 +148,7 @@ public class GARecipeAddition {
 			} */
 
 
+			//TODO, either move this into RecipeHandler or move elsewhere
 			if (GAConfig.GT6.BendingPipes && GAConfig.GT6.BendingCylinders && GAConfig.GT6.addCurvedPlates) {
 				removeCraftingRecipes(OreDictUnifier.get(OrePrefix.pipeSmall, Materials.Wood));
 				removeCraftingRecipes(OreDictUnifier.get(OrePrefix.pipeMedium, Materials.Wood));
@@ -241,7 +237,7 @@ public class GARecipeAddition {
 		}
 
 		//Pipes
-		for (Material m : Material.MATERIAL_REGISTRY) {
+		/*for (Material m : Material.MATERIAL_REGISTRY) {
 			if (!OreDictUnifier.get(OrePrefix.pipeMedium, m).isEmpty() && !OreDictUnifier.get(OrePrefix.valueOf("plateCurved"), m).isEmpty() && GAConfig.GT6.BendingPipes) {
 				removeRecipeByName(String.format("gregtech:small_%s_pipe", m.toString()));
 				removeRecipeByName(String.format("gregtech:medium_%s_pipe", m.toString()));
@@ -252,7 +248,7 @@ public class GARecipeAddition {
 					ModHandler.addShapedRecipe("pipe_ga_small_" + m.toString(), OreDictUnifier.get(OrePrefix.pipeSmall, m, 4), "PwP", "PCP", "PhP", 'P', OreDictUnifier.get(OrePrefix.valueOf("plateCurved"), m), 'C', "craftingToolBendingCylinder");
 				}
 			}
-		}
+		} */
 
 		//Reinforced Glass
 		int multiplier2;
@@ -366,7 +362,7 @@ public class GARecipeAddition {
 		//Assembly Line Related Recipes
 		ModHandler.addShapedRecipe("assline_casing", GAMetaBlocks.MUTLIBLOCK_CASING.getItemVariant(GAMultiblockCasing.CasingType.TUNGSTENSTEEL_GEARBOX_CASING, 2), "PhP", "AFA", "PwP", 'P', "plateSteel", 'A', MetaItems.ROBOT_ARM_IV.getStackForm(), 'F', OreDictUnifier.get(OrePrefix.frameGt, Materials.TungstenSteel));
 		removeRecipeByName("gregtech:casing_assembler_casing");
-		ModHandler.addShapedRecipe("ga_assmbler_casing", MetaBlocks.MUTLIBLOCK_CASING.getItemVariant(MultiblockCasingType.ASSEMBLER_CASING, 3), "CCC", "CFC", "CMC", 'C', "circuitElite", 'F', "frameGtTungstenSteel", 'M', MetaItems.ELECTRIC_MOTOR_IV.getStackForm());
+		ModHandler.addShapedRecipe("ga_assembler_casing", MetaBlocks.MUTLIBLOCK_CASING.getItemVariant(MultiblockCasingType.ASSEMBLER_CASING, 3), "CCC", "CFC", "CMC", 'C', "circuitElite", 'F', "frameGtTungstenSteel", 'M', MetaItems.ELECTRIC_MOTOR_IV.getStackForm());
         //Assembly Line Casing
         RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder()
                 .inputs(MetaItems.ROBOT_ARM_IV.getStackForm(2), OreDictUnifier.get(OrePrefix.plate, Materials.Steel, 4), OreDictUnifier.get(OrePrefix.frameGt, Materials.TungstenSteel))
@@ -388,7 +384,7 @@ public class GARecipeAddition {
 		//Stem Cells
 		RecipeMaps.EXTRACTOR_RECIPES.recipeBuilder().duration(600).EUt(512).inputs(new ItemStack(Items.EGG)).chancedOutput(GAMetaItems.STEM_CELLS.getStackForm(), 1500, 500).buildAndRegister();
 
-		//Assline Recipes
+		//Assembly Line Recipes
 		GARecipeMaps.ASSEMBLY_LINE_RECIPES.recipeBuilder().inputs(OreDictUnifier.get(OrePrefix.stickLong, Materials.NeodymiumMagnetic, 1), OreDictUnifier.get(OrePrefix.stickLong, Materials.HSSG, 2), OreDictUnifier.get(OrePrefix.ring, Materials.HSSG, 4), OreDictUnifier.get(OrePrefix.valueOf("round"), Materials.HSSG, 16), OreDictUnifier.get(OrePrefix.wireFine, Materials.AnnealedCopper, 64), OreDictUnifier.get(OrePrefix.wireFine, Materials.AnnealedCopper, 64), OreDictUnifier.get(OrePrefix.wireFine, Materials.AnnealedCopper, 64), OreDictUnifier.get(OrePrefix.wireFine, Materials.AnnealedCopper, 64), OreDictUnifier.get(OrePrefix.cableGtSingle, Materials.YttriumBariumCuprate, 2)).fluidInputs(Materials.SolderingAlloy.getFluid(144), Materials.Lubricant.getFluid(250)).outputs(MetaItems.ELECTRIC_MOTOR_LUV.getStackForm()).duration(600).EUt(10240).buildAndRegister();
 		GARecipeMaps.ASSEMBLY_LINE_RECIPES.recipeBuilder().inputs(OreDictUnifier.get(OrePrefix.stickLong, Materials.NeodymiumMagnetic, 1), OreDictUnifier.get(OrePrefix.stickLong, Materials.HSSE, 2), OreDictUnifier.get(OrePrefix.ring, Materials.HSSE, 4), OreDictUnifier.get(OrePrefix.valueOf("round"), Materials.HSSE, 16), OreDictUnifier.get(OrePrefix.wireFine, Materials.Platinum, 64), OreDictUnifier.get(OrePrefix.wireFine, Materials.Platinum, 64), OreDictUnifier.get(OrePrefix.wireFine, Materials.Platinum, 64), OreDictUnifier.get(OrePrefix.wireFine, Materials.Platinum, 64), OreDictUnifier.get(OrePrefix.cableGtQuadruple, Materials.VanadiumGallium, 2)).fluidInputs(Materials.SolderingAlloy.getFluid(288), Materials.Lubricant.getFluid(750)).outputs(MetaItems.ELECTRIC_MOTOR_ZPM.getStackForm()).duration(600).EUt(40960).buildAndRegister();
 		GARecipeMaps.ASSEMBLY_LINE_RECIPES.recipeBuilder().inputs(OreDictUnifier.get(OrePrefix.block, Materials.NeodymiumMagnetic, 1), OreDictUnifier.get(OrePrefix.stickLong, GAMaterials.NEUTRONIUM, 2), OreDictUnifier.get(OrePrefix.ring, GAMaterials.NEUTRONIUM, 4), OreDictUnifier.get(OrePrefix.valueOf("round"), GAMaterials.NEUTRONIUM, 16), OreDictUnifier.get(OrePrefix.wireGtSingle, Tier.Superconductor, 64), OreDictUnifier.get(OrePrefix.wireGtSingle, Tier.Superconductor, 64), OreDictUnifier.get(OrePrefix.wireGtSingle, Tier.Superconductor, 64), OreDictUnifier.get(OrePrefix.wireGtSingle, Tier.Superconductor, 64), OreDictUnifier.get(OrePrefix.cableGtQuadruple, Materials.NiobiumTitanium, 2)).fluidInputs(Materials.SolderingAlloy.getFluid(1296), Materials.Lubricant.getFluid(2000)).outputs(MetaItems.ELECTRIC_MOTOR_UV.getStackForm()).duration(600).EUt(163840).buildAndRegister();
@@ -425,13 +421,14 @@ public class GARecipeAddition {
 
 		GARecipeMaps.ASSEMBLY_LINE_RECIPES.recipeBuilder().inputs(MetaItems.WETWARE_BOARD.getStackForm(), GAMetaItems.STEM_CELLS.getStackForm(8), MetaItems.GLASS_TUBE.getStackForm(8), OreDictUnifier.get(OrePrefix.foil, Materials.SiliconeRubber, 64)).input(OrePrefix.plate, Materials.Gold, 8).input(OrePrefix.plate, Materials.StainlessSteel, 4).fluidInputs(GAMaterials.STERILE_GROWTH_MEDIUM.getFluid(100), Materials.UUMatter.getFluid(20), Materials.DistilledWater.getFluid(4000)).outputs(GAMetaItems.NEURO_PROCESSOR.getStackForm(8)).duration(200).EUt(20000).buildAndRegister();
 
+		//Should this be replaced with direct removals?
 		List<Recipe> recipes = new ArrayList<Recipe>();
 		for (Recipe recipe : RecipeMaps.ASSEMBLER_RECIPES.getRecipeList()) {
 			if (recipe.getOutputs().get(0).isItemEqual(MetaItems.WETWARE_PROCESSOR_LUV.getStackForm()) || recipe.getOutputs().get(0).isItemEqual(MetaItems.WETWARE_PROCESSOR_ASSEMBLY_ZPM.getStackForm())) {
 				recipes.add(recipe);
 			}
 		}
-		recipes.forEach(recipe -> RecipeMaps.ASSEMBLER_RECIPES.removeRecipe(recipe));
+		recipes.forEach(RecipeMaps.ASSEMBLER_RECIPES::removeRecipe);
 
 		RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder().duration(200).EUt(28000).inputs(GAMetaItems.NEURO_PROCESSOR.getStackForm(), MetaItems.CRYSTAL_CENTRAL_PROCESSING_UNIT.getStackForm(), MetaItems.NANO_CENTRAL_PROCESSING_UNIT.getStackForm(), MetaItems.SMD_CAPACITOR.getStackForm(2), MetaItems.SMD_TRANSISTOR.getStackForm(2)).input(OrePrefix.wireFine, Materials.YttriumBariumCuprate, 2).fluidInputs(Materials.SolderingAlloy.getFluid(72)).outputs(MetaItems.WETWARE_PROCESSOR_LUV.getStackForm()).buildAndRegister();
 		RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder().duration(200).EUt(28000).inputs(GAMetaItems.NEURO_PROCESSOR.getStackForm(), MetaItems.CRYSTAL_CENTRAL_PROCESSING_UNIT.getStackForm(), MetaItems.NANO_CENTRAL_PROCESSING_UNIT.getStackForm(), MetaItems.SMD_CAPACITOR.getStackForm(2), MetaItems.SMD_TRANSISTOR.getStackForm(2)).input(OrePrefix.wireFine, Materials.YttriumBariumCuprate, 2).fluidInputs(Materials.Tin.getFluid(144)).outputs(MetaItems.WETWARE_PROCESSOR_LUV.getStackForm()).buildAndRegister();
@@ -535,33 +532,6 @@ public class GARecipeAddition {
 		RecipeMaps.FLUID_EXTRACTION_RECIPES.recipeBuilder().duration(80).EUt(32).input(OrePrefix.dust, Materials.Redstone).fluidOutputs(Materials.Redstone.getFluid(144)).buildAndRegister();
 		RecipeMaps.FLUID_EXTRACTION_RECIPES.recipeBuilder().duration(80).EUt(32).input(OrePrefix.dust, Materials.Glowstone).fluidOutputs(Materials.Glowstone.getFluid(144)).buildAndRegister();
 
-		//Gem Tool Part Fixes
-		//TODO is this really needed? All it does is remove the hammer from gem tool recipes
-		for (Material material : Material.MATERIAL_REGISTRY) {
-			if (!OreDictUnifier.get(OrePrefix.gem, material).isEmpty() && !OreDictUnifier.get(OrePrefix.toolHeadHammer, material).isEmpty() && material != Materials.Flint) {
-				removeCraftingRecipes(OreDictUnifier.get(OrePrefix.toolHeadAxe, material));
-				ModHandler.addShapedRecipe("axe_head_" + material.toString(), OreDictUnifier.get(OrePrefix.toolHeadAxe, material), "GG", "Gf", 'G', new UnificationEntry(OrePrefix.gem, material));
-				removeCraftingRecipes(OreDictUnifier.get(OrePrefix.toolHeadFile, material));
-				ModHandler.addShapedRecipe("file_head_" + material.toString(), OreDictUnifier.get(OrePrefix.toolHeadFile, material), "G", "G", "f", 'G', new UnificationEntry(OrePrefix.gem, material));
-				removeCraftingRecipes(OreDictUnifier.get(OrePrefix.toolHeadHammer, material));
-				ModHandler.addShapedRecipe("hammer_head_" + material.toString(), OreDictUnifier.get(OrePrefix.toolHeadHammer, material), "GG ", "GGf", "GG ", 'G', new UnificationEntry(OrePrefix.gem, material));
-				removeCraftingRecipes(OreDictUnifier.get(OrePrefix.toolHeadHoe, material));
-				ModHandler.addShapedRecipe("hoe_head_" + material.toString(), OreDictUnifier.get(OrePrefix.toolHeadHoe, material), "GGf", 'G', new UnificationEntry(OrePrefix.gem, material));
-				removeCraftingRecipes(OreDictUnifier.get(OrePrefix.toolHeadPickaxe, material));
-				ModHandler.addShapedRecipe("pickaxe_head_" + material.toString(), OreDictUnifier.get(OrePrefix.toolHeadPickaxe, material), "GGG", "f  ", 'G', new UnificationEntry(OrePrefix.gem, material));
-				removeCraftingRecipes(OreDictUnifier.get(OrePrefix.toolHeadSaw, material));
-				ModHandler.addShapedRecipe("saw_head_" + material.toString(), OreDictUnifier.get(OrePrefix.toolHeadSaw, material), "GG", "f ", 'G', new UnificationEntry(OrePrefix.gem, material));
-				removeCraftingRecipes(OreDictUnifier.get(OrePrefix.toolHeadSense, material));
-				ModHandler.addShapedRecipe("sense_head_" + material.toString(), OreDictUnifier.get(OrePrefix.toolHeadSense, material), "GGG", " f ", 'G', new UnificationEntry(OrePrefix.gem, material));
-				removeCraftingRecipes(OreDictUnifier.get(OrePrefix.toolHeadShovel, material));
-				ModHandler.addShapedRecipe("shovel_head_" + material.toString(), OreDictUnifier.get(OrePrefix.toolHeadShovel, material), "fG", 'G', new UnificationEntry(OrePrefix.gem, material));
-				removeCraftingRecipes(OreDictUnifier.get(OrePrefix.toolHeadSword, material));
-				ModHandler.addShapedRecipe("sword_head_" + material.toString(), OreDictUnifier.get(OrePrefix.toolHeadSword, material), " G", "fG", 'G', new UnificationEntry(OrePrefix.gem, material));
-				removeCraftingRecipes(OreDictUnifier.get(OrePrefix.toolHeadUniversalSpade, material));
-				ModHandler.addShapedRecipe("universal_spade_head_" + material.toString(), OreDictUnifier.get(OrePrefix.toolHeadUniversalSpade, material), "GGG", "GfG", " G ", 'G', new UnificationEntry(OrePrefix.gem, material));
-			}
-		}
-
 		//Misc Recipe Patches
 		RecipeMaps.COMPRESSOR_RECIPES.recipeBuilder().duration(400).EUt(2).input(OrePrefix.dust, Materials.NetherQuartz).outputs(OreDictUnifier.get(OrePrefix.plate, Materials.NetherQuartz)).buildAndRegister();
 		RecipeMaps.COMPRESSOR_RECIPES.recipeBuilder().duration(400).EUt(2).input(OrePrefix.dust, Materials.CertusQuartz).outputs(OreDictUnifier.get(OrePrefix.plate, Materials.CertusQuartz)).buildAndRegister();
@@ -659,13 +629,29 @@ public class GARecipeAddition {
 							break;
 						}
 					}
-					if (match) {
-						if (GAConfig.GT5U.Remove3x3BlockRecipes) recipesToRemove.add(String.format("%s:%s", recipe.getRegistryName().getNamespace(), recipe.getRegistryName().getPath()));
-						if (GAConfig.GT5U.GenerateCompressorRecipes) RecipeMaps.COMPRESSOR_RECIPES.recipeBuilder().duration(400).EUt(2).inputs(CountableIngredient.from(recipe.getIngredients().get(0).getMatchingStacks()[0], recipe.getIngredients().size())).outputs(recipe.getRecipeOutput()).buildAndRegister();
+					if(match) {
+						if(GAConfig.GT5U.Remove3x3BlockRecipes) {
+							recipesToRemove.add(String.format("%s:%s", recipe.getRegistryName().getNamespace(), recipe.getRegistryName().getPath()));
+						}
+						else if(GAConfig.Misc.Packager3x3Recipes && !GAMetaItems.hasPrefix(recipe.getRecipeOutput(), "dust", "dustTiny") && recipe.getRecipeOutput().getCount() == 1) {
+							RecipeMaps.PACKER_RECIPES.recipeBuilder()
+									.inputs(CountableIngredient.from(recipe.getIngredients().get(0).getMatchingStacks()[0], recipe.getIngredients().size()))
+									.notConsumable(GAMetaItems.SCHEMATIC_3X3.getStackForm())
+									.outputs(recipe.getRecipeOutput())
+									.duration(100).EUt(4).buildAndRegister();
+						}
+
+						if(GAConfig.GT5U.GenerateCompressorRecipes) {
+							RecipeMaps.COMPRESSOR_RECIPES.recipeBuilder()
+									.inputs(CountableIngredient.from(recipe.getIngredients().get(0).getMatchingStacks()[0], recipe.getIngredients().size()))
+									.outputs(recipe.getRecipeOutput())
+									.duration(400).EUt(2).buildAndRegister();
+						}
 					}
 				}
 			}
-			if (recipe.getIngredients().size() == 9) {
+			//The initial section here is exactly the same as above, so the sections were combined to avoid iterating twice
+			/*if (recipe.getIngredients().size() == 9) {
 				if (recipe.getIngredients().get(0).getMatchingStacks().length > 0 && Block.getBlockFromItem(recipe.getRecipeOutput().getItem()) == Blocks.AIR) {
 					boolean match = true;
 					for (int i = 1; i < recipe.getIngredients().size(); i++) {
@@ -678,7 +664,7 @@ public class GARecipeAddition {
 						RecipeMaps.PACKER_RECIPES.recipeBuilder().duration(100).EUt(4).inputs(CountableIngredient.from(recipe.getIngredients().get(0).getMatchingStacks()[0], recipe.getIngredients().size())).notConsumable(GAMetaItems.SCHEMATIC_3X3.getStackForm()).outputs(recipe.getRecipeOutput()).buildAndRegister();
 					}
 				}
-			}
+			} */
 			if (recipe.getIngredients().size() == 4) {
 				if (recipe.getIngredients().get(0).getMatchingStacks().length > 0 && Block.getBlockFromItem(recipe.getRecipeOutput().getItem()) != Blocks.QUARTZ_BLOCK) {
 					boolean match = true;
@@ -688,28 +674,49 @@ public class GARecipeAddition {
 							break;
 						}
 					}
-					if (match && !recipesToRemove.contains(String.format("%s:%s", recipe.getRegistryName().getNamespace(), recipe.getRegistryName().getPath())) && !GAMetaItems.hasPrefix(recipe.getRecipeOutput(), "dust", "dustSmall") && recipe.getRecipeOutput().getCount() == 1 && GAConfig.Misc.Packager2x2Recipes) {
-						RecipeMaps.PACKER_RECIPES.recipeBuilder().duration(100).EUt(4).inputs(CountableIngredient.from(recipe.getIngredients().get(0).getMatchingStacks()[0], recipe.getIngredients().size())).notConsumable(GAMetaItems.SCHEMATIC_2X2.getStackForm()).outputs(recipe.getRecipeOutput()).buildAndRegister();
+					if (match && GAConfig.Misc.Packager2x2Recipes && !recipesToRemove.contains(String.format("%s:%s", recipe.getRegistryName().getNamespace(), recipe.getRegistryName().getPath())) && !GAMetaItems.hasPrefix(recipe.getRecipeOutput(), "dust", "dustSmall") && recipe.getRecipeOutput().getCount() == 1) {
+						RecipeMaps.PACKER_RECIPES.recipeBuilder()
+								.inputs(CountableIngredient.from(recipe.getIngredients().get(0).getMatchingStacks()[0], recipe.getIngredients().size()))
+								.notConsumable(GAMetaItems.SCHEMATIC_2X2.getStackForm())
+								.outputs(recipe.getRecipeOutput())
+								.duration(100).EUt(4).buildAndRegister();
 					}
 				}
 			}
-			if (recipe.getIngredients().size() == 1 && recipe.getIngredients().get(0).getMatchingStacks().length > 0 && recipe.getRecipeOutput().getCount() == 9 && Block.getBlockFromItem(recipe.getIngredients().get(0).getMatchingStacks()[0].getItem()) != Blocks.AIR && Block.getBlockFromItem(recipe.getIngredients().get(0).getMatchingStacks()[0].getItem()) != Blocks.SLIME_BLOCK) {
-				boolean isIngot = false;
-				for (int i : OreDictionary.getOreIDs(recipe.getRecipeOutput())) {
-					if (OreDictionary.getOreName(i).startsWith("ingot")) {
-						isIngot = true;
-						break;
+			if(recipe.getIngredients().size() == 1 && recipe.getIngredients().get(0).getMatchingStacks().length > 0 && recipe.getRecipeOutput().getCount() == 9) {
+
+				if(GAConfig.Misc.Unpackager3x3Recipes && !recipesToRemove.contains(String.format("%s:%s", recipe.getRegistryName().getNamespace(), recipe.getRegistryName().getPath()))) {
+					RecipeMaps.UNPACKER_RECIPES.recipeBuilder()
+							.inputs(recipe.getIngredients().get(0).getMatchingStacks()[0])
+							.inputs(new CountableIngredient(new IntCircuitIngredient(1), 0))
+							.outputs(recipe.getRecipeOutput())
+							.duration(100).EUt(8).buildAndRegister();
+				}
+
+				if(Block.getBlockFromItem(recipe.getIngredients().get(0).getMatchingStacks()[0].getItem()) != Blocks.AIR && Block.getBlockFromItem(recipe.getIngredients().get(0).getMatchingStacks()[0].getItem()) != Blocks.SLIME_BLOCK) {
+
+					boolean isIngot = false;
+					for (int i : OreDictionary.getOreIDs(recipe.getRecipeOutput())) {
+						if (OreDictionary.getOreName(i).startsWith("ingot")) {
+							isIngot = true;
+							break;
+						}
+					}
+
+					if(GAConfig.GT5U.RemoveBlockUncraftingRecipes) {
+						recipesToRemove.add(String.format("%s:%s", recipe.getRegistryName().getNamespace(), recipe.getRegistryName().getPath()));
+					}
+					if(!isIngot) {
+						RecipeMaps.FORGE_HAMMER_RECIPES.recipeBuilder()
+								.inputs(recipe.getIngredients().get(0).getMatchingStacks()[0])
+								.outputs(recipe.getRecipeOutput())
+								.duration(100).EUt(24).buildAndRegister();
 					}
 				}
-				if (GAConfig.GT5U.RemoveBlockUncraftingRecipes) recipesToRemove.add(String.format("%s:%s", recipe.getRegistryName().getNamespace(), recipe.getRegistryName().getPath()));
-				if (!isIngot) {
-					RecipeMaps.FORGE_HAMMER_RECIPES.recipeBuilder().duration(100).EUt(24).inputs(recipe.getIngredients().get(0).getMatchingStacks()[0]).outputs(recipe.getRecipeOutput()).buildAndRegister();
-				}
-			}
-			if (recipe.getIngredients().size() == 1 && recipe.getIngredients().get(0).getMatchingStacks().length > 0 && recipe.getRecipeOutput().getCount() == 9) {
+			/*if (recipe.getIngredients().size() == 1 && recipe.getIngredients().get(0).getMatchingStacks().length > 0 && recipe.getRecipeOutput().getCount() == 9) {
 				if (!recipesToRemove.contains(String.format("%s:%s", recipe.getRegistryName().getNamespace(), recipe.getRegistryName().getPath())) && GAConfig.Misc.Unpackager3x3Recipes) {
 					RecipeMaps.UNPACKER_RECIPES.recipeBuilder().duration(100).EUt(8).inputs(recipe.getIngredients().get(0).getMatchingStacks()[0]).inputs(new CountableIngredient(new IntCircuitIngredient(1), 0)).outputs(recipe.getRecipeOutput()).buildAndRegister();
-				}
+				} */
 			}
 		}
 
@@ -723,7 +730,10 @@ public class GARecipeAddition {
 			removeRecipeByName("minecraft:glowstone");
 			removeRecipeByName("minecraft:quartz_block");
 			removeRecipeByName("gregtech:nether_quartz_block_to_nether_quartz");
-			RecipeMaps.FORGE_HAMMER_RECIPES.recipeBuilder().duration(100).EUt(24).inputs(OreDictUnifier.get(OrePrefix.block, Materials.NetherQuartz)).outputs(OreDictUnifier.get(OrePrefix.gem, Materials.NetherQuartz, 4)).buildAndRegister();
+			RecipeMaps.FORGE_HAMMER_RECIPES.recipeBuilder()
+					.inputs(OreDictUnifier.get(OrePrefix.block, Materials.NetherQuartz))
+					.outputs(OreDictUnifier.get(OrePrefix.gem, Materials.NetherQuartz, 4))
+					.duration(100).EUt(24).buildAndRegister();
 		}
 
 		//Generate Plank Recipes
@@ -731,20 +741,28 @@ public class GARecipeAddition {
 			if(recipe.getRecipeOutput().isEmpty()) {
 				continue;
 			}
-			for(int i : OreDictionary.getOreIDs(recipe.getRecipeOutput())) {
-				if(OreDictionary.getOreName(i).equals("plankWood") && recipe.getIngredients().size() == 1 && recipe.getRecipeOutput().getCount() == 4) {
-					if(GAConfig.GT5U.GeneratedSawingRecipes) {
-						//TODO, Check that this removal actually works
-						removeRecipeByName(String.format("%s:%s", recipe.getRegistryName().getNamespace(), recipe.getRegistryName().getPath()));
-						ModHandler.addShapelessRecipe("log_to_4_" + recipe.getRecipeOutput().toString(), GTUtility.copyAmount(4, recipe.getRecipeOutput()), recipe.getIngredients().get(0).getMatchingStacks()[0], ToolDictNames.craftingToolSaw);
-						ModHandler.addShapelessRecipe("log_to_2_" + recipe.getRecipeOutput().toString(), GTUtility.copyAmount(2, recipe.getRecipeOutput()), recipe.getIngredients().get(0).getMatchingStacks()[0]);
-					}
-					RecipeMaps.CUTTER_RECIPES.recipeBuilder().duration(200).EUt(8).inputs(recipe.getIngredients().get(0).getMatchingStacks()[0]).fluidInputs(Materials.Lubricant.getFluid(1)).outputs(GTUtility.copyAmount(6, recipe.getRecipeOutput()), OreDictUnifier.get(OrePrefix.dust, Materials.Wood, 2)).buildAndRegister();
+			//for(int i : OreDictionary.getOreIDs(recipe.getRecipeOutput())) {
+			if(GAMetaItems.hasPrefix(recipe.getRecipeOutput(), "plankWood") && recipe.getIngredients().size() == 1 && recipe.getRecipeOutput().getCount() == 4) {
+				if(GAConfig.GT5U.GeneratedSawingRecipes) {
+					//TODO, Check that this removal actually works
+					removeRecipeByName(String.format("%s:%s", recipe.getRegistryName().getNamespace(), recipe.getRegistryName().getPath()));
+					ModHandler.addShapelessRecipe("log_to_4_" + recipe.getRecipeOutput().toString(), GTUtility.copyAmount(4, recipe.getRecipeOutput()), recipe.getIngredients().get(0).getMatchingStacks()[0], ToolDictNames.craftingToolSaw);
+					ModHandler.addShapelessRecipe("log_to_2_" + recipe.getRecipeOutput().toString(), GTUtility.copyAmount(2, recipe.getRecipeOutput()), recipe.getIngredients().get(0).getMatchingStacks()[0]);
 				}
-				if(OreDictionary.getOreName(i).equals("slabWood") && recipe.getRecipeOutput().getCount() == 6) {
-					RecipeMaps.CUTTER_RECIPES.recipeBuilder().duration(50).EUt(4).inputs(recipe.getIngredients().get(0).getMatchingStacks()[0]).outputs(GTUtility.copyAmount(2, recipe.getRecipeOutput())).buildAndRegister();
-				}
+				RecipeMaps.CUTTER_RECIPES.recipeBuilder()
+						.inputs(recipe.getIngredients().get(0).getMatchingStacks()[0])
+						.fluidInputs(Materials.Lubricant.getFluid(1))
+						.outputs(GTUtility.copyAmount(6, recipe.getRecipeOutput()), OreDictUnifier.get(OrePrefix.dust, Materials.Wood, 2))
+						.duration(200).EUt(8).buildAndRegister();
 			}
+
+			if(GAMetaItems.hasPrefix(recipe.getRecipeOutput(), "slabWood") && recipe.getRecipeOutput().getCount() == 6) {
+				RecipeMaps.CUTTER_RECIPES.recipeBuilder()
+						.inputs(recipe.getIngredients().get(0).getMatchingStacks()[0])
+						.outputs(GTUtility.copyAmount(2, recipe.getRecipeOutput()))
+						.duration(50).EUt(4).buildAndRegister();
+			}
+			//}
 		}
 
 		//Disable Wood To Charcoal Recipes

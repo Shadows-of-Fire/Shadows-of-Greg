@@ -250,6 +250,10 @@ public class GAConfig {
 
 		@Config.Name("Should higher tier Bundlers be registered?")
 		public boolean highTierBundler = true;
+
+		@Config.Name("Replace Hammers with Files in Gem Tool recipes")
+		@Config.Comment("Replaces the Hammer with a File in Tool recipes when the material is a Gem")
+		public boolean gemToolsNeedFiles = false;
 	}
 
 	@SubscribeEvent

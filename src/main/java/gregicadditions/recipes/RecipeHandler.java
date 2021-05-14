@@ -7,12 +7,11 @@ import gregicadditions.item.GAMetaItems;
 import gregtech.api.GTValues;
 import gregtech.api.items.toolitem.ToolMetaItem;
 import gregtech.api.recipes.ModHandler;
+import gregtech.api.recipes.RecipeMaps;
 import gregtech.api.recipes.ingredients.IntCircuitIngredient;
 import gregtech.api.unification.OreDictUnifier;
 import gregtech.api.unification.material.Materials;
-import gregtech.api.unification.material.type.DustMaterial;
-import gregtech.api.unification.material.type.FluidMaterial;
-import gregtech.api.unification.material.type.IngotMaterial;
+import gregtech.api.unification.material.type.*;
 import gregtech.api.unification.ore.OrePrefix;
 import gregtech.api.unification.stack.MaterialStack;
 import gregtech.api.unification.stack.UnificationEntry;
@@ -35,7 +34,6 @@ import static gregicadditions.recipes.GARecipeMaps.CLUSTER_MILL_RECIPES;
 import static gregtech.api.GTValues.L;
 import static gregtech.api.GTValues.M;
 import static gregtech.api.recipes.RecipeMaps.*;
-import static gregtech.api.recipes.RecipeMaps.ASSEMBLER_RECIPES;
 import static gregtech.api.recipes.ingredients.IntCircuitIngredient.getIntegratedCircuit;
 import static gregtech.api.unification.material.type.DustMaterial.MatFlags.NO_SMASHING;
 import static gregtech.loaders.oreprocessing.WireRecipeHandler.INSULATION_MATERIALS;
@@ -61,6 +59,7 @@ public class RecipeHandler {
         ingot.addProcessingHandler(IngotMaterial.class, RecipeHandler::processIngot);
         foil.addProcessingHandler(IngotMaterial.class, RecipeHandler::processFoil);
         GAEnums.GAOrePrefix.round.addProcessingHandler(IngotMaterial.class, RecipeHandler::processRound);
+        gem.addProcessingHandler(GemMaterial.class, RecipeHandler::processGem);
 
         dustSmall.addProcessingHandler(DustMaterial.class, RecipeHandler::processSmallDust);
         if(GAConfig.Misc.PackagerDustRecipes) {
@@ -312,10 +311,12 @@ public class RecipeHandler {
                 .buildAndRegister();
 
         // Register Curved Plate Pipe Recipes
-        if (!OreDictUnifier.get(pipeMedium, material).isEmpty()) {
+        //TODO, check if this does wood pipes
+        if(GAConfig.GT6.BendingPipes) {
 
-            if (GAConfig.GT6.BendingPipes && !OreDictUnifier.get(plateCurved, material).isEmpty()) {
+            if(!OreDictUnifier.get(pipeMedium, material).isEmpty() && !OreDictUnifier.get(plateCurved, material).isEmpty()) {
 
+                //TODO, check large and tiny pipes, do they only have extruder recipes?
                 removeCraftingRecipes(OreDictUnifier.get(pipeSmall, material, 4));
                 removeCraftingRecipes(OreDictUnifier.get(pipeMedium, material, 2));
 
@@ -338,6 +339,25 @@ public class RecipeHandler {
                         "PhP", "PCP", "PwP",
                         'P', new UnificationEntry(plateCurved, material),
                         'C', "craftingToolBendingCylinder");
+            }
+        }
+
+        if(GAConfig.GT6.BendingRotors) {
+
+            if(!OreDictUnifier.get(rotor, material).isEmpty() && !OreDictUnifier.get(plateCurved, material).isEmpty()) {
+                removeCraftingRecipes(OreDictUnifier.get(rotor, material));
+                ModHandler.addShapedRecipe(String.format("ga_rotor_%s", material.toString()), OreDictUnifier.get(rotor, material),
+                        "ChC", "SRf", "CdC",
+                        'C', OreDictUnifier.get(plateCurved, material),
+                        'S', OreDictUnifier.get(screw, material),
+                        'R', OreDictUnifier.get(ring, material));
+
+                RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder()
+                        .input(plateCurved, material, 4)
+                        .input(ring, material)
+                        .fluidInputs(Materials.SolderingAlloy.getFluid(32))
+                        .outputs(OreDictUnifier.get(rotor, material))
+                        .duration(240).EUt(24).buildAndRegister();
             }
         }
     }
@@ -366,12 +386,24 @@ public class RecipeHandler {
 
     private static void processWireGt(OrePrefix wireGt, IngotMaterial material) {
 
+        //Bundler Recipes
+        for(int startTier = 0; startTier < 4; startTier++) {
+            final int current = startTier; // yay lambdas
+            IntStream.range(1, 5 - startTier).forEach(tier -> {
+                GARecipeMaps.BUNDLER_RECIPES.recipeBuilder()
+                        .inputs(OreDictUnifier.get(WIRE_DOUBLING_ORDER.get(current), material, 1 << tier))
+                        .notConsumable(new IntCircuitIngredient(tier))
+                        .outputs(OreDictUnifier.get(WIRE_DOUBLING_ORDER.get(current + tier), material, 1))
+                        .buildAndRegister();
+            });
+        }
+
+
         //Check done here instead of in the register method so that Bundler Recipes can also be included
         if(GAConfig.GT5U.CablesGT5U) {
 
-            //Only Process recipes on applicable cables with voltages greater than EV
-            //TODO, apply this to all cables but LV and ULV, or remove the check for LV and ULV in the adding recipes section. Check GT5U
-            if (material.cableProperties == null || material.cableProperties.voltage < GTValues.EV) {
+            //Only Process recipes on applicable cables with voltages greater than LV
+            if(material.cableProperties == null || material.cableProperties.voltage <= GTValues.LV) {
                 return;
             }
 
@@ -380,12 +412,13 @@ public class RecipeHandler {
 
 
             //Removing the existing Recipes
-            for (FluidMaterial insulationMaterial : INSULATION_MATERIALS.keySet()) {
+            for(FluidMaterial insulationMaterial : INSULATION_MATERIALS.keySet()) {
 
                 // Try to remove 1 recipe with the Fluid type. If it fails, then exit
                 boolean wasRemoved = removeRecipesByInputs(ASSEMBLER_RECIPES, new ItemStack[]{OreDictUnifier.get(wireGt, material), getIntegratedCircuit(24)}, new FluidStack[]{insulationMaterial.getFluid(L * (int) (wireGt.materialAmount / M) * 2)});
-                if (!wasRemoved)
+                if(!wasRemoved) {
                     continue;
+                }
 
                 removeRecipesByInputs(ASSEMBLER_RECIPES,
                         new ItemStack[]{OreDictUnifier.get(wireGt, material, (int) (wireGt.materialAmount / M) * 2), getIntegratedCircuit(24 + WIRE_DOUBLING_ORDER.indexOf(wireGt))},
@@ -402,88 +435,130 @@ public class RecipeHandler {
             }
 
             //Adding the new Recipes
-            //Exempt the LV and ULV cables from the harder recipes
-            if (!(material.cableProperties.voltage <= GTValues.LV)) {
-                for (FluidMaterial insulationMaterial : INSULATION_MATERIALS.keySet()) {
-                    int cableTier = GTUtility.getTierByVoltage(material.cableProperties.voltage);
-                    int insulationTier = INSULATION_MATERIALS.get(insulationMaterial);
-                    int fluidAmount = Math.max(36, 144 / (1 + (insulationTier - cableTier) / 2));
+            for(FluidMaterial insulationMaterial : INSULATION_MATERIALS.keySet()) {
+                int cableTier = GTUtility.getTierByVoltage(material.cableProperties.voltage);
+                int insulationTier = INSULATION_MATERIALS.get(insulationMaterial);
+                int fluidAmount = Math.max(36, 144 / (1 + (insulationTier - cableTier) / 2));
 
-                    //If the cable is IV tier or above, Add additional recipes with material foils
-                    if (material.cableProperties.voltage >= GTValues.IV) {
+                //If the cable is IV tier or above, Add additional recipes with material foils
+                if(material.cableProperties.voltage >= GTValues.IV) {
 
-                        //TODO Check Fluid amounts against pre-refactor amounts
-                        //TODO Check Foil Amounts against pre-refactor amounts
+                    //TODO Check Fluid amounts against pre-refactor amounts
+                    //TODO Check Foil Amounts against pre-refactor amounts
+                    ASSEMBLER_RECIPES.recipeBuilder()
+                            .input(wireGt, material)
+                            .input(foil, material, (int) (wireGt.materialAmount / M) * 2)
+                            .fluidInputs(insulationMaterial.getFluid((int) (fluidAmount * (wireGt.materialAmount / M) * 2)))
+                            .circuitMeta(24)
+                            .outputs(cableStack)
+                            .duration(150).EUt(8).buildAndRegister();
+
+                    ASSEMBLER_RECIPES.recipeBuilder()
+                            .input(wireGt, material)
+                            .input(foil, Materials.PolyphenyleneSulfide, (int) (wireGt.materialAmount / M) * 2)
+                            .fluidInputs(insulationMaterial.getFluid((int) (fluidAmount * (wireGt.materialAmount / M) * 2)))
+                            .circuitMeta(24)
+                            .outputs(cableStack)
+                            .duration(150).EUt(8).buildAndRegister();
+
+                    for(MaterialStack dustStack : cableDusts) {
+
                         ASSEMBLER_RECIPES.recipeBuilder()
                                 .input(wireGt, material)
                                 .input(foil, material, (int) (wireGt.materialAmount / M) * 2)
-                                .fluidInputs(insulationMaterial.getFluid((int) (fluidAmount * (wireGt.materialAmount / M) * 2)))
-                                .circuitMeta(24)
+                                .input(dustSmall, dustStack.material, (int) (wireGt.materialAmount / M) * 2)
+                                .fluidInputs(insulationMaterial.getFluid((int) (fluidAmount * wireGt.materialAmount / M)))
                                 .outputs(cableStack)
                                 .duration(150).EUt(8).buildAndRegister();
 
                         ASSEMBLER_RECIPES.recipeBuilder()
                                 .input(wireGt, material)
+                                .input(dustSmall, dustStack.material, (int) (wireGt.materialAmount / M) * 2)
                                 .input(foil, Materials.PolyphenyleneSulfide, (int) (wireGt.materialAmount / M) * 2)
-                                .fluidInputs(insulationMaterial.getFluid((int) (fluidAmount * (wireGt.materialAmount / M) * 2)))
-                                .circuitMeta(24)
+                                .fluidInputs(insulationMaterial.getFluid((int) (fluidAmount * wireGt.materialAmount / M)))
                                 .outputs(cableStack)
                                 .duration(150).EUt(8).buildAndRegister();
 
-                        for (MaterialStack dustStack : cableDusts) {
-
-                            ASSEMBLER_RECIPES.recipeBuilder()
-                                    .input(wireGt, material)
-                                    .input(foil, material, (int) (wireGt.materialAmount / M) * 2)
-                                    .input(dustSmall, dustStack.material, (int) (wireGt.materialAmount / M) * 2)
-                                    .fluidInputs(insulationMaterial.getFluid((int) (fluidAmount * wireGt.materialAmount / M)))
-                                    .outputs(cableStack)
-                                    .duration(150).EUt(8).buildAndRegister();
-
-                            ASSEMBLER_RECIPES.recipeBuilder()
-                                    .input(wireGt, material)
-                                    .input(dustSmall, dustStack.material, (int) (wireGt.materialAmount / M) * 2)
-                                    .input(foil, Materials.PolyphenyleneSulfide, (int) (wireGt.materialAmount / M) * 2)
-                                    .fluidInputs(insulationMaterial.getFluid((int) (fluidAmount * wireGt.materialAmount / M)))
-                                    .outputs(cableStack)
-                                    .duration(150).EUt(8).buildAndRegister();
-
-                        }
                     }
-                    //EV only cables, recipes do not get the material foils
-                    else {
+                }
+                //MV to EV cable, no material foil recipes
+                else {
+
+                    ASSEMBLER_RECIPES.recipeBuilder()
+                            .input(wireGt, material)
+                            .fluidInputs(insulationMaterial.getFluid((int) (fluidAmount * (wireGt.materialAmount / M) * 2)))
+                            .circuitMeta(24)
+                            .outputs(cableStack)
+                            .duration(150).EUt(8).buildAndRegister();
+
+                    for(MaterialStack dustStack : cableDusts) {
 
                         ASSEMBLER_RECIPES.recipeBuilder()
                                 .input(wireGt, material)
-                                .fluidInputs(insulationMaterial.getFluid((int) (fluidAmount * (wireGt.materialAmount / M) * 2)))
-                                .circuitMeta(24)
+                                .input(dustSmall, dustStack.material, (int) (wireGt.materialAmount / M) * 2)
+                                .fluidInputs(insulationMaterial.getFluid((int) (fluidAmount * wireGt.materialAmount / M)))
                                 .outputs(cableStack)
                                 .duration(150).EUt(8).buildAndRegister();
-
-                        for (MaterialStack dustStack : cableDusts) {
-
-                            ASSEMBLER_RECIPES.recipeBuilder()
-                                    .input(wireGt, material)
-                                    .input(dustSmall, dustStack.material, (int) (wireGt.materialAmount / M) * 2)
-                                    .fluidInputs(insulationMaterial.getFluid((int) (fluidAmount * wireGt.materialAmount / M)))
-                                    .outputs(cableStack)
-                                    .duration(150).EUt(8).buildAndRegister();
-                        }
                     }
                 }
             }
         }
+    }
 
-        for(int startTier = 0; startTier < 4; startTier++) {
-            final int current = startTier; // yay lambdas
-            IntStream.range(1, 5 - startTier).forEach(tier -> {
-                GARecipeMaps.BUNDLER_RECIPES.recipeBuilder()
-                        .inputs(OreDictUnifier.get(WIRE_DOUBLING_ORDER.get(current), material, 1 << tier))
-                        .notConsumable(new IntCircuitIngredient(tier))
-                        .outputs(OreDictUnifier.get(WIRE_DOUBLING_ORDER.get(current + tier), material, 1))
-                        .buildAndRegister();
-            });
+
+    private static void processGem(OrePrefix gem, GemMaterial material) {
+
+        //Adds mirrored recipes for the hammer tool. Why only using gems I have no idea. TODO, is this needed?
+        if (!OreDictUnifier.get(toolHeadHammer, material).isEmpty()) {
+            ModHandler.addMirroredShapedRecipe(String.format("gem_hammer_%s", material.toString()), MetaItems.HARD_HAMMER.getStackForm(material, 1),
+                    "GG ", "GGS", "GG ",
+                    'G', new UnificationEntry(gem, material), 'S', new UnificationEntry(stick, Materials.Wood));
         }
+
+        //Replace Hammers in gem recipes with files
+        //TODO is this really needed? All it does is remove the hammer from gem tool recipes
+        if (GAConfig.Misc.gemToolsNeedFiles && !OreDictUnifier.get(toolHeadHammer, material).isEmpty()) {
+            removeCraftingRecipes(OreDictUnifier.get(toolHeadAxe, material));
+            ModHandler.addShapedRecipe(String.format("axe_head_%s", material.toString()), OreDictUnifier.get(toolHeadAxe, material),
+                    "GG", "Gf", 'G', new UnificationEntry(gem, material));
+
+            removeCraftingRecipes(OreDictUnifier.get(toolHeadFile, material));
+            ModHandler.addShapedRecipe(String.format("file_head_%s", material.toString()), OreDictUnifier.get(toolHeadFile, material),
+                    "G", "G", "f", 'G', new UnificationEntry(gem, material));
+
+            removeCraftingRecipes(OreDictUnifier.get(toolHeadHammer, material));
+            ModHandler.addShapedRecipe(String.format("hammer_head_%s", material.toString()), OreDictUnifier.get(toolHeadHammer, material),
+                    "GG ", "GGf", "GG ", 'G', new UnificationEntry(gem, material));
+
+            removeCraftingRecipes(OreDictUnifier.get(toolHeadHoe, material));
+            ModHandler.addShapedRecipe(String.format("hoe_head_%s", material.toString()), OreDictUnifier.get(toolHeadHoe, material),
+                    "GGf", 'G', new UnificationEntry(gem, material));
+
+            removeCraftingRecipes(OreDictUnifier.get(toolHeadPickaxe, material));
+            ModHandler.addShapedRecipe(String.format("pickaxe_head_%s", material.toString()), OreDictUnifier.get(toolHeadPickaxe, material),
+                    "GGG", "f  ", 'G', new UnificationEntry(gem, material));
+
+            removeCraftingRecipes(OreDictUnifier.get(toolHeadSaw, material));
+            ModHandler.addShapedRecipe(String.format("saw_head_%s", material.toString()), OreDictUnifier.get(toolHeadSaw, material),
+                    "GG", "f ", 'G', new UnificationEntry(gem, material));
+
+            removeCraftingRecipes(OreDictUnifier.get(toolHeadSense, material));
+            ModHandler.addShapedRecipe(String.format("sense_head_%s", material.toString()), OreDictUnifier.get(toolHeadSense, material),
+                    "GGG", " f ", 'G', new UnificationEntry(gem, material));
+
+            removeCraftingRecipes(OreDictUnifier.get(toolHeadShovel, material));
+            ModHandler.addShapedRecipe(String.format("shovel_head_%s", material.toString()), OreDictUnifier.get(toolHeadShovel, material),
+                    "fG", 'G', new UnificationEntry(gem, material));
+
+            removeCraftingRecipes(OreDictUnifier.get(toolHeadSword, material));
+            ModHandler.addShapedRecipe(String.format("sword_head_%s", material.toString()), OreDictUnifier.get(toolHeadSword, material),
+                    " G", "fG", 'G', new UnificationEntry(gem, material));
+
+            removeCraftingRecipes(OreDictUnifier.get(toolHeadUniversalSpade, material));
+            ModHandler.addShapedRecipe(String.format("universal_spade_head_%s", material.toString()), OreDictUnifier.get(toolHeadUniversalSpade, material),
+                    "GGG", "GfG", " G ", 'G', new UnificationEntry(gem, material));
+            }
+
     }
 }
 

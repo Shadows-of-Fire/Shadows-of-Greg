@@ -83,6 +83,7 @@ public class GAMetaItems {
 		}
 	}
 
+	//TODO, is this needed any more?
 	public static void registerRecipes() {
 		for (MetaItem<?> item : ITEMS) {
 			if (item instanceof GAMetaTool) ((GAMetaTool) item).registerRecipes();
@@ -92,6 +93,7 @@ public class GAMetaItems {
 	public static ItemStack getFilledCell(Fluid fluid, int count) {
 		ItemStack fluidCell = MetaItems.FLUID_CELL.getStackForm().copy();
 		IFluidHandlerItem fluidHandlerItem = fluidCell.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY, null);
+		//Should this be null checked? Would that allow for removing the try?
 		try {
 			fluidHandlerItem.fill(new FluidStack(fluid, 1000), true);
 
