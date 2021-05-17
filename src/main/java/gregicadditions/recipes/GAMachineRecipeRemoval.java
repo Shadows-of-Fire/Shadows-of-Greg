@@ -70,10 +70,6 @@ public class GAMachineRecipeRemoval {
 
 		removeRecipesByInputs(RecipeMaps.ASSEMBLER_RECIPES, MetaItems.ENERGY_LAPOTRONIC_ORB2.getStackForm(8), OreDictUnifier.get(OrePrefix.plate, Materials.Darmstadtium, 16));
 
-		//Remove GT5 Ash Centrifuging
-		removeRecipesByInputs(RecipeMaps.CENTRIFUGE_RECIPES, OreDictUnifier.get(OrePrefix.dust, Materials.DarkAsh, 2));
-		removeRecipesByInputs(RecipeMaps.CENTRIFUGE_RECIPES, OreDictUnifier.get(OrePrefix.dust, Materials.Ash));
-
 		//Star Recipes
 		removeRecipesByInputs(RecipeMaps.AUTOCLAVE_RECIPES, new ItemStack[] { new ItemStack(Items.NETHER_STAR) }, new FluidStack[] { Materials.Darmstadtium.getFluid(288) });
 
@@ -83,9 +79,6 @@ public class GAMachineRecipeRemoval {
 
 		//Electrolyzing Fixes
 		removeRecipesByInputs(RecipeMaps.ELECTROLYZER_RECIPES, OreDictUnifier.get(OrePrefix.dust, Materials.Sphalerite, 2));
-
-		//Remove Cheap Diesel Recipe
-		removeRecipesByInputs(RecipeMaps.MIXER_RECIPES, Materials.LightFuel.getFluid(5000), Materials.HeavyFuel.getFluid(1000));
 
 		//Remove duplicate seed oil recipes if we are generating our own
 		if(GAConfig.GTBees.GenerateExtractorRecipes) {

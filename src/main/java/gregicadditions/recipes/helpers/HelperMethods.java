@@ -21,21 +21,32 @@ import java.util.List;
 public class HelperMethods {
 
     /**
+     * Removes a Crafting Table Recipe with the given name.
+     *
+     * @param recipe The ResourceLocation of the Recipe.
+     */
+    public static void removeRecipeByName(ResourceLocation recipe) {
+        String recipeName = recipe.toString();
+        if(ForgeRegistries.RECIPES.containsKey(recipe)) {
+            GregicAdditions.LOGGER.info("Successfully Removed Recipe with Name: {}", recipeName);
+        }
+        else {
+            GregicAdditions.LOGGER.warn("Failed to Remove Recipe with Name: {}", recipeName);
+        }
+
+        ModHandler.removeRecipeByName(recipe);
+    }
+
+    /**
      * Wrapper method for removing Crafting Table recipes by recipe Name
      * Wrapped to provide logging on if the removal fails or succeeds
      * @param recipeName The name of the recipe as a String, including modid
      */
+
     public static void removeRecipeByName(String recipeName) {
-        ResourceLocation recipe = new ResourceLocation(recipeName);
-
-        if (ForgeRegistries.RECIPES.containsKey(recipe)) {
-            GregicAdditions.LOGGER.info("Successfully Removed Recipe with Name: {}", recipeName);
-        } else {
-            GregicAdditions.LOGGER.warn("Failed to Remove Recipe with Name: {}", recipeName);
-        }
-
-        ModHandler.removeRecipeByName(new ResourceLocation(recipeName));
+        removeRecipeByName(new ResourceLocation(recipeName));
     }
+
 
     /**
      * Wrapper method for removing Crafting Table Recipes by output.

@@ -102,10 +102,6 @@ public class GregicAdditions {
 		// Register GTCE Material Handlers
 		RecipeHandler.register();
 
-		// Register OreDictionary Entries
-		//GAMetaItems.registerOreDict();
-		//GAMetaBlocks.registerOreDict();
-
 		// Run GTCE Material Handlers
 		OrePrefix.runMaterialHandlers();
 	}
@@ -114,14 +110,15 @@ public class GregicAdditions {
 	public void registerRecipes(RegistryEvent.Register<IRecipe> event) {
 		LOGGER.info("Registering Recipes...");
 		GAMachineRecipeRemoval.init();
-		GARecipeAddition.init();
-		GARecipeAddition.init2();
+		GARecipeAddition.miscCraftingRecipes();
+		GARecipeAddition.miscSingleblockMachineRecipes();
+		GARecipeAddition.miscMultiblockRecipes();
 		GARecipeAddition.forestrySupport();
+		ComponentRegistration.init();
 		MatterReplication.init();
 		MachineCraftingRecipes.init();
 		GeneratorFuels.init();
 		GAMetaItems.registerOreDict();
-		GAMetaItems.registerRecipes();
 		GARecipeAddition.generatedRecipes();
 		if (!isForestryBeesDisabled()) {
 			GTMachineCombRecipes.init();

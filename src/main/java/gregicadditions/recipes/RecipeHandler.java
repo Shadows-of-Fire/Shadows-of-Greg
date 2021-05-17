@@ -93,10 +93,10 @@ public class RecipeHandler {
     private static void processIngot(OrePrefix ingot, IngotMaterial material) {
 
         // Tools
-        if (!material.hasFlag(NO_SMASHING) && material.toolDurability > 0) {
+        if(!material.hasFlag(NO_SMASHING) && material.toolDurability > 0) {
 
             // GT6 Expensive Wrenches (Plates over Ingots)
-            if (GAConfig.GT6.ExpensiveWrenches) {
+            if(GAConfig.GT6.ExpensiveWrenches) {
 
                 removeRecipeByName(String.format("%s:wrench_%s", MODID, material.toString()));
 
@@ -106,7 +106,7 @@ public class RecipeHandler {
             }
 
             // Bending Cylinders
-            if (GAConfig.GT6.BendingCylinders) {
+            if(GAConfig.GT6.BendingCylinders) {
 
                 ModHandler.addShapedRecipe(String.format("cylinder_%s", material.toString()), ((ToolMetaItem<?>.MetaToolValueItem) BENDING_CYLINDER).getStackForm(material),
                         "sfh", "XXX", "XXX",
@@ -144,7 +144,7 @@ public class RecipeHandler {
     private static void processSmallDust(OrePrefix dustSmall, DustMaterial material) {
 
         // Small Dust Uncrafting Recipe Fix
-        if (!OreDictUnifier.get(dustSmall, material).isEmpty()) {
+        if(!OreDictUnifier.get(dustSmall, material).isEmpty()) {
 
             removeRecipeByName(String.format("%s:small_dust_disassembling_%s", MODID, material.toString()));
 
@@ -156,7 +156,7 @@ public class RecipeHandler {
         // Packager Small Dust Recipes
         // NOTE This config is checked here instead of in "register()" because this method always needs to be hit
         // in order to fix the Small Dust Uncrafting recipes
-        if (GAConfig.Misc.PackagerDustRecipes) {
+        if(GAConfig.Misc.PackagerDustRecipes) {
 
             removeRecipesByInputs(PACKER_RECIPES, OreDictUnifier.get(dustSmall, material, 4), getIntegratedCircuit(2));
 
@@ -208,9 +208,9 @@ public class RecipeHandler {
 
             // Handcrafting foils
             //TODO, do we need the no smashing flag
-            if (!material.hasFlag(NO_SMASHING)) {
+            if(!material.hasFlag(NO_SMASHING)) {
                 //TODO, check for if Bending Cylinders are enabled?
-                if (GAConfig.GT6.BendingFoils) {
+                if(GAConfig.GT6.BendingFoils) {
                     ModHandler.addShapedRecipe(String.format("foil_%s", material.toString()), OreDictUnifier.get(foil, material, 2),
                             "hPC",
                             'P', new UnificationEntry(plate, material),
@@ -225,7 +225,7 @@ public class RecipeHandler {
             }
 
             // Cluster Mill foils
-            if (GAConfig.GT6.BendingFoilsAutomatic) {
+            if(GAConfig.GT6.BendingFoilsAutomatic) {
 
                 removeRecipesByInputs(BENDER_RECIPES, OreDictUnifier.get(plate, material), getIntegratedCircuit(0));
 
@@ -245,7 +245,7 @@ public class RecipeHandler {
      * - Removes old Handcrafting Ring Recipes if enabled
      */
     private static void processRing(OrePrefix ring, IngotMaterial material) {
-        if (!material.hasFlag(NO_SMASHING)) {
+        if(!material.hasFlag(NO_SMASHING)) {
 
             removeCraftingRecipes(OreDictUnifier.get(ring, material));
 
@@ -263,7 +263,7 @@ public class RecipeHandler {
      * + Round Lathe Recipes
      */
     private static void processRound(OrePrefix round, IngotMaterial material) {
-        if (!material.hasFlag(NO_SMASHING) && !OreDictUnifier.get(round, material).isEmpty()) {
+        if(!material.hasFlag(NO_SMASHING) && !OreDictUnifier.get(round, material).isEmpty()) {
 
             ModHandler.addShapedRecipe(String.format("round_%s", material.toString()), OreDictUnifier.get(round, material),
                     "fN", "N ",
@@ -286,7 +286,7 @@ public class RecipeHandler {
     private static void processPlateCurved(OrePrefix plateCurved, IngotMaterial material) {
 
         // Register Curved Plate recipes
-        if (!material.hasFlag(NO_SMASHING)) {
+        if(!material.hasFlag(NO_SMASHING)) {
 
             ModHandler.addShapedRecipe(String.format("curved_plate_%s", material.toString()), OreDictUnifier.get(plateCurved, material),
                     "h", "P", "C",
@@ -311,7 +311,6 @@ public class RecipeHandler {
                 .buildAndRegister();
 
         // Register Curved Plate Pipe Recipes
-        //TODO, check if this does wood pipes
         if(GAConfig.GT6.BendingPipes) {
 
             if(!OreDictUnifier.get(pipeMedium, material).isEmpty() && !OreDictUnifier.get(plateCurved, material).isEmpty()) {
