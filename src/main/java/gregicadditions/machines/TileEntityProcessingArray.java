@@ -23,6 +23,7 @@ import gregtech.common.metatileentities.electric.MetaTileEntityMacerator;
 import net.minecraft.block.state.*;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.*;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -129,6 +130,18 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 	public void readFromNBT(NBTTagCompound data) {
 		super.readFromNBT(data);
 		isDistinct = data.getBoolean("Distinct");
+	}
+
+	@Override
+	public void writeInitialSyncData(PacketBuffer buf) {
+		super.writeInitialSyncData(buf);
+		buf.writeBoolean(isDistinct);
+	}
+
+	@Override
+	public void receiveInitialSyncData(PacketBuffer buf) {
+		super.receiveInitialSyncData(buf);
+		this.isDistinct = buf.readBoolean();
 	}
 
 	protected static class ProcessingArrayWorkable extends MultiblockRecipeLogic {
