@@ -23,41 +23,6 @@ public class GAMachineRecipeRemoval {
 
 
 	public static void init() {
-		/*for (Material m : Material.MATERIAL_REGISTRY) {
-
-			//Foil recipes
-			if(m instanceof IngotMaterial && m.hasFlag("GENERATE_FOIL")) {
-				removeRecipesByInputs(RecipeMaps.BENDER_RECIPES, OreDictUnifier.get(OrePrefix.plate, m), IntCircuitIngredient.getIntegratedCircuit(0));
-			}
-
-			//Remove EV+ Cable Recipes
-			//Since the cables are EV+ tier, they are only covered with SBR and SR
-			if (GAConfig.GT5U.CablesGT5U) {
-				if(m instanceof IngotMaterial) {
-					if(((IngotMaterial) m).cableProperties != null && ((IngotMaterial) m).cableProperties.voltage >= GTValues.EV) {
-						for(FluidMaterial insulationMaterial : INSULATION_MATERIALS.keySet()) {
-
-							int cableTier = GTUtility.getTierByVoltage(((IngotMaterial) m).cableProperties.voltage);
-							int insulationTier = INSULATION_MATERIALS.get(insulationMaterial);
-							if(cableTier > insulationTier) {
-								continue;
-							}
-							int fluidAmount = Math.max(36, 144 / (1 + (insulationTier - cableTier) / 2));
-
-							removeRecipesByInputs(RecipeMaps.ASSEMBLER_RECIPES, new ItemStack[] { OreDictUnifier.get(OrePrefix.wireGtSingle, m), IntCircuitIngredient.getIntegratedCircuit(24) }, new FluidStack[] { insulationMaterial.getFluid(fluidAmount) });
-							removeRecipesByInputs(RecipeMaps.ASSEMBLER_RECIPES, new ItemStack[] { OreDictUnifier.get(OrePrefix.wireGtSingle, m, 2), IntCircuitIngredient.getIntegratedCircuit(25) }, new FluidStack[] { insulationMaterial.getFluid(fluidAmount * 2)});
-							removeRecipesByInputs(RecipeMaps.ASSEMBLER_RECIPES, new ItemStack[] { OreDictUnifier.get(OrePrefix.wireGtSingle, m, 4), IntCircuitIngredient.getIntegratedCircuit(26) }, new FluidStack[] { insulationMaterial.getFluid(fluidAmount * 4)});
-							removeRecipesByInputs(RecipeMaps.ASSEMBLER_RECIPES, new ItemStack[] { OreDictUnifier.get(OrePrefix.wireGtSingle, m, 8), IntCircuitIngredient.getIntegratedCircuit(27) }, new FluidStack[] { insulationMaterial.getFluid(fluidAmount * 8)});
-							removeRecipesByInputs(RecipeMaps.ASSEMBLER_RECIPES, new ItemStack[] { OreDictUnifier.get(OrePrefix.wireGtSingle, m, 16), IntCircuitIngredient.getIntegratedCircuit(28) }, new FluidStack[] { insulationMaterial.getFluid(fluidAmount * 16)});
-							removeRecipesByInputs(RecipeMaps.ASSEMBLER_RECIPES, new ItemStack[] { OreDictUnifier.get(OrePrefix.wireGtDouble, m), IntCircuitIngredient.getIntegratedCircuit(24) }, new FluidStack[] { insulationMaterial.getFluid(fluidAmount * 2)});
-							removeRecipesByInputs(RecipeMaps.ASSEMBLER_RECIPES, new ItemStack[] { OreDictUnifier.get(OrePrefix.wireGtQuadruple, m), IntCircuitIngredient.getIntegratedCircuit(24) }, new FluidStack[] { insulationMaterial.getFluid(fluidAmount * 4)});
-							removeRecipesByInputs(RecipeMaps.ASSEMBLER_RECIPES, new ItemStack[] { OreDictUnifier.get(OrePrefix.wireGtOctal, m), IntCircuitIngredient.getIntegratedCircuit(24) }, new FluidStack[] { insulationMaterial.getFluid(fluidAmount * 8)});
-							removeRecipesByInputs(RecipeMaps.ASSEMBLER_RECIPES, new ItemStack[] { OreDictUnifier.get(OrePrefix.wireGtHex, m), IntCircuitIngredient.getIntegratedCircuit(24) }, new FluidStack[] { insulationMaterial.getFluid(fluidAmount * 16)});
-						}
-					}
-				}
-			}
-		} */
 
 		//Remove Old Bucket Recipe
 		if (GAConfig.GT6.BendingCurvedPlates && GAConfig.GT6.addCurvedPlates) {
