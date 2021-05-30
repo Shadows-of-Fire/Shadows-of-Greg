@@ -20,8 +20,6 @@ import gregtech.common.items.MetaItems;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.IntStream;
 
 import static gregicadditions.GAEnums.GAOrePrefix.ingotDouble;
@@ -45,13 +43,6 @@ import static gregtech.api.unification.ore.OrePrefix.*;
  */
 public class RecipeHandler {
 
-    private static final List<OrePrefix> WIRE_DOUBLING_ORDER = new ArrayList<OrePrefix>(){{
-        add(wireGtSingle);
-        add(wireGtDouble);
-        add(wireGtQuadruple);
-        add(wireGtOctal);
-        add(wireGtHex);
-    }};
     private static final MaterialStack[] cableDusts = { new MaterialStack(Materials.Polydimethylsiloxane, 1), new MaterialStack(Materials.PolyvinylChloride, 1) };
 
 
@@ -61,25 +52,26 @@ public class RecipeHandler {
         GAEnums.GAOrePrefix.round.addProcessingHandler(IngotMaterial.class, RecipeHandler::processRound);
         gem.addProcessingHandler(GemMaterial.class, RecipeHandler::processGem);
 
-        dustSmall.addProcessingHandler(DustMaterial.class, RecipeHandler::processSmallDust);
         if(GAConfig.Misc.PackagerDustRecipes) {
+            dustSmall.addProcessingHandler(DustMaterial.class, RecipeHandler::processSmallDust);
             dustTiny.addProcessingHandler(DustMaterial.class, RecipeHandler::processTinyDust);
             //TODO, this one needs looking at, don't see where this is registered
             nugget.addProcessingHandler(IngotMaterial.class, RecipeHandler::processNugget);
         }
 
+        plate.addProcessingHandler(IngotMaterial.class, RecipeHandler::processPlate);
+
         if(GAConfig.GT6.PlateDoubleIngot && GAConfig.GT6.addDoubleIngots) {
             plate.addProcessingHandler(IngotMaterial.class, RecipeHandler::processDoubleIngot);
         }
-        if(GAConfig.GT6.BendingCurvedPlates && GAConfig.GT6.BendingCylinders) {
+        if(GAConfig.GT6.BendingCurvedPlates && GAConfig.GT6.BendingCylinders && GAConfig.GT6.addCurvedPlates) {
             plateCurved.addProcessingHandler(IngotMaterial.class, RecipeHandler::processPlateCurved);
         }
         if(GAConfig.GT6.BendingRings && GAConfig.GT6.BendingCylinders) {
-            //TODO, Rubber Blacklist is covered by No Smashing, check what else is affected
             ring.addProcessingHandler(IngotMaterial.class, RecipeHandler::processRing);
         }
 
-        for(OrePrefix wirePrefix : WIRE_DOUBLING_ORDER) {
+        for(OrePrefix wirePrefix : GAEnums.WIRE_DOUBLING_ORDER) {
             wirePrefix.addProcessingHandler(IngotMaterial.class, RecipeHandler::processWireGt);
         }
     }
@@ -121,8 +113,7 @@ public class RecipeHandler {
 
     /**
      * Tiny Dust Material Handler. Generates:
-     *
-     * + Schematic Recipes in favor of Integrated Circuit Packager Recipes
+     * Schematic Recipes in favor of Integrated Circuit Packager Recipes
      */
     private static void processTinyDust(OrePrefix dustTiny, DustMaterial material) {
 
@@ -137,35 +128,17 @@ public class RecipeHandler {
 
     /**
      * Small Dust Material Handler. Generates:
-     *
-     * + Overrides GTCE Small Dust Uncrafting Recipe to favor GT5's
-     * + Schematic Recipes in favor of Integrated Circuit Packager Recipes
+     * Schematic Recipes in favor of Integrated Circuit Packager Recipes
      */
     private static void processSmallDust(OrePrefix dustSmall, DustMaterial material) {
 
-        // Small Dust Uncrafting Recipe Fix
-        if(!OreDictUnifier.get(dustSmall, material).isEmpty()) {
+        removeRecipesByInputs(PACKER_RECIPES, OreDictUnifier.get(dustSmall, material, 4), getIntegratedCircuit(2));
 
-            removeRecipeByName(String.format("%s:small_dust_disassembling_%s", MODID, material.toString()));
-
-            ModHandler.addShapedRecipe(String.format("dust_small_%s", material.toString()), OreDictUnifier.get(dustSmall, material, 4),
-                    " D", "  ", 'D',
-                    new UnificationEntry(dust, material));
-        }
-
-        // Packager Small Dust Recipes
-        // NOTE This config is checked here instead of in "register()" because this method always needs to be hit
-        // in order to fix the Small Dust Uncrafting recipes
-        if(GAConfig.Misc.PackagerDustRecipes) {
-
-            removeRecipesByInputs(PACKER_RECIPES, OreDictUnifier.get(dustSmall, material, 4), getIntegratedCircuit(2));
-
-            PACKER_RECIPES.recipeBuilder().duration(100).EUt(4)
-                    .input(dustSmall, material, 4)
-                    .notConsumable(GAMetaItems.SCHEMATIC_DUST.getStackForm())
-                    .output(dust, material)
-                    .buildAndRegister();
-        }
+        PACKER_RECIPES.recipeBuilder().duration(100).EUt(4)
+                .input(dustSmall, material, 4)
+                .notConsumable(GAMetaItems.SCHEMATIC_DUST.getStackForm())
+                .output(dust, material)
+                .buildAndRegister();
     }
 
     /**
@@ -207,21 +180,16 @@ public class RecipeHandler {
         if (!OreDictUnifier.get(foil, material).isEmpty()) {
 
             // Handcrafting foils
-            //TODO, do we need the no smashing flag
-            if(!material.hasFlag(NO_SMASHING)) {
-                //TODO, check for if Bending Cylinders are enabled?
-                if(GAConfig.GT6.BendingFoils) {
-                    ModHandler.addShapedRecipe(String.format("foil_%s", material.toString()), OreDictUnifier.get(foil, material, 2),
-                            "hPC",
-                            'P', new UnificationEntry(plate, material),
-                            'C', "craftingToolBendingCylinder");
-
-                }
-                else {
-                    ModHandler.addShapedRecipe(String.format("foil_%s", material.toString()), OreDictUnifier.get(foil, material, 2),
-                            "hP ",
-                            'P', new UnificationEntry(plate, material));
-                }
+            if(GAConfig.GT6.BendingFoils && GAConfig.GT6.BendingCylinders) {
+                ModHandler.addShapedRecipe(String.format("foil_%s", material.toString()), OreDictUnifier.get(foil, material, 2),
+                        "hPC",
+                        'P', new UnificationEntry(plate, material),
+                        'C', "craftingToolBendingCylinder");
+            }
+            else {
+                ModHandler.addShapedRecipe(String.format("foil_%s", material.toString()), OreDictUnifier.get(foil, material, 2),
+                        "hP ",
+                        'P', new UnificationEntry(plate, material));
             }
 
             // Cluster Mill foils
@@ -286,27 +254,24 @@ public class RecipeHandler {
     private static void processPlateCurved(OrePrefix plateCurved, IngotMaterial material) {
 
         // Register Curved Plate recipes
-        if(!material.hasFlag(NO_SMASHING)) {
+        ModHandler.addShapedRecipe(String.format("curved_plate_%s", material.toString()), OreDictUnifier.get(plateCurved, material),
+                "h", "P", "C",
+                'P', new UnificationEntry(plate, material),
+                'C', "craftingToolBendingCylinder");
 
-            ModHandler.addShapedRecipe(String.format("curved_plate_%s", material.toString()), OreDictUnifier.get(plateCurved, material),
-                    "h", "P", "C",
-                    'P', new UnificationEntry(plate, material),
-                    'C', "craftingToolBendingCylinder");
-
-            ModHandler.addShapedRecipe(String.format("flatten_plate_%s", material.toString()), OreDictUnifier.get(plate, material),
-                    "h", "C",
-                    'C', new UnificationEntry(plateCurved, material));
-        }
+        ModHandler.addShapedRecipe(String.format("flatten_plate_%s", material.toString()), OreDictUnifier.get(plate, material),
+                "h", "C",
+                'C', new UnificationEntry(plateCurved, material));
 
         BENDER_RECIPES.recipeBuilder().EUt(24).duration((int) material.getMass())
                 .input(plate, material)
-                .circuitMeta(1)
+                .circuitMeta(0)
                 .output(plateCurved, material)
                 .buildAndRegister();
 
         BENDER_RECIPES.recipeBuilder().EUt(24).duration((int) material.getMass())
                 .input(plateCurved, material)
-                .circuitMeta(0)
+                .circuitMeta(1)
                 .output(plate, material)
                 .buildAndRegister();
 
@@ -315,7 +280,6 @@ public class RecipeHandler {
 
             if(!OreDictUnifier.get(pipeMedium, material).isEmpty() && !OreDictUnifier.get(plateCurved, material).isEmpty()) {
 
-                //TODO, check large and tiny pipes, do they only have extruder recipes?
                 removeCraftingRecipes(OreDictUnifier.get(pipeSmall, material, 4));
                 removeCraftingRecipes(OreDictUnifier.get(pipeMedium, material, 2));
 
@@ -359,6 +323,17 @@ public class RecipeHandler {
                         .duration(240).EUt(24).buildAndRegister();
             }
         }
+        //Re-add rotor assembler recipes removed by GTCE
+        else {
+            if (!OreDictUnifier.get(rotor, material).isEmpty() && !OreDictUnifier.get(plate, material).isEmpty()) {
+                RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder()
+                        .input(plate, material, 4)
+                        .input(ring, material)
+                        .fluidInputs(Materials.SolderingAlloy.getFluid(32))
+                        .outputs(OreDictUnifier.get(rotor, material))
+                        .duration(240).EUt(24).buildAndRegister();
+            }
+        }
     }
 
     /**
@@ -368,7 +343,7 @@ public class RecipeHandler {
      * + Plates from Double Ingots if enabled
      */
     private static void processDoubleIngot(OrePrefix plate, IngotMaterial material) {
-        //TODO, does this need the flag check if Double Ingots are generated with the flag?
+        //TODO, check if this removed Fiber-Reinforced Expoy Resin sheets: It will
         if (!material.hasFlag(NO_SMASHING)) {
 
             removeCraftingRecipes(OreDictUnifier.get(plate, material));
@@ -383,6 +358,23 @@ public class RecipeHandler {
         }
     }
 
+    /**
+     * Adds by hand recipes for Tiny and Large Pipes, when curved plates are disabled.
+     */
+    private static void processPlate(OrePrefix plate, IngotMaterial material) {
+
+        if(!OreDictUnifier.get(pipeTiny, material).isEmpty() && !(GAConfig.GT6.BendingPipes && GAConfig.GT6.addCurvedPlates)) {
+
+            ModHandler.addShapedRecipe(String.format("pipe_ga_tiny_%s", material.toString()), OreDictUnifier.get(pipeTiny, material, 8),
+                    "PfP", "P P", "PhP",
+                    'P', new UnificationEntry(plate, material));
+
+            ModHandler.addShapedRecipe(String.format("pipe_ga_large_%s", material.toString()), OreDictUnifier.get(pipeLarge, material),
+                    "PhP", "P P", "PfP",
+                    'P', new UnificationEntry(plate, material));
+        }
+    }
+
     private static void processWireGt(OrePrefix wireGt, IngotMaterial material) {
 
         //Bundler Recipes
@@ -390,9 +382,9 @@ public class RecipeHandler {
             final int current = startTier; // yay lambdas
             IntStream.range(1, 5 - startTier).forEach(tier -> {
                 GARecipeMaps.BUNDLER_RECIPES.recipeBuilder()
-                        .inputs(OreDictUnifier.get(WIRE_DOUBLING_ORDER.get(current), material, 1 << tier))
+                        .inputs(OreDictUnifier.get(GAEnums.WIRE_DOUBLING_ORDER.get(current), material, 1 << tier))
                         .notConsumable(new IntCircuitIngredient(tier))
-                        .outputs(OreDictUnifier.get(WIRE_DOUBLING_ORDER.get(current + tier), material, 1))
+                        .outputs(OreDictUnifier.get(GAEnums.WIRE_DOUBLING_ORDER.get(current + tier), material, 1))
                         .buildAndRegister();
             });
         }
@@ -411,6 +403,7 @@ public class RecipeHandler {
 
 
             //Removing the existing Recipes
+            //TODO, this is not removing the 16 -> 1 on circuit 28
             for(FluidMaterial insulationMaterial : INSULATION_MATERIALS.keySet()) {
 
                 // Try to remove 1 recipe with the Fluid type. If it fails, then exit
@@ -420,7 +413,7 @@ public class RecipeHandler {
                 }
 
                 removeRecipesByInputs(ASSEMBLER_RECIPES,
-                        new ItemStack[]{OreDictUnifier.get(wireGt, material, (int) (wireGt.materialAmount / M) * 2), getIntegratedCircuit(24 + WIRE_DOUBLING_ORDER.indexOf(wireGt))},
+                        new ItemStack[]{OreDictUnifier.get(wireGtSingle, material, (int) (wireGt.materialAmount / M) * 2), getIntegratedCircuit(24 + GAEnums.WIRE_DOUBLING_ORDER.indexOf(wireGt))},
                         new FluidStack[]{insulationMaterial.getFluid(L * (int) (wireGt.materialAmount / M) * 2)});
 
             /*removeRecipesByInputs(ASSEMBLER_RECIPES, new ItemStack[]{OreDictUnifier.get(wireGtSingle, material, 2), getIntegratedCircuit(25)}, new FluidStack[]{insulationMaterial.getFluid(288)});

@@ -6,6 +6,7 @@ import java.util.List;
 import forestry.core.ModuleCore;
 import forestry.core.items.EnumElectronTube;
 import gregicadditions.GAConfig;
+import gregicadditions.GAEnums;
 import gregicadditions.GAMaterials;
 import gregicadditions.item.GAMetaBlocks;
 import gregicadditions.item.GAMetaItems;
@@ -23,6 +24,7 @@ import gregtech.api.unification.material.MarkerMaterials.Tier;
 import gregtech.api.unification.material.Materials;
 import gregtech.api.unification.material.type.IngotMaterial;
 import gregtech.api.unification.material.type.Material;
+import gregtech.api.unification.ore.OrePrefix;
 import gregtech.api.unification.stack.MaterialStack;
 import gregtech.api.unification.stack.UnificationEntry;
 import gregtech.api.util.GTUtility;
@@ -42,8 +44,10 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.oredict.OreDictionary;
 
 import static gregicadditions.recipes.helpers.HelperMethods.*;
+import static gregtech.api.GTValues.M;
 import static gregtech.api.recipes.RecipeMaps.*;
 import static gregtech.api.unification.ore.OrePrefix.*;
+import static gregtech.loaders.oreprocessing.WireRecipeHandler.INSULATION_MATERIALS;
 
 public class GARecipeAddition {
 
@@ -188,9 +192,9 @@ public class GARecipeAddition {
 
 		//Adjust the recipes for wooden pipes if the config is enabled.
 		//This cannot be done in the Recipe Handler because there is no wood curved plate
-		if(GAConfig.GT6.BendingPipes && GAConfig.GT6.BendingCylinders && GAConfig.GT6.addCurvedPlates) {
-			removeCraftingRecipes(OreDictUnifier.get(pipeSmall, Materials.Wood));
-			removeCraftingRecipes(OreDictUnifier.get(pipeMedium, Materials.Wood));
+		if(GAConfig.GT6.BendingPipes && GAConfig.GT6.BendingCylinders) {
+			removeRecipeByName("gregtech:medium_wooden_pipe");
+			removeRecipeByName("gregtech:small_wooden_pipe");
 
 			ModHandler.addShapedRecipe("pipe_ga_tiny_wood", OreDictUnifier.get(pipeTiny, Materials.Wood, 8),
 					"PPP", "hCs", "PPP",
@@ -281,6 +285,37 @@ public class GARecipeAddition {
 	 * This method deals with Miscellaneous recipe removals and additions from Single-block machines
 	 */
 	public static void miscSingleblockMachineRecipes() {
+
+		//Covering Superconductor cables TODO, needs amounts corrected
+		int cableTier = GTUtility.getTierByVoltage(GTValues.UV);
+		int insulationTier = INSULATION_MATERIALS.get(Materials.SiliconeRubber);
+
+		int fluidAmount = Math.max(36, 144 / (1 + (insulationTier - cableTier) / 2));
+
+		for(OrePrefix wirePrefix : GAEnums.WIRE_DOUBLING_ORDER) {
+
+			OrePrefix cablePrefix = valueOf("cable" + wirePrefix.name().substring(4));
+			ItemStack cableStack = OreDictUnifier.get(cablePrefix, Tier.Superconductor);
+
+			//Register everything under circuit 24
+			ASSEMBLER_RECIPES.recipeBuilder()
+					.input(wirePrefix, Tier.Superconductor)
+					.fluidInputs(Materials.SiliconeRubber.getFluid((int) (fluidAmount * (wirePrefix.materialAmount / M) * 2)))
+					.circuitMeta(24)
+					.outputs(cableStack)
+					.duration(150).EUt(8).buildAndRegister();
+
+			//Register unique circuit configurations
+			if(wirePrefix != wireGtSingle) {
+				ASSEMBLER_RECIPES.recipeBuilder()
+						.input(wireGtSingle, Tier.Superconductor,(int) (wirePrefix.materialAmount / M) * 2)
+						.fluidInputs(Materials.SiliconeRubber.getFluid((int) (fluidAmount * (wirePrefix.materialAmount / M) * 2)))
+						.circuitMeta(24 + GAEnums.WIRE_DOUBLING_ORDER.indexOf(wirePrefix))
+						.outputs(cableStack)
+						.duration(150).EUt(8).buildAndRegister();
+			}
+		}
+
 
 		//Boiler Casings Recipes
 		ASSEMBLER_RECIPES.recipeBuilder()

@@ -72,7 +72,7 @@ public class HelperMethods {
      */
     public static void removeFurnaceRecipe(ItemStack input) {
         if (ModHandler.removeFurnaceSmelting(input)) {
-            GregicAdditions.LOGGER.info("Removed Smelting Recipe for Input: {}", input.getDisplayName());
+            GregicAdditions.LOGGER.info("Successfully Removed Smelting Recipe for Input: {}", input.getDisplayName());
         }
         else {
             GregicAdditions.LOGGER.warn("Failed to Remove Smelting Recipe for Input: {}", input.getDisplayName());
@@ -105,7 +105,7 @@ public class HelperMethods {
 
         boolean wasRemoved = map.removeRecipe(map.findRecipe(Long.MAX_VALUE, itemIn, fluidIn, Integer.MAX_VALUE));
         if(wasRemoved) {
-            GregicAdditions.LOGGER.info(String.format("Removed Recipe for inputs: Items: %s Fluids: %s", itemNames, fluidNames));
+            GregicAdditions.LOGGER.info(String.format("Successfully Removed Recipe for inputs: Items: %s Fluids: %s", itemNames, fluidNames));
         }
         else {
             GregicAdditions.LOGGER.warn(String.format("Failed to Remove Recipe for inputs: Items: %s Fluids: %s", itemNames, fluidNames));
@@ -138,7 +138,7 @@ public class HelperMethods {
      */
     public static void removeFuelRecipe(FuelRecipeMap map, FluidStack fluidStack) {
         if(map.removeRecipe(map.findRecipe(Integer.MAX_VALUE, fluidStack))) {
-            GregicAdditions.LOGGER.debug("Removed Generator Recipe for {} for Fluid: {}", map.getUnlocalizedName(), fluidStack.getLocalizedName());
+            GregicAdditions.LOGGER.debug("Successfully Removed Generator Recipe for {} for Fluid: {}", map.getUnlocalizedName(), fluidStack.getLocalizedName());
         }
         else {
             GregicAdditions.LOGGER.warn("Failed to remove Generator Recipe for {} for Fluid: {}", map.getUnlocalizedName(), fluidStack.getLocalizedName());
