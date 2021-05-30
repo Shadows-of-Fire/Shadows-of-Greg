@@ -31,7 +31,7 @@ public class GAConfig {
 		public boolean BendingPipes = true;
 
 		@Config.Comment("Set this to false to disable Plates being crafted from Double Ingots")
-		@Config.Name("Plates are crafted from Double Ingots")
+		@Config.Name("Plates are hand crafted from Double Ingots")
 		public boolean PlateDoubleIngot = true;
 
 		@Config.Comment("Set this to false to enable the GT5 Wrench recipes")

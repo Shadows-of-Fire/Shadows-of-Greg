@@ -885,7 +885,7 @@ public class GARecipeAddition {
 					.duration(100).EUt(24).buildAndRegister();
 		}
 
-		//Generate Plank Recipes
+		//Generate Plank Recipes, TODO check against the config option in GTCE
 		for(IRecipe recipe : CraftingManager.REGISTRY) {
 			if(recipe.getRecipeOutput().isEmpty()) {
 				continue;
@@ -893,7 +893,6 @@ public class GARecipeAddition {
 			//for(int i : OreDictionary.getOreIDs(recipe.getRecipeOutput())) {
 			if(GAMetaItems.hasPrefix(recipe.getRecipeOutput(), "plankWood") && recipe.getIngredients().size() == 1 && recipe.getRecipeOutput().getCount() == 4) {
 				if(GAConfig.GT5U.GeneratedSawingRecipes) {
-					//TODO, Check that this removal actually works
 					removeRecipeByName(recipe.getRegistryName());
 					ModHandler.addShapelessRecipe("log_to_4_" + recipe.getRecipeOutput().toString(), GTUtility.copyAmount(4, recipe.getRecipeOutput()), recipe.getIngredients().get(0).getMatchingStacks()[0], ToolDictNames.craftingToolSaw);
 					ModHandler.addShapelessRecipe("log_to_2_" + recipe.getRecipeOutput().toString(), GTUtility.copyAmount(2, recipe.getRecipeOutput()), recipe.getIngredients().get(0).getMatchingStacks()[0]);

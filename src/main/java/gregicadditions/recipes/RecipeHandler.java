@@ -250,6 +250,8 @@ public class RecipeHandler {
      * + Curved Plate Recipes if enabled, Handcrafting and Machine
      * + Curved Plate Rotor Recipes if enabled
      * + Curved Plate Pipe Recipes if enabled
+     *
+     * + Adds back old rotor recipes if Curved Plate Rotors are disabled
      */
     private static void processPlateCurved(OrePrefix plateCurved, IngotMaterial material) {
 
@@ -325,7 +327,7 @@ public class RecipeHandler {
         }
         //Re-add rotor assembler recipes removed by GTCE
         else {
-            if (!OreDictUnifier.get(rotor, material).isEmpty() && !OreDictUnifier.get(plate, material).isEmpty()) {
+            if(!OreDictUnifier.get(rotor, material).isEmpty() && !OreDictUnifier.get(plate, material).isEmpty()) {
                 RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder()
                         .input(plate, material, 4)
                         .input(ring, material)
@@ -344,18 +346,16 @@ public class RecipeHandler {
      */
     private static void processDoubleIngot(OrePrefix plate, IngotMaterial material) {
         //TODO, check if this removed Fiber-Reinforced Expoy Resin sheets: It will
-        if (!material.hasFlag(NO_SMASHING)) {
 
-            removeCraftingRecipes(OreDictUnifier.get(plate, material));
+        removeCraftingRecipes(OreDictUnifier.get(plate, material));
 
-            ModHandler.addShapedRecipe(String.format("ingot_double_%s", material.toString()), OreDictUnifier.get(ingotDouble, material),
-                    "h", "I", "I",
-                    'I', new UnificationEntry(ingot, material));
+        ModHandler.addShapedRecipe(String.format("ingot_double_%s", material.toString()), OreDictUnifier.get(ingotDouble, material),
+                "h", "I", "I",
+                'I', new UnificationEntry(ingot, material));
 
-            ModHandler.addShapedRecipe(String.format("double_ingot_to_plate_%s", material.toString()), OreDictUnifier.get(plate, material),
-                    "h", "I",
-                    'I', new UnificationEntry(ingotDouble, material));
-        }
+        ModHandler.addShapedRecipe(String.format("double_ingot_to_plate_%s", material.toString()), OreDictUnifier.get(plate, material),
+                "h", "I",
+                'I', new UnificationEntry(ingotDouble, material));
     }
 
     /**
