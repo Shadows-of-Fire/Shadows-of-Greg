@@ -690,10 +690,6 @@ public class GARecipeAddition {
 			BLAST_RECIPES.recipeBuilder().duration(500).EUt(120).blastFurnaceTemp(1500).input(ore, materials).input(dustTiny, Materials.Quicklime, 3).outputs(OreDictUnifier.get(ingot, Materials.Iron, 2), OreDictUnifier.get(dustSmall, Materials.DarkAsh)).buildAndRegister();
 		}
 
-		ModHandler.addShapedRecipe("3x3_schematic", GAMetaItems.SCHEMATIC_3X3.getStackForm(), "  d", " S ", "   ", 'S', GAMetaItems.SCHEMATIC.getStackForm());
-		ModHandler.addShapedRecipe("2x2_schematic", GAMetaItems.SCHEMATIC_2X2.getStackForm(), " d ", " S ", "   ", 'S', GAMetaItems.SCHEMATIC.getStackForm());
-		ModHandler.addShapedRecipe("dust_schematic", GAMetaItems.SCHEMATIC_DUST.getStackForm(), "   ", " S ", "  d", 'S', GAMetaItems.SCHEMATIC.getStackForm());
-
 		/*
 		Fluid Regulators
 		Note, although this loop starts at IV, it registers recipes for LuV-UV Fluid Regulators
