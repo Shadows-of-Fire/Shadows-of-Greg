@@ -20,6 +20,7 @@ import gregtech.common.items.MetaItems;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
+import java.util.HashMap;
 import java.util.stream.IntStream;
 
 import static gregicadditions.GAEnums.GAOrePrefix.ingotDouble;
@@ -394,7 +395,7 @@ public class RecipeHandler {
         if(GAConfig.GT5U.CablesGT5U) {
 
             //Only Process recipes on applicable cables with voltages greater than LV
-            if(material.cableProperties == null || material.cableProperties.voltage <= GTValues.LV) {
+            if(material.cableProperties == null || material.cableProperties.voltage <= GTValues.V[GTValues.LV]) {
                 return;
             }
 
@@ -404,30 +405,32 @@ public class RecipeHandler {
 
             //Removing the existing Recipes
             //TODO, this is not removing the 16 -> 1 on circuit 28
-            for(FluidMaterial insulationMaterial : INSULATION_MATERIALS.keySet()) {
+            HashMap<FluidMaterial, Integer> trimmedInsulationMap = findRelevantInsulation(material.cableProperties.voltage);
+            for(FluidMaterial insulationMaterial : trimmedInsulationMap.keySet()) {
+                int cableTier = GTUtility.getTierByVoltage(material.cableProperties.voltage);
+                int insulationTier = INSULATION_MATERIALS.get(insulationMaterial);
+                if(cableTier > insulationTier) {
+                    continue;
+                }
+
+                int fluidAmount = Math.max(36, 144 / (1 + (insulationTier - cableTier) / 2));
+
 
                 // Try to remove 1 recipe with the Fluid type. If it fails, then exit
-                boolean wasRemoved = removeRecipesByInputs(ASSEMBLER_RECIPES, new ItemStack[]{OreDictUnifier.get(wireGt, material), getIntegratedCircuit(24)}, new FluidStack[]{insulationMaterial.getFluid(L * (int) (wireGt.materialAmount / M) * 2)});
+                boolean wasRemoved = removeRecipesByInputs(ASSEMBLER_RECIPES, new ItemStack[]{OreDictUnifier.get(wireGt, material), getIntegratedCircuit(24)}, new FluidStack[]{insulationMaterial.getFluid(fluidAmount * (int) (wireGt.materialAmount / M) * 2)});
                 if(!wasRemoved) {
                     continue;
                 }
 
-                removeRecipesByInputs(ASSEMBLER_RECIPES,
+                boolean temp = removeRecipesByInputs(ASSEMBLER_RECIPES,
                         new ItemStack[]{OreDictUnifier.get(wireGtSingle, material, (int) (wireGt.materialAmount / M) * 2), getIntegratedCircuit(24 + GAEnums.WIRE_DOUBLING_ORDER.indexOf(wireGt))},
-                        new FluidStack[]{insulationMaterial.getFluid(L * (int) (wireGt.materialAmount / M) * 2)});
+                        new FluidStack[]{insulationMaterial.getFluid(fluidAmount * (int) (wireGt.materialAmount / M) * 2)});
 
-            /*removeRecipesByInputs(ASSEMBLER_RECIPES, new ItemStack[]{OreDictUnifier.get(wireGtSingle, material, 2), getIntegratedCircuit(25)}, new FluidStack[]{insulationMaterial.getFluid(288)});
-            removeRecipesByInputs(ASSEMBLER_RECIPES, new ItemStack[]{OreDictUnifier.get(wireGtSingle, material, 4), getIntegratedCircuit(26)}, new FluidStack[]{insulationMaterial.getFluid(576)});
-            removeRecipesByInputs(ASSEMBLER_RECIPES, new ItemStack[]{OreDictUnifier.get(wireGtSingle, material, 8), getIntegratedCircuit(27)}, new FluidStack[]{insulationMaterial.getFluid(1152)});
-            removeRecipesByInputs(ASSEMBLER_RECIPES, new ItemStack[]{OreDictUnifier.get(wireGtSingle, material, 16), getIntegratedCircuit(28)}, new FluidStack[]{insulationMaterial.getFluid(2304)});
-            removeRecipesByInputs(ASSEMBLER_RECIPES, new ItemStack[]{OreDictUnifier.get(wireGtDouble, material), getIntegratedCircuit(24)}, new FluidStack[]{insulationMaterial.getFluid(288)});
-            removeRecipesByInputs(ASSEMBLER_RECIPES, new ItemStack[]{OreDictUnifier.get(wireGtQuadruple, material), getIntegratedCircuit(24)}, new FluidStack[]{insulationMaterial.getFluid(576)});
-            removeRecipesByInputs(ASSEMBLER_RECIPES, new ItemStack[]{OreDictUnifier.get(wireGtOctal, material), getIntegratedCircuit(24)}, new FluidStack[]{insulationMaterial.getFluid(1152)});
-            removeRecipesByInputs(ASSEMBLER_RECIPES, new ItemStack[]{OreDictUnifier.get(wireGtHex, material), getIntegratedCircuit(24)}, new FluidStack[]{insulationMaterial.getFluid(2304)}); */
+                System.out.println(temp);
             }
 
             //Adding the new Recipes
-            for(FluidMaterial insulationMaterial : INSULATION_MATERIALS.keySet()) {
+            for(FluidMaterial insulationMaterial : trimmedInsulationMap.keySet()) {
                 int cableTier = GTUtility.getTierByVoltage(material.cableProperties.voltage);
                 int insulationTier = INSULATION_MATERIALS.get(insulationMaterial);
                 if(cableTier > insulationTier) {
@@ -437,10 +440,9 @@ public class RecipeHandler {
                 int fluidAmount = Math.max(36, 144 / (1 + (insulationTier - cableTier) / 2));
 
                 //If the cable is IV tier or above, Add additional recipes with material foils
-                if(material.cableProperties.voltage >= GTValues.IV) {
+                if(material.cableProperties.voltage >= GTValues.V[GTValues.IV]) {
 
                     //TODO Check Fluid amounts against pre-refactor amounts
-                    //TODO Check Foil Amounts against pre-refactor amounts
                     ASSEMBLER_RECIPES.recipeBuilder()
                             .input(wireGt, material)
                             .input(foil, material, (int) (wireGt.materialAmount / M) * 2)
@@ -499,6 +501,27 @@ public class RecipeHandler {
                 }
             }
         }
+    }
+
+    private static HashMap<FluidMaterial, Integer> findRelevantInsulation(long voltage) {
+
+        HashMap<FluidMaterial, Integer> modifiedInsulationMap = new HashMap<>();
+
+        if(voltage >= GTValues.V[GTValues.ZPM]) {
+            modifiedInsulationMap.put(Materials.SiliconeRubber, 4);
+        }
+        else if(voltage >= GTValues.V[GTValues.EV]) {
+            modifiedInsulationMap.put(Materials.StyreneButadieneRubber, 3);
+            modifiedInsulationMap.put(Materials.SiliconeRubber, 4);
+        }
+        else {
+            modifiedInsulationMap.put(Materials.Rubber, 1);
+            modifiedInsulationMap.put(Materials.StyreneButadieneRubber, 3);
+            modifiedInsulationMap.put(Materials.SiliconeRubber, 4);
+        }
+
+        return modifiedInsulationMap;
+
     }
 
 

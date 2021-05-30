@@ -92,6 +92,8 @@ public class GAConfig {
 		public boolean highTierBenders = true;
 		@Config.Name("Should higher tier Breweries be registered?")
 		public boolean highTierBreweries = true;
+		@Config.Name("Should higher tier Bundlers be registered?")
+		public boolean highTierBundler = true;
 		@Config.Name("Should higher tier Canning Machines be registered?")
 		public boolean highTierCanners = true;
 		@Config.Name("Should higher tier Centrifuges be registered?")
@@ -247,9 +249,6 @@ public class GAConfig {
 		@Config.Comment("Set this to false to disable the high tier Air Collectors")
 		@Config.Name("Air Collector have IV and LuV version")
 		public boolean highTierCollector = true;
-
-		@Config.Name("Should higher tier Bundlers be registered?")
-		public boolean highTierBundler = true;
 
 		@Config.Name("Replace Hammers with Files in Gem Tool recipes")
 		@Config.Comment("Replaces the Hammer with a File in Tool recipes when the material is a Gem")
