@@ -55,7 +55,6 @@ public class RecipeHandler {
         if(GAConfig.Misc.PackagerDustRecipes) {
             dustSmall.addProcessingHandler(DustMaterial.class, RecipeHandler::processSmallDust);
             dustTiny.addProcessingHandler(DustMaterial.class, RecipeHandler::processTinyDust);
-            //TODO, this one needs looking at, don't see where this is registered
             nugget.addProcessingHandler(IngotMaterial.class, RecipeHandler::processNugget);
         }
 

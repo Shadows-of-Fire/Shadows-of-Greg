@@ -235,7 +235,7 @@ public class GAConfig {
 		public boolean Packager3x3Recipes = true;
 		@Config.Name("Packaging - 2x2 recipes can automated with the Packagers")
 		public boolean Packager2x2Recipes = true;
-		@Config.Name("Packaging - Dust compressing can automated with the Packagers")
+		@Config.Name("Packaging - Dust and nugget compressing can automated with the Packagers")
 		public boolean PackagerDustRecipes = true;
 
 		@Config.Comment("Set this to false to disable the Forestry Integration")
