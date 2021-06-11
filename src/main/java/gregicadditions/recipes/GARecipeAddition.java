@@ -286,7 +286,7 @@ public class GARecipeAddition {
 	 */
 	public static void miscSingleblockMachineRecipes() {
 
-		//Covering Superconductor cables TODO, needs amounts corrected
+		//Covering Superconductor cables
 		int cableTier = GTUtility.getTierByVoltage(GTValues.UV);
 		int insulationTier = INSULATION_MATERIALS.get(Materials.SiliconeRubber);
 
@@ -294,13 +294,16 @@ public class GARecipeAddition {
 
 		for(OrePrefix wirePrefix : GAEnums.WIRE_DOUBLING_ORDER) {
 
+			int cableAmount = (int) (wirePrefix.materialAmount * 2 / M);
+
+
 			OrePrefix cablePrefix = valueOf("cable" + wirePrefix.name().substring(4));
 			ItemStack cableStack = OreDictUnifier.get(cablePrefix, Tier.Superconductor);
 
 			//Register everything under circuit 24
 			ASSEMBLER_RECIPES.recipeBuilder()
 					.input(wirePrefix, Tier.Superconductor)
-					.fluidInputs(Materials.SiliconeRubber.getFluid((int) (fluidAmount * (wirePrefix.materialAmount / M) * 2)))
+					.fluidInputs(Materials.SiliconeRubber.getFluid(fluidAmount * cableAmount))
 					.circuitMeta(24)
 					.outputs(cableStack)
 					.duration(150).EUt(8).buildAndRegister();
@@ -308,8 +311,8 @@ public class GARecipeAddition {
 			//Register unique circuit configurations
 			if(wirePrefix != wireGtSingle) {
 				ASSEMBLER_RECIPES.recipeBuilder()
-						.input(wireGtSingle, Tier.Superconductor,(int) (wirePrefix.materialAmount / M) * 2)
-						.fluidInputs(Materials.SiliconeRubber.getFluid((int) (fluidAmount * (wirePrefix.materialAmount / M) * 2)))
+						.input(wireGtSingle, Tier.Superconductor, cableAmount)
+						.fluidInputs(Materials.SiliconeRubber.getFluid(fluidAmount * cableAmount))
 						.circuitMeta(24 + GAEnums.WIRE_DOUBLING_ORDER.indexOf(wirePrefix))
 						.outputs(cableStack)
 						.duration(150).EUt(8).buildAndRegister();

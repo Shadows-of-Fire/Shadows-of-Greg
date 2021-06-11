@@ -30,7 +30,6 @@ import static gregicadditions.item.GAMetaItems.BENDING_CYLINDER;
 import static gregicadditions.item.GAMetaItems.SMALL_BENDING_CYLINDER;
 import static gregicadditions.recipes.helpers.HelperMethods.*;
 import static gregicadditions.recipes.GARecipeMaps.CLUSTER_MILL_RECIPES;
-import static gregtech.api.GTValues.L;
 import static gregtech.api.GTValues.M;
 import static gregtech.api.recipes.RecipeMaps.*;
 import static gregtech.api.recipes.ingredients.IntCircuitIngredient.getIntegratedCircuit;
@@ -346,7 +345,6 @@ public class RecipeHandler {
      * + Plates from Double Ingots if enabled
      */
     private static void processDoubleIngot(OrePrefix plate, IngotMaterial material) {
-        //TODO, check if this removed Fiber-Reinforced Expoy Resin sheets: It will
 
         removeCraftingRecipes(OreDictUnifier.get(plate, material));
 
@@ -401,37 +399,38 @@ public class RecipeHandler {
 
             OrePrefix cablePrefix = valueOf("cable" + wireGt.name().substring(4));
             ItemStack cableStack = OreDictUnifier.get(cablePrefix, material);
+            int cableTier = GTUtility.getTierByVoltage(material.cableProperties.voltage);
+            int cableAmount = (int) (wireGt.materialAmount * 2 / M);
 
 
             //Removing the existing Recipes
-            //TODO, this is not removing the 16 -> 1 on circuit 28
             HashMap<FluidMaterial, Integer> trimmedInsulationMap = findRelevantInsulation(material.cableProperties.voltage);
             for(FluidMaterial insulationMaterial : trimmedInsulationMap.keySet()) {
-                int cableTier = GTUtility.getTierByVoltage(material.cableProperties.voltage);
+
                 int insulationTier = INSULATION_MATERIALS.get(insulationMaterial);
+
+
                 if(cableTier > insulationTier) {
                     continue;
                 }
 
+                //This is directly taken from GTCE logic
                 int fluidAmount = Math.max(36, 144 / (1 + (insulationTier - cableTier) / 2));
 
 
-                // Try to remove 1 recipe with the Fluid type. If it fails, then exit
-                boolean wasRemoved = removeRecipesByInputs(ASSEMBLER_RECIPES, new ItemStack[]{OreDictUnifier.get(wireGt, material), getIntegratedCircuit(24)}, new FluidStack[]{insulationMaterial.getFluid(fluidAmount * (int) (wireGt.materialAmount / M) * 2)});
-                if(!wasRemoved) {
-                    continue;
+                // Remove the single cable covering recipe
+                removeRecipesByInputs(ASSEMBLER_RECIPES, new ItemStack[]{OreDictUnifier.get(wireGt, material), getIntegratedCircuit(24)}, new FluidStack[]{insulationMaterial.getFluid(fluidAmount * cableAmount)});
+
+                //Remove the many cable covering recipe, on different circuit counts
+                if(wireGt != wireGtSingle) {
+                    removeRecipesByInputs(ASSEMBLER_RECIPES,
+                            new ItemStack[]{OreDictUnifier.get(wireGtSingle, material, cableAmount), getIntegratedCircuit(24 + GAEnums.WIRE_DOUBLING_ORDER.indexOf(wireGt))},
+                            new FluidStack[]{insulationMaterial.getFluid(fluidAmount * cableAmount)});
                 }
-
-                boolean temp = removeRecipesByInputs(ASSEMBLER_RECIPES,
-                        new ItemStack[]{OreDictUnifier.get(wireGtSingle, material, (int) (wireGt.materialAmount / M) * 2), getIntegratedCircuit(24 + GAEnums.WIRE_DOUBLING_ORDER.indexOf(wireGt))},
-                        new FluidStack[]{insulationMaterial.getFluid(fluidAmount * (int) (wireGt.materialAmount / M) * 2)});
-
-                System.out.println(temp);
             }
 
             //Adding the new Recipes
             for(FluidMaterial insulationMaterial : trimmedInsulationMap.keySet()) {
-                int cableTier = GTUtility.getTierByVoltage(material.cableProperties.voltage);
                 int insulationTier = INSULATION_MATERIALS.get(insulationMaterial);
                 if(cableTier > insulationTier) {
                     continue;
@@ -442,19 +441,18 @@ public class RecipeHandler {
                 //If the cable is IV tier or above, Add additional recipes with material foils
                 if(material.cableProperties.voltage >= GTValues.V[GTValues.IV]) {
 
-                    //TODO Check Fluid amounts against pre-refactor amounts
                     ASSEMBLER_RECIPES.recipeBuilder()
                             .input(wireGt, material)
-                            .input(foil, material, (int) (wireGt.materialAmount / M) * 2)
-                            .fluidInputs(insulationMaterial.getFluid((int) (fluidAmount * (wireGt.materialAmount / M) * 2)))
+                            .input(foil, material, cableAmount)
+                            .fluidInputs(insulationMaterial.getFluid(fluidAmount * cableAmount))
                             .circuitMeta(24)
                             .outputs(cableStack)
                             .duration(150).EUt(8).buildAndRegister();
 
                     ASSEMBLER_RECIPES.recipeBuilder()
                             .input(wireGt, material)
-                            .input(foil, Materials.PolyphenyleneSulfide, (int) (wireGt.materialAmount / M) * 2)
-                            .fluidInputs(insulationMaterial.getFluid((int) (fluidAmount * (wireGt.materialAmount / M) * 2)))
+                            .input(foil, Materials.PolyphenyleneSulfide, cableAmount)
+                            .fluidInputs(insulationMaterial.getFluid(fluidAmount * cableAmount))
                             .circuitMeta(24)
                             .outputs(cableStack)
                             .duration(150).EUt(8).buildAndRegister();
@@ -463,16 +461,16 @@ public class RecipeHandler {
 
                         ASSEMBLER_RECIPES.recipeBuilder()
                                 .input(wireGt, material)
-                                .input(foil, material, (int) (wireGt.materialAmount / M) * 2)
-                                .input(dustSmall, dustStack.material, (int) (wireGt.materialAmount / M) * 2)
+                                .input(foil, material, cableAmount)
+                                .input(dustSmall, dustStack.material, cableAmount)
                                 .fluidInputs(insulationMaterial.getFluid((int) (fluidAmount * wireGt.materialAmount / M)))
                                 .outputs(cableStack)
                                 .duration(150).EUt(8).buildAndRegister();
 
                         ASSEMBLER_RECIPES.recipeBuilder()
                                 .input(wireGt, material)
-                                .input(dustSmall, dustStack.material, (int) (wireGt.materialAmount / M) * 2)
-                                .input(foil, Materials.PolyphenyleneSulfide, (int) (wireGt.materialAmount / M) * 2)
+                                .input(dustSmall, dustStack.material, cableAmount)
+                                .input(foil, Materials.PolyphenyleneSulfide, cableAmount)
                                 .fluidInputs(insulationMaterial.getFluid((int) (fluidAmount * wireGt.materialAmount / M)))
                                 .outputs(cableStack)
                                 .duration(150).EUt(8).buildAndRegister();
@@ -484,7 +482,7 @@ public class RecipeHandler {
 
                     ASSEMBLER_RECIPES.recipeBuilder()
                             .input(wireGt, material)
-                            .fluidInputs(insulationMaterial.getFluid((int) (fluidAmount * (wireGt.materialAmount / M) * 2)))
+                            .fluidInputs(insulationMaterial.getFluid(fluidAmount * cableAmount))
                             .circuitMeta(24)
                             .outputs(cableStack)
                             .duration(150).EUt(8).buildAndRegister();
@@ -493,7 +491,7 @@ public class RecipeHandler {
 
                         ASSEMBLER_RECIPES.recipeBuilder()
                                 .input(wireGt, material)
-                                .input(dustSmall, dustStack.material, (int) (wireGt.materialAmount / M) * 2)
+                                .input(dustSmall, dustStack.material, cableAmount)
                                 .fluidInputs(insulationMaterial.getFluid((int) (fluidAmount * wireGt.materialAmount / M)))
                                 .outputs(cableStack)
                                 .duration(150).EUt(8).buildAndRegister();
