@@ -120,6 +120,7 @@ public class HelperMethods {
      * @param map The Recipe Map for which all recipes should be removed
      *
      */
+    @SuppressWarnings("unused")
     public static <R extends RecipeBuilder<R>> void removeAllRecipes(RecipeMap<R> map) {
 
         List<Recipe> recipes = new ArrayList<>(map.getRecipeList());
