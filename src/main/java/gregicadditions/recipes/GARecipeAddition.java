@@ -407,33 +407,6 @@ public class GARecipeAddition {
 				.outputs(GAMetaBlocks.TRANSPARENT_CASING.getItemVariant(GATransparentCasing.CasingType.REINFORCED_GLASS, 4))
 				.duration(400).EUt(4).buildAndRegister();
 
-		//Machine Components - Adjusting the pump recipe to the GT5U recipe
-		removeCraftingRecipes(MetaItems.ELECTRIC_PUMP_LV.getStackForm());
-		removeCraftingRecipes(MetaItems.ELECTRIC_PUMP_MV.getStackForm());
-		removeCraftingRecipes(MetaItems.ELECTRIC_PUMP_HV.getStackForm());
-		removeCraftingRecipes(MetaItems.ELECTRIC_PUMP_EV.getStackForm());
-		removeCraftingRecipes(MetaItems.ELECTRIC_PUMP_IV.getStackForm());
-
-		ModHandler.addShapedRecipe("lv_electric_pump_paper", MetaItems.ELECTRIC_PUMP_LV.getStackForm(), "SRH", "dPw", "HMC", 'S', OreDictUnifier.get(screw, Materials.Tin), 'R', OreDictUnifier.get(rotor, Materials.Tin), 'H', OreDictUnifier.get(ring, Materials.Paper), 'P', OreDictUnifier.get(pipeMedium, Materials.Bronze), 'M', MetaItems.ELECTRIC_MOTOR_LV.getStackForm(), 'C', OreDictUnifier.get(cableGtSingle, Materials.Tin));
-		for (MaterialStack stackFluid : cableFluids) {
-			IngotMaterial m = (IngotMaterial) stackFluid.material;
-			ModHandler.addShapedRecipe(String.format("lv_electric_pump_%s", m.toString()), MetaItems.ELECTRIC_PUMP_LV.getStackForm(), "SRH", "dPw", "HMC", 'S', OreDictUnifier.get(screw, Materials.Tin), 'R', OreDictUnifier.get(rotor, Materials.Tin), 'H', OreDictUnifier.get(ring, m), 'P', OreDictUnifier.get(pipeMedium, Materials.Bronze), 'M', MetaItems.ELECTRIC_MOTOR_LV.getStackForm(), 'C', OreDictUnifier.get(cableGtSingle, Materials.Tin));
-			ModHandler.addShapedRecipe(String.format("mv_electric_pump_%s", m.toString()), MetaItems.ELECTRIC_PUMP_MV.getStackForm(), "SRH", "dPw", "HMC", 'S', OreDictUnifier.get(screw, Materials.Bronze), 'R', OreDictUnifier.get(rotor, Materials.Bronze), 'H', OreDictUnifier.get(ring, m), 'P', OreDictUnifier.get(pipeMedium, Materials.Steel), 'M', MetaItems.ELECTRIC_MOTOR_MV.getStackForm(), 'C', OreDictUnifier.get(cableGtSingle, Materials.Copper));
-			ModHandler.addShapedRecipe(String.format("hv_electric_pump_%s", m.toString()), MetaItems.ELECTRIC_PUMP_HV.getStackForm(), "SRH", "dPw", "HMC", 'S', OreDictUnifier.get(screw, Materials.Steel), 'R', OreDictUnifier.get(rotor, Materials.Steel), 'H', OreDictUnifier.get(ring, m), 'P', OreDictUnifier.get(pipeMedium, Materials.StainlessSteel), 'M', MetaItems.ELECTRIC_MOTOR_HV.getStackForm(), 'C', OreDictUnifier.get(cableGtSingle, Materials.Gold));
-			ModHandler.addShapedRecipe(String.format("ev_electric_pump_%s", m.toString()), MetaItems.ELECTRIC_PUMP_EV.getStackForm(), "SRH", "dPw", "HMC", 'S', OreDictUnifier.get(screw, Materials.StainlessSteel), 'R', OreDictUnifier.get(rotor, Materials.StainlessSteel), 'H', OreDictUnifier.get(ring, m), 'P', OreDictUnifier.get(pipeMedium, Materials.Titanium), 'M', MetaItems.ELECTRIC_MOTOR_EV.getStackForm(), 'C', OreDictUnifier.get(cableGtSingle, Materials.Aluminium));
-			ModHandler.addShapedRecipe(String.format("iv_electric_pump_%s", m.toString()), MetaItems.ELECTRIC_PUMP_IV.getStackForm(), "SRH", "dPw", "HMC", 'S', OreDictUnifier.get(screw, Materials.TungstenSteel), 'R', OreDictUnifier.get(rotor, Materials.TungstenSteel), 'H', OreDictUnifier.get(ring, m), 'P', OreDictUnifier.get(pipeMedium, Materials.TungstenSteel), 'M', MetaItems.ELECTRIC_MOTOR_IV.getStackForm(), 'C', OreDictUnifier.get(cableGtSingle, Materials.Tungsten));
-		}
-
-		//Adjust the GTCE Pump Assembler recipe to match our pump recipe
-		for (MaterialStack stackFluid : cableFluids) {
-			IngotMaterial m = (IngotMaterial) stackFluid.material;
-			ASSEMBLER_RECIPES.recipeBuilder().duration(100).EUt(30).input(rotor, Materials.Tin).input(cableGtSingle, Materials.Tin).input(screw, Materials.Tin).input(pipeMedium, Materials.Bronze).inputs(MetaItems.ELECTRIC_MOTOR_LV.getStackForm()).fluidInputs(m.getFluid((int) stackFluid.amount)).outputs(MetaItems.ELECTRIC_PUMP_LV.getStackForm()).buildAndRegister();
-			ASSEMBLER_RECIPES.recipeBuilder().duration(100).EUt(120).input(rotor, Materials.Bronze).input(cableGtSingle, Materials.Copper).input(screw, Materials.Bronze).input(pipeMedium, Materials.Steel).inputs(MetaItems.ELECTRIC_MOTOR_MV.getStackForm()).fluidInputs(m.getFluid((int) stackFluid.amount)).outputs(MetaItems.ELECTRIC_PUMP_MV.getStackForm()).buildAndRegister();
-			ASSEMBLER_RECIPES.recipeBuilder().duration(100).EUt(480).input(rotor, Materials.Steel).input(cableGtSingle, Materials.Gold).input(screw, Materials.Steel).input(pipeMedium, Materials.StainlessSteel).inputs(MetaItems.ELECTRIC_MOTOR_HV.getStackForm()).fluidInputs(m.getFluid((int) stackFluid.amount)).outputs(MetaItems.ELECTRIC_PUMP_HV.getStackForm()).buildAndRegister();
-			ASSEMBLER_RECIPES.recipeBuilder().duration(100).EUt(1920).input(rotor, Materials.StainlessSteel).input(cableGtSingle, Materials.Aluminium).input(screw, Materials.StainlessSteel).input(pipeMedium, Materials.Titanium).inputs(MetaItems.ELECTRIC_MOTOR_EV.getStackForm()).fluidInputs(m.getFluid((int) stackFluid.amount)).outputs(MetaItems.ELECTRIC_PUMP_EV.getStackForm()).buildAndRegister();
-			ASSEMBLER_RECIPES.recipeBuilder().duration(100).EUt(7680).input(rotor, Materials.TungstenSteel).input(cableGtSingle, Materials.Tungsten).input(screw, Materials.TungstenSteel).input(pipeMedium, Materials.TungstenSteel).inputs(MetaItems.ELECTRIC_MOTOR_IV.getStackForm()).fluidInputs(m.getFluid((int) stackFluid.amount)).outputs(MetaItems.ELECTRIC_PUMP_IV.getStackForm()).buildAndRegister();
-		}
-
 		//Chemical Reactor Cracking
 		CHEMICAL_RECIPES.recipeBuilder().duration(160).EUt(30).fluidInputs(Materials.Hydrogen.getFluid(2000), Materials.Ethane.getFluid(1000)).fluidOutputs(Materials.HydroCrackedEthane.getFluid(1000)).buildAndRegister();
 		CHEMICAL_RECIPES.recipeBuilder().duration(160).EUt(30).fluidInputs(Materials.Hydrogen.getFluid(2000), Materials.Ethylene.getFluid(1000)).fluidOutputs(Materials.HydroCrackedEthylene.getFluid(1000)).buildAndRegister();

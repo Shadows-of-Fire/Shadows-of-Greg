@@ -1,7 +1,7 @@
 package gregicadditions.recipes;
 
+import gregicadditions.GAEnums;
 import gregicadditions.GAMaterials;
-import gregtech.api.recipes.CountableIngredient;
 import gregtech.api.recipes.ModHandler;
 import gregtech.api.recipes.RecipeMaps;
 import gregtech.api.unification.OreDictUnifier;
@@ -50,8 +50,7 @@ public class ComponentRegistration {
                 'S', "circuitElite");
 
         //Pump
-        //Replace plates with tools, add pipe
-
+        //Replace plates with tools, add pipe. Basically change to the GT5U recipe
         ModHandler.addShapedRecipe("lv_electric_pump_paper", MetaItems.ELECTRIC_PUMP_LV.getStackForm(),
                 "SRH", "dPw", "HMC",
                 'S', OreDictUnifier.get(OrePrefix.screw, Materials.Tin),
@@ -109,60 +108,23 @@ public class ComponentRegistration {
                     'C', OreDictUnifier.get(OrePrefix.cableGtSingle, Materials.Tungsten));
         }
 
+        //Machine Recipe Removals
+
+        //Pumps
+        //Remove the GTCE Pump assembler recipes to match our changed recipes
+        for(MaterialStack stackFluid : cableFluids) {
+            IngotMaterial material = (IngotMaterial) stackFluid.material;
+            removeRecipesByInputs(RecipeMaps.ASSEMBLER_RECIPES, new ItemStack[] {OreDictUnifier.get(OrePrefix.plate, Materials.Tin, 2), OreDictUnifier.get(OrePrefix.cableGtSingle, Materials.Tin), OreDictUnifier.get(OrePrefix.screw, Materials.Tin), OreDictUnifier.get(OrePrefix.rotor, Materials.Tin), MetaItems.ELECTRIC_MOTOR_LV.getStackForm()}, new FluidStack[] {material.getFluid((int) stackFluid.amount)});
+            removeRecipesByInputs(RecipeMaps.ASSEMBLER_RECIPES, new ItemStack[] {OreDictUnifier.get(OrePrefix.plate, Materials.Bronze, 2), OreDictUnifier.get(OrePrefix.cableGtSingle, Materials.Copper), OreDictUnifier.get(OrePrefix.screw, Materials.Bronze), OreDictUnifier.get(OrePrefix.rotor, Materials.Bronze), MetaItems.ELECTRIC_MOTOR_MV.getStackForm()}, new FluidStack[] {material.getFluid((int) stackFluid.amount)});
+            //TODO, fix cable type once it is fixed in GTCE (Copper -> Gold)
+            removeRecipesByInputs(RecipeMaps.ASSEMBLER_RECIPES, new ItemStack[] {OreDictUnifier.get(OrePrefix.plate, Materials.Steel, 2), OreDictUnifier.get(OrePrefix.cableGtSingle, Materials.Copper), OreDictUnifier.get(OrePrefix.screw, Materials.Steel), OreDictUnifier.get(OrePrefix.rotor, Materials.Steel), MetaItems.ELECTRIC_MOTOR_HV.getStackForm()}, new FluidStack[] {material.getFluid((int) stackFluid.amount)});
+            removeRecipesByInputs(RecipeMaps.ASSEMBLER_RECIPES, new ItemStack[] {OreDictUnifier.get(OrePrefix.plate, Materials.StainlessSteel, 2), OreDictUnifier.get(OrePrefix.cableGtSingle, Materials.Aluminium), OreDictUnifier.get(OrePrefix.screw, Materials.StainlessSteel), OreDictUnifier.get(OrePrefix.rotor, Materials.StainlessSteel), MetaItems.ELECTRIC_MOTOR_EV.getStackForm()}, new FluidStack[] {material.getFluid((int) stackFluid.amount)});
+            removeRecipesByInputs(RecipeMaps.ASSEMBLER_RECIPES, new ItemStack[] {OreDictUnifier.get(OrePrefix.plate, Materials.TungstenSteel, 2), OreDictUnifier.get(OrePrefix.cableGtSingle, Materials.Tungsten), OreDictUnifier.get(OrePrefix.screw, Materials.TungstenSteel), OreDictUnifier.get(OrePrefix.rotor, Materials.TungstenSteel), MetaItems.ELECTRIC_MOTOR_IV.getStackForm()}, new FluidStack[] {material.getFluid((int) stackFluid.amount)});
+        }
+
         //Machine Recipe Additions--------------------------------------------------------------------------
 
         //Field Generators
-        //Adjusting the time requirement
-        removeRecipesByInputs(RecipeMaps.ASSEMBLER_RECIPES,
-                new ItemStack[] {OreDictUnifier.get(OrePrefix.circuit, MarkerMaterials.Tier.Basic, 4), OreDictUnifier.get(OrePrefix.dust, Materials.EnderPearl)},
-                new FluidStack[]{Materials.Osmium.getFluid(288)});
-        RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder()
-                .inputs(CountableIngredient.from(OrePrefix.circuit, MarkerMaterials.Tier.Basic, 4))
-                .inputs(CountableIngredient.from(OrePrefix.dust, Materials.EnderPearl))
-                .fluidInputs(Materials.Osmium.getFluid(288))
-                .outputs(MetaItems.FIELD_GENERATOR_LV.getStackForm())
-                .duration(100).EUt(30).buildAndRegister();
-
-        //Adjusting the time requirement
-        removeRecipesByInputs(RecipeMaps.ASSEMBLER_RECIPES,
-                new ItemStack[] {OreDictUnifier.get(OrePrefix.circuit, MarkerMaterials.Tier.Good, 4), OreDictUnifier.get(OrePrefix.dust, Materials.EnderEye)},
-                new FluidStack[]{Materials.Osmium.getFluid(576)});
-        RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder()
-                .inputs(CountableIngredient.from(OrePrefix.circuit, MarkerMaterials.Tier.Good, 4), CountableIngredient.from(OrePrefix.dust, Materials.EnderEye))
-                .fluidInputs(Materials.Osmium.getFluid(576))
-                .outputs(MetaItems.FIELD_GENERATOR_MV.getStackForm())
-                .duration(100).EUt(120).buildAndRegister();
-
-        //Adjusting the time requirement
-        removeRecipesByInputs(RecipeMaps.ASSEMBLER_RECIPES,
-                new ItemStack[] {OreDictUnifier.get(OrePrefix.circuit, MarkerMaterials.Tier.Advanced, 4), MetaItems.QUANTUM_EYE.getStackForm()},
-                new FluidStack[]{Materials.Osmium.getFluid(1152)});
-        RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder()
-                .inputs(CountableIngredient.from(OrePrefix.circuit, MarkerMaterials.Tier.Advanced, 4), CountableIngredient.from(MetaItems.QUANTUM_EYE.getStackForm()))
-                .fluidInputs(Materials.Osmium.getFluid(1152))
-                .outputs(MetaItems.FIELD_GENERATOR_HV.getStackForm())
-                .duration(100).EUt(480).buildAndRegister();
-
-        //Adjusting the time requirement, Fixing the circuit requirement
-        removeRecipesByInputs(RecipeMaps.ASSEMBLER_RECIPES,
-                new ItemStack[] {OreDictUnifier.get(OrePrefix.circuit, MarkerMaterials.Tier.Elite, 4), OreDictUnifier.get(OrePrefix.dust, Materials.NetherStar)},
-                new FluidStack[]{Materials.Osmium.getFluid(2304)});
-        RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder()
-                .inputs(CountableIngredient.from(OrePrefix.circuit, MarkerMaterials.Tier.Extreme, 4), CountableIngredient.from(OrePrefix.dust, Materials.NetherStar))
-                .fluidInputs(Materials.Osmium.getFluid(2304))
-                .outputs(MetaItems.FIELD_GENERATOR_EV.getStackForm())
-                .duration(100).EUt(1920).buildAndRegister();
-
-        //Adjusting the time requirement, Fixing the circuit requirement
-        removeRecipesByInputs(RecipeMaps.ASSEMBLER_RECIPES,
-                new ItemStack[] {OreDictUnifier.get(OrePrefix.circuit, MarkerMaterials.Tier.Master, 4), MetaItems.QUANTUM_STAR.getStackForm()},
-                new FluidStack[]{Materials.Osmium.getFluid(4608)});
-        RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder()
-                .inputs(CountableIngredient.from(OrePrefix.circuit, MarkerMaterials.Tier.Elite, 4), CountableIngredient.from(MetaItems.QUANTUM_STAR.getStackForm()))
-                .fluidInputs(Materials.Osmium.getFluid(4608))
-                .outputs(MetaItems.FIELD_GENERATOR_IV.getStackForm())
-                .duration(100).EUt(7680).buildAndRegister();
-
         GARecipeMaps.ASSEMBLY_LINE_RECIPES.recipeBuilder()
                 .input(OrePrefix.frameGt, Materials.HSSG)
                 .inputs(MetaItems.QUANTUM_STAR.getStackForm(), MetaItems.EMITTER_LUV.getStackForm(4))
@@ -203,59 +165,11 @@ public class ComponentRegistration {
                 .duration(600).EUt(491520).buildAndRegister();
 
         //Electric Motors
-        RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder()
-                .input(OrePrefix.cableGtSingle, Materials.Tin, 2)
-                .input(OrePrefix.stick, Materials.Iron, 2)
-                .input(OrePrefix.stick, Materials.IronMagnetic)
-                .fluidInputs(Materials.Copper.getFluid(288))
-                .outputs(MetaItems.ELECTRIC_MOTOR_LV.getStackForm())
-                .duration(100).EUt(10).buildAndRegister();
-
-        RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder()
-                .input(OrePrefix.cableGtSingle, Materials.Tin, 2)
-                .input(OrePrefix.stick, Materials.Steel, 2)
-                .input(OrePrefix.stick, Materials.SteelMagnetic)
-                .fluidInputs(Materials.Copper.getFluid(288))
-                .outputs(MetaItems.ELECTRIC_MOTOR_LV.getStackForm())
-                .duration(100).EUt(10).buildAndRegister();
-
-        RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder()
-                .input(OrePrefix.cableGtSingle, Materials.Copper, 2)
-                .input(OrePrefix.stick, Materials.Aluminium, 2)
-                .input(OrePrefix.stick, Materials.SteelMagnetic)
-                .fluidInputs(Materials.Copper.getFluid(576))
-                .outputs(MetaItems.ELECTRIC_MOTOR_MV.getStackForm())
-                .duration(100).EUt(40).buildAndRegister();
-
-        RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder()
-                .input(OrePrefix.cableGtSingle, Materials.Gold, 2)
-                .input(OrePrefix.stick, Materials.StainlessSteel, 2)
-                .input(OrePrefix.stick, Materials.SteelMagnetic)
-                .fluidInputs(Materials.Copper.getFluid(1152))
-                .outputs(MetaItems.ELECTRIC_MOTOR_HV.getStackForm())
-                .duration(100).EUt(160).buildAndRegister();
-
-        RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder()
-                .input(OrePrefix.cableGtSingle, Materials.Aluminium, 2)
-                .input(OrePrefix.stick, Materials.Titanium, 2)
-                .input(OrePrefix.stick, Materials.NeodymiumMagnetic)
-                .fluidInputs(Materials.AnnealedCopper.getFluid(2304))
-                .outputs(MetaItems.ELECTRIC_MOTOR_EV.getStackForm())
-                .duration(600).EUt(640).buildAndRegister();
-
-        RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder()
-                .input(OrePrefix.cableGtSingle, Materials.Tungsten, 2)
-                .input(OrePrefix.stick, Materials.TungstenSteel, 2)
-                .input(OrePrefix.stick, Materials.NeodymiumMagnetic)
-                .fluidInputs(Materials.AnnealedCopper.getFluid(4608))
-                .outputs(MetaItems.ELECTRIC_MOTOR_IV.getStackForm())
-                .duration(100).EUt(2560).buildAndRegister();
-
         GARecipeMaps.ASSEMBLY_LINE_RECIPES.recipeBuilder()
                 .input(OrePrefix.stickLong, Materials.NeodymiumMagnetic)
                 .input(OrePrefix.stickLong, Materials.HSSG, 2)
                 .input(OrePrefix.ring, Materials.HSSG, 4)
-                .input(OrePrefix.valueOf("round"), Materials.HSSG, 16)
+                .input(GAEnums.GAOrePrefix.round, Materials.HSSG, 16)
                 .input(OrePrefix.wireFine, Materials.AnnealedCopper, 64)
                 .input(OrePrefix.wireFine, Materials.AnnealedCopper, 64)
                 .input(OrePrefix.wireFine, Materials.AnnealedCopper, 64)
@@ -269,7 +183,7 @@ public class ComponentRegistration {
                 .input(OrePrefix.stickLong, Materials.NeodymiumMagnetic)
                 .input(OrePrefix.stickLong, Materials.HSSE, 2)
                 .input(OrePrefix.ring, Materials.HSSE, 4)
-                .input(OrePrefix.valueOf("round"), Materials.HSSE, 16)
+                .input(GAEnums.GAOrePrefix.round, Materials.HSSE, 16)
                 .input(OrePrefix.wireFine, Materials.Platinum, 64)
                 .input(OrePrefix.wireFine, Materials.Platinum, 64)
                 .input(OrePrefix.wireFine, Materials.Platinum, 64)
@@ -283,7 +197,7 @@ public class ComponentRegistration {
                 .input(OrePrefix.block, Materials.NeodymiumMagnetic)
                 .input(OrePrefix.stickLong, GAMaterials.NEUTRONIUM, 2)
                 .input(OrePrefix.ring, GAMaterials.NEUTRONIUM, 4)
-                .input(OrePrefix.valueOf("round"), GAMaterials.NEUTRONIUM, 16)
+                .input(GAEnums.GAOrePrefix.round, GAMaterials.NEUTRONIUM, 16)
                 .input(OrePrefix.wireGtSingle, MarkerMaterials.Tier.Superconductor, 64)
                 .input(OrePrefix.wireGtSingle, MarkerMaterials.Tier.Superconductor, 64)
                 .input(OrePrefix.wireGtSingle, MarkerMaterials.Tier.Superconductor, 64)
@@ -294,41 +208,6 @@ public class ComponentRegistration {
                 .duration(600).EUt(163840).buildAndRegister();
 
         //Conveyors
-        RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder()
-                .input(OrePrefix.cableGtSingle, Materials.Tin)
-                .inputs(MetaItems.ELECTRIC_MOTOR_LV.getStackForm(2))
-                .fluidInputs(Materials.Rubber.getFluid(864))
-                .outputs(MetaItems.CONVEYOR_MODULE_LV.getStackForm())
-                .duration(100).EUt(15).buildAndRegister();
-
-        RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder()
-                .input(OrePrefix.cableGtSingle, Materials.Copper)
-                .inputs(MetaItems.ELECTRIC_MOTOR_MV.getStackForm(2))
-                .fluidInputs(Materials.Rubber.getFluid(864))
-                .outputs(MetaItems.CONVEYOR_MODULE_MV.getStackForm())
-                .duration(100).EUt(60).buildAndRegister();
-
-        RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder()
-                .input(OrePrefix.cableGtSingle, Materials.Gold)
-                .inputs(MetaItems.ELECTRIC_MOTOR_HV.getStackForm(2))
-                .fluidInputs(Materials.Rubber.getFluid(864))
-                .outputs(MetaItems.CONVEYOR_MODULE_HV.getStackForm())
-                .duration(100).EUt(240).buildAndRegister();
-
-        RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder()
-                .input(OrePrefix.cableGtSingle, Materials.Aluminium)
-                .inputs(MetaItems.ELECTRIC_MOTOR_EV.getStackForm(2))
-                .fluidInputs(Materials.Rubber.getFluid(864))
-                .outputs(MetaItems.CONVEYOR_MODULE_EV.getStackForm())
-                .duration(100).EUt(960).buildAndRegister();
-
-        RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder()
-                .input(OrePrefix.cableGtSingle, Materials.Tungsten)
-                .inputs(MetaItems.ELECTRIC_MOTOR_IV.getStackForm(2))
-                .fluidInputs(Materials.Rubber.getFluid(864))
-                .outputs(MetaItems.CONVEYOR_MODULE_IV.getStackForm())
-                .duration(100).EUt(3840).buildAndRegister();
-
         GARecipeMaps.ASSEMBLY_LINE_RECIPES.recipeBuilder()
                 .inputs(MetaItems.ELECTRIC_MOTOR_LUV.getStackForm(2))
                 .input(OrePrefix.plate, Materials.HSSG, 8)
@@ -363,46 +242,6 @@ public class ComponentRegistration {
                 .duration(600).EUt(245760).buildAndRegister();
 
         //Emitters
-        RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder()
-                .input(OrePrefix.circuit, MarkerMaterials.Tier.Basic, 2)
-                .input(OrePrefix.cableGtSingle, Materials.Tin, 2)
-                .input(OrePrefix.gem, Materials.Quartzite)
-                .fluidInputs(Materials.Brass.getFluid(288))
-                .outputs(MetaItems.EMITTER_LV.getStackForm())
-                .duration(100).EUt(15).buildAndRegister();
-
-        RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder()
-                .input(OrePrefix.circuit, MarkerMaterials.Tier.Good, 2)
-                .input(OrePrefix.cableGtSingle, Materials.Copper, 2)
-                .input(OrePrefix.gem, Materials.NetherQuartz)
-                .fluidInputs(Materials.Electrum.getFluid(288))
-                .outputs(MetaItems.EMITTER_MV.getStackForm())
-                .duration(100).EUt(60).buildAndRegister();
-
-        RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder()
-                .input(OrePrefix.circuit, MarkerMaterials.Tier.Advanced, 2)
-                .input(OrePrefix.cableGtSingle, Materials.Gold, 2)
-                .input(OrePrefix.gem, Materials.Emerald)
-                .fluidInputs(Materials.Chrome.getFluid(288))
-                .outputs(MetaItems.EMITTER_HV.getStackForm())
-                .duration(100).EUt(240).buildAndRegister();
-
-        RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder()
-                .input(OrePrefix.circuit, MarkerMaterials.Tier.Extreme, 2)
-                .input(OrePrefix.cableGtSingle, Materials.Aluminium, 2)
-                .input(OrePrefix.gem, Materials.EnderPearl)
-                .fluidInputs(Materials.Platinum.getFluid(288))
-                .outputs(MetaItems.EMITTER_EV.getStackForm())
-                .duration(100).EUt(960).buildAndRegister();
-
-        RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder()
-                .input(OrePrefix.circuit, MarkerMaterials.Tier.Elite, 2)
-                .input(OrePrefix.cableGtSingle, Materials.Tungsten, 2)
-                .input(OrePrefix.gem, Materials.EnderEye)
-                .fluidInputs(Materials.Osmium.getFluid(288))
-                .outputs(MetaItems.EMITTER_IV.getStackForm())
-                .duration(100).EUt(3840).buildAndRegister();
-
         GARecipeMaps.ASSEMBLY_LINE_RECIPES.recipeBuilder()
                 .input(OrePrefix.frameGt, Materials.HSSG)
                 .inputs(MetaItems.EMITTER_IV.getStackForm(2))
@@ -443,6 +282,60 @@ public class ComponentRegistration {
                 .duration(600).EUt(245760).buildAndRegister();
 
         //Electric Pump
+        //Adjust the GTCE Pump Assembler recipe to match our pump recipe
+        for (MaterialStack stackFluid : cableFluids) {
+            IngotMaterial m = (IngotMaterial) stackFluid.material;
+            RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder()
+                    .input(OrePrefix.rotor, Materials.Tin)
+                    .input(OrePrefix.cableGtSingle, Materials.Tin)
+                    .input(OrePrefix.screw, Materials.Tin)
+                    .input(OrePrefix.pipeMedium, Materials.Bronze)
+                    .inputs(MetaItems.ELECTRIC_MOTOR_LV.getStackForm())
+                    .fluidInputs(m.getFluid((int) stackFluid.amount))
+                    .outputs(MetaItems.ELECTRIC_PUMP_LV.getStackForm())
+                    .duration(100).EUt(30).buildAndRegister();
+
+            RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder()
+                    .input(OrePrefix.rotor, Materials.Bronze)
+                    .input(OrePrefix.cableGtSingle, Materials.Copper)
+                    .input(OrePrefix.screw, Materials.Bronze)
+                    .input(OrePrefix.pipeMedium, Materials.Steel)
+                    .inputs(MetaItems.ELECTRIC_MOTOR_MV.getStackForm())
+                    .fluidInputs(m.getFluid((int) stackFluid.amount))
+                    .outputs(MetaItems.ELECTRIC_PUMP_MV.getStackForm())
+                    .duration(100).EUt(120).buildAndRegister();
+
+            RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder()
+                    .input(OrePrefix.rotor, Materials.Steel)
+                    .input(OrePrefix.cableGtSingle, Materials.Gold)
+                    .input(OrePrefix.screw, Materials.Steel)
+                    .input(OrePrefix.pipeMedium, Materials.StainlessSteel)
+                    .inputs(MetaItems.ELECTRIC_MOTOR_HV.getStackForm())
+                    .fluidInputs(m.getFluid((int) stackFluid.amount))
+                    .outputs(MetaItems.ELECTRIC_PUMP_HV.getStackForm())
+                    .duration(100).EUt(480).buildAndRegister();
+
+            RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder()
+                    .input(OrePrefix.rotor, Materials.StainlessSteel)
+                    .input(OrePrefix.cableGtSingle, Materials.Aluminium)
+                    .input(OrePrefix.screw, Materials.StainlessSteel)
+                    .input(OrePrefix.pipeMedium, Materials.Titanium)
+                    .inputs(MetaItems.ELECTRIC_MOTOR_EV.getStackForm())
+                    .fluidInputs(m.getFluid((int) stackFluid.amount))
+                    .outputs(MetaItems.ELECTRIC_PUMP_EV.getStackForm())
+                    .duration(100).EUt(1920).buildAndRegister();
+
+            RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder()
+                    .input(OrePrefix.rotor, Materials.TungstenSteel)
+                    .input(OrePrefix.cableGtSingle, Materials.Tungsten)
+                    .input(OrePrefix.screw, Materials.TungstenSteel)
+                    .input(OrePrefix.pipeMedium, Materials.TungstenSteel)
+                    .inputs(MetaItems.ELECTRIC_MOTOR_IV.getStackForm())
+                    .fluidInputs(m.getFluid((int) stackFluid.amount))
+                    .outputs(MetaItems.ELECTRIC_PUMP_IV.getStackForm())
+                    .duration(100).EUt(7680).buildAndRegister();
+        }
+
         GARecipeMaps.ASSEMBLY_LINE_RECIPES.recipeBuilder()
                 .inputs(MetaItems.ELECTRIC_MOTOR_LUV.getStackForm())
                 .input(OrePrefix.pipeSmall, Materials.Ultimet, 2)
