@@ -347,11 +347,13 @@ public class RecipeHandler {
 
         removeCraftingRecipes(OreDictUnifier.get(plate, material));
 
-        if(!material.hasFlag(NO_SMASHING)) {
-            ModHandler.addShapedRecipe(String.format("ingot_double_%s", material.toString()), OreDictUnifier.get(ingotDouble, material),
-                    "h", "I", "I",
-                    'I', new UnificationEntry(ingot, material));
+        ModHandler.addShapedRecipe(String.format("ingot_double_%s", material.toString()), OreDictUnifier.get(ingotDouble, material),
+                "h", "I", "I",
+                'I', new UnificationEntry(ingot, material));
 
+        //Only remove the double ingot -> plate recipes for no smashing materials in case modpack makers want to use
+        //the double ingots for something
+        if(!material.hasFlag(NO_SMASHING)) {
             ModHandler.addShapedRecipe(String.format("double_ingot_to_plate_%s", material.toString()), OreDictUnifier.get(plate, material),
                     "h", "I",
                     'I', new UnificationEntry(ingotDouble, material));
