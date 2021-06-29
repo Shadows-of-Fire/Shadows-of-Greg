@@ -82,8 +82,6 @@ public class MetaTileEntityMachineHolder extends MetaTileEntityItemBus implement
         @Override
         public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
 
-            String unlocalizedName = stack.getItem().getUnlocalizedNameInefficiently(stack);
-
             if(stack.getItem() instanceof MachineItemBlock) {
                 MetaTileEntity mte = MachineItemBlock.getMetaTileEntity(stack);
 

@@ -142,6 +142,7 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 		int numberOfOperations = 0;
 		ItemStack machineItemStack = null;
 		ItemStack oldMachineStack = null;
+		RecipeMap<?> recipeMap = null;
 		// Fields used for distinct mode
 		protected int lastRecipeIndex = 0;
 		protected ItemStack[][] lastItemInputsMatrix;
@@ -150,15 +151,22 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			super(tileEntity);
 		}
 
+		protected Recipe findRecipe(long maxVoltage, IItemHandlerModifiable inputs, IMultipleTankHandler fluidInputs, Tuple<ItemStack, RecipeMap<?>> itemStackRecipeMapTuple) {
+			if(itemStackRecipeMapTuple == null) {
+				return null;
+			}
+
+			this.machineItemStack = itemStackRecipeMapTuple.getFirst();
+			this.recipeMap = itemStackRecipeMapTuple.getSecond();
+
+			return findRecipe(maxVoltage, inputs, fluidInputs);
+		}
+
 		@Override
 		protected Recipe findRecipe(long maxVoltage,
 									IItemHandlerModifiable inputs,
 									IMultipleTankHandler fluidInputs) {
 
-			this.machineItemStack = findMachineStack();
-			if(machineItemStack == null) {
-				return null;
-			}
 
 			MetaTileEntity mte = MachineItemBlock.getMetaTileEntity(machineItemStack);
 			if(mte == null) {
@@ -169,13 +177,6 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			this.voltageTier = GTValues.V[((ITieredMetaTileEntity) mte).getTier()];
 			//Find the number of machines
 			this.numberOfMachines = Math.min(GAConfig.processingArray.processingArrayMachineLimit, machineItemStack.getCount());
-
-
-			RecipeMap<?> recipeMap = findRecipeMapAndCheckValid(machineItemStack);
-
-			// No valid recipe map.
-			if(recipeMap == null)
-				return null;
 
 			Recipe recipe = recipeMap.findRecipe(voltageTier,
 												 inputs,
@@ -363,7 +364,7 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 		}
 
 		//Finds the Recipe Map of the passed Machine Stack and checks if it is a valid Recipe Map
-		protected RecipeMap findRecipeMapAndCheckValid(ItemStack machineStack) {
+		protected RecipeMap<?> findRecipeMapAndCheckValid(ItemStack machineStack) {
 
 			if(machineStack == null || machineStack.isEmpty()) {
 				return null;
@@ -378,13 +379,15 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 
 				RecipeMap<?> rmap = RecipeMap.getByName(recipeMapName);
 
+				RecipeBuilder<?> rbuilder = rmap.recipeBuilder();
+
 				//Find the RecipeMap of the MTE and ensure that the Processing Array only works on SimpleRecipeBuilders
 				//For some reason GTCE has specialized recipe maps for some machines, when it does not need them
-				if (rmap != null && (rmap.recipeBuilder() instanceof SimpleRecipeBuilder ||
-						rmap.recipeBuilder() instanceof IntCircuitRecipeBuilder ||
-						rmap.recipeBuilder() instanceof ArcFurnaceRecipeBuilder ||
-						rmap.recipeBuilder() instanceof CutterRecipeBuilder ||
-						rmap.recipeBuilder() instanceof UniversalDistillationRecipeBuilder)) {
+				if (rbuilder instanceof SimpleRecipeBuilder ||
+						rbuilder instanceof IntCircuitRecipeBuilder ||
+						rbuilder instanceof ArcFurnaceRecipeBuilder ||
+						rbuilder instanceof CutterRecipeBuilder ||
+						rbuilder instanceof UniversalDistillationRecipeBuilder) {
 
 					return rmap;
 				}
@@ -420,13 +423,19 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			return Arrays.asList(blacklist).contains(unlocalizedName);
 		}
 
-		public ItemStack findMachineStack() {
+		public Tuple<ItemStack, RecipeMap<?>> findMachineStack() {
+
 			RecipeMapMultiblockController controller = (RecipeMapMultiblockController) this.metaTileEntity;
 
 			//The Processing Array is limited to 1 Machine Interface per multiblock, and only has 1 slot
 			ItemStack machine = controller.getAbilities(GACapabilities.PA_MACHINE_CONTAINER).get(0).getStackInSlot(0);
 
-			return findRecipeMapAndCheckValid(machine) == null ? null : machine;
+			RecipeMap<?> rmap = findRecipeMapAndCheckValid(machine);
+			if(rmap == null) {
+				return null;
+			}
+
+			return new Tuple<ItemStack, RecipeMap<?>>(machine, rmap);
 		}
 
 		@Override
@@ -488,8 +497,16 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			Recipe currentRecipe;
 			IItemHandlerModifiable importInventory = getInputInventory();
 			IMultipleTankHandler importFluids = getInputTank();
+			ItemStack newMachineStack;
 
-			ItemStack newMachineStack = findMachineStack();
+			Tuple<ItemStack, RecipeMap<?>> itemStackRecipeMapTuple = findMachineStack();
+
+			if(itemStackRecipeMapTuple == null) {
+				newMachineStack = null;
+			}
+			else {
+				newMachineStack = itemStackRecipeMapTuple.getFirst();
+			}
 
 			boolean dirty = checkRecipeInputsDirty(importInventory, importFluids);
 			if(dirty || forceRecipeRecheck) {
@@ -506,7 +523,7 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			}
 			else {
 				//If the previous recipe was null, or does not match the current recipe, search for a new recipe
-				currentRecipe = findRecipe(maxVoltage, importInventory, importFluids);
+				currentRecipe = findRecipe(maxVoltage, importInventory, importFluids, itemStackRecipeMapTuple);
 				oldMachineStack = null;
 
 				//Update the previous recipe
@@ -533,9 +550,19 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			Recipe currentRecipe = null;
 			List<IItemHandlerModifiable> importInventory = getInputBuses();
 			IMultipleTankHandler importFluids = getInputTank();
-			ItemStack newMachineStack = findMachineStack();
 			RecipeMapMultiblockController controller = (RecipeMapMultiblockController) this.metaTileEntity;
 			IItemHandlerModifiable machineBus = controller.getAbilities(GACapabilities.PA_MACHINE_CONTAINER).get(0);
+			ItemStack newMachineStack;
+
+			Tuple<ItemStack, RecipeMap<?>> itemStackRecipeMapTuple = findMachineStack();
+
+			if(itemStackRecipeMapTuple == null) {
+				newMachineStack = null;
+			}
+			else {
+				newMachineStack = itemStackRecipeMapTuple.getFirst();
+			}
+
 
 			//Check to see if the machine stack has changed first
 			//TODO Could this machine bus specific check be used in the combined code?
