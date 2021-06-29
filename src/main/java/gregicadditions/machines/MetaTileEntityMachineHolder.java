@@ -1,7 +1,7 @@
 package gregicadditions.machines;
 
 import gregicadditions.GACapabilities;
-import gregtech.api.GregTechAPI;
+import gregtech.api.block.machines.MachineItemBlock;
 import gregtech.api.metatileentity.ITieredMetaTileEntity;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.MetaTileEntityHolder;
@@ -84,12 +84,10 @@ public class MetaTileEntityMachineHolder extends MetaTileEntityItemBus implement
 
             String unlocalizedName = stack.getItem().getUnlocalizedNameInefficiently(stack);
 
-            if(unlocalizedName.contains("gregtech.machine") || unlocalizedName.contains("gtadditions.machine")) {
-                MetaTileEntity mte = GregTechAPI.META_TILE_ENTITY_REGISTRY.getObjectById(stack.getItemDamage());
-                
-                if(mte != null && mte instanceof ITieredMetaTileEntity) {
-                    return true;
-                }
+            if(stack.getItem() instanceof MachineItemBlock) {
+                MetaTileEntity mte = MachineItemBlock.getMetaTileEntity(stack);
+
+                return mte instanceof ITieredMetaTileEntity;
             }
 
             return false;

@@ -4,14 +4,13 @@ import gregicadditions.GACapabilities;
 import gregicadditions.GAConfig;
 import gregicadditions.recipes.*;
 import gregtech.api.GTValues;
-import gregtech.api.GregTechAPI;
+import gregtech.api.block.machines.MachineItemBlock;
 import gregtech.api.capability.*;
 import gregtech.api.capability.impl.*;
 import gregtech.api.gui.Widget;
 import gregtech.api.metatileentity.*;
 import gregtech.api.metatileentity.multiblock.*;
 import gregtech.api.multiblock.*;
-import gregtech.api.multiblock.BlockWorldState;
 import gregtech.api.recipes.*;
 import gregtech.api.recipes.Recipe.*;
 import gregtech.api.recipes.builders.*;
@@ -31,7 +30,6 @@ import net.minecraftforge.fluids.*;
 import net.minecraftforge.items.*;
 
 import java.util.*;
-import java.util.function.Predicate;
 
 import static gregtech.api.gui.widgets.AdvancedTextWidget.withButton;
 import static gregtech.api.gui.widgets.AdvancedTextWidget.withHoverTextTranslate;
@@ -43,10 +41,11 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 		MultiblockAbility.EXPORT_ITEMS,
 		MultiblockAbility.IMPORT_FLUIDS,
 		MultiblockAbility.EXPORT_FLUIDS,
-		MultiblockAbility.INPUT_ENERGY
+		MultiblockAbility.INPUT_ENERGY,
+		GACapabilities.PA_MACHINE_CONTAINER
 	};
 
-	protected boolean isDistinct = false;
+	protected boolean isDistinctInputBusMode = false;
 
 	public TileEntityProcessingArray(ResourceLocation metaTileEntityId) {
 		super(metaTileEntityId, GARecipeMaps.PROCESSING_ARRAY_RECIPES);
@@ -62,24 +61,17 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 								  .aisle("XXX", "XSX", "XXX")
 								  .setAmountAtLeast('L', 12)
 								  .setAmountLimit('M', 1, 1)
-								  .where('M', machineHolderPredicate())
+								  .where('M', abilityPartPredicate(GACapabilities.PA_MACHINE_CONTAINER))
 								  .where('L', statePredicate(getCasingState()))
 								  .where('S', selfPredicate())
 								  .where('X',
 										 statePredicate(getCasingState())
-											 .or(abilityPartPredicate(ALLOWED_ABILITIES))
-								    		 .or(machineHolderPredicate()))
+											 .or(abilityPartPredicate(ALLOWED_ABILITIES)))
 								  .where('#', isAirPredicate()).build();
 	}
 
 	public IBlockState getCasingState() {
 		return MetaBlocks.METAL_CASING.getState(MetalCasingType.TUNGSTENSTEEL_ROBUST);
-	}
-
-	public Predicate<BlockWorldState> machineHolderPredicate() {
-		return tilePredicate((state, tile) ->
-			tile instanceof IMultiblockAbilityPart && ((IMultiblockAbilityPart) tile).getAbility().equals(GACapabilities.PA_MACHINE_CONTAINER)
-		);
 	}
 
 	@Override
@@ -102,7 +94,7 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 
 		ITextComponent buttonText = new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct");
 		buttonText.appendText(" ");
-		ITextComponent button = withButton((isDistinct ?
+		ITextComponent button = withButton((isDistinctInputBusMode ?
 				new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct.yes") :
 				new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct.no")), "distinct");
 		withHoverTextTranslate(button, "gtadditions.multiblock.processing_array.distinct.info");
@@ -116,32 +108,32 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 	@Override
 	protected void handleDisplayClick(String componentData, Widget.ClickData clickData) {
 		super.handleDisplayClick(componentData, clickData);
-		isDistinct = !isDistinct;
+		isDistinctInputBusMode = !isDistinctInputBusMode;
 	}
 
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound data) {
 		super.writeToNBT(data);
-		data.setBoolean("Distinct", isDistinct);
+		data.setBoolean("Distinct", isDistinctInputBusMode);
 		return data;
 	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound data) {
 		super.readFromNBT(data);
-		isDistinct = data.getBoolean("Distinct");
+		isDistinctInputBusMode = data.getBoolean("Distinct");
 	}
 
 	@Override
 	public void writeInitialSyncData(PacketBuffer buf) {
 		super.writeInitialSyncData(buf);
-		buf.writeBoolean(isDistinct);
+		buf.writeBoolean(isDistinctInputBusMode);
 	}
 
 	@Override
 	public void receiveInitialSyncData(PacketBuffer buf) {
 		super.receiveInitialSyncData(buf);
-		this.isDistinct = buf.readBoolean();
+		this.isDistinctInputBusMode = buf.readBoolean();
 	}
 
 	protected static class ProcessingArrayWorkable extends MultiblockRecipeLogic {
@@ -168,7 +160,7 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 				return null;
 			}
 
-			MetaTileEntity mte = GregTechAPI.META_TILE_ENTITY_REGISTRY.getObjectById(machineItemStack.getItemDamage());
+			MetaTileEntity mte = MachineItemBlock.getMetaTileEntity(machineItemStack);
 			if(mte == null) {
 				return null;
 			}
@@ -405,16 +397,17 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			String trimmedName = unlocalizedName.substring(0, unlocalizedName.lastIndexOf("."));
 			trimmedName = trimmedName.substring(trimmedName.lastIndexOf(".") + 1);
 
-			//For some reason, the Cutting saw's machine name does not match the recipe map's unlocalized name, so correct it
-			//Same with the Electric Furnace
-			if(trimmedName.equals("cutter")) {
-				trimmedName = "cutting_saw";
-			}
-			else if(trimmedName.equals("electric_furnace")) {
-				trimmedName = "furnace";
-			}
-			else if(trimmedName.equals("ore_washer")) {
-				trimmedName = "orewasher";
+			//Catch some cases where the machine's name is not the same as its recipe map's name
+			switch (trimmedName) {
+				case "cutter":
+					trimmedName = "cutting_saw";
+					break;
+				case "electric_furnace":
+					trimmedName = "furnace";
+					break;
+				case "ore_washer":
+					trimmedName = "orewasher";
+					break;
 			}
 
 			return trimmedName;
@@ -482,7 +475,7 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 
 		@Override
 		protected void trySearchNewRecipe() {
-			if(metaTileEntity instanceof TileEntityProcessingArray && ((TileEntityProcessingArray) metaTileEntity).isDistinct) {
+			if(metaTileEntity instanceof TileEntityProcessingArray && ((TileEntityProcessingArray) metaTileEntity).isDistinctInputBusMode) {
 				trySearchNewRecipeDistinct();
 			}
 			else {
