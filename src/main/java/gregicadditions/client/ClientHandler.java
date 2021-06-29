@@ -13,6 +13,8 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
+import static gregtech.api.render.OrientedOverlayRenderer.OverlayFace.FRONT;
+
 @EventBusSubscriber(modid = GregicAdditions.MODID, value = Side.CLIENT)
 public class ClientHandler {
 
@@ -23,6 +25,7 @@ public class ClientHandler {
 	public static OrientedOverlayRenderer REPLICATOR_OVERLAY = new OrientedOverlayRenderer("machines/replicator", OverlayFace.FRONT);
 	public static OrientedOverlayRenderer MASS_FAB_OVERLAY = new OrientedOverlayRenderer("machines/mass_fab", OverlayFace.FRONT);
 	public static OrientedOverlayRenderer FUSION_REACTOR_OVERLAY = new OrientedOverlayRenderer("machines/fusion_reactor", OverlayFace.FRONT);
+	public static OrientedOverlayRenderer BUNDLER_OVERLAY = new OrientedOverlayRenderer("machines/bundler", FRONT);
 	public static DrumRenderer BARREL = new DrumRenderer("storage/drums/barrel");
 	public static DrumRenderer DRUM = new DrumRenderer("storage/drums/drum");
 	public static CrateRenderer WOODEN_CRATE = new CrateRenderer("storage/crates/wooden_crate");

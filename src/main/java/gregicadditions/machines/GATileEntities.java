@@ -431,7 +431,7 @@ public class GATileEntities {
 					2214 + tier,
 					new SimpleMachineMetaTileEntity(location("bundler." + GTValues.VN[tier + 1].toLowerCase()),
 													GARecipeMaps.BUNDLER_RECIPES,
-													Textures.PACKER_OVERLAY, // FIXME: need new textures for this machine
+													ClientHandler.BUNDLER_OVERLAY,
 													tier + 1));
 		});
 	}
