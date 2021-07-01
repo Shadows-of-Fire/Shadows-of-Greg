@@ -1,5 +1,6 @@
 package gregicadditions.jei;
 
+import com.google.common.collect.ImmutableMap;
 import gregtech.api.gui.GuiTextures;
 import gregtech.integration.jei.multiblock.MultiblockInfoRecipeWrapper;
 import mezz.jei.api.IGuiHelper;
@@ -13,8 +14,6 @@ import mezz.jei.gui.recipes.RecipeLayout;
 import net.minecraft.client.resources.I18n;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.Map;
 
 public class GAMultiblockInfoCategory implements IRecipeCategory<MultiblockInfoRecipeWrapper> {
 	private final IDrawable background;
@@ -25,13 +24,12 @@ public class GAMultiblockInfoCategory implements IRecipeCategory<MultiblockInfoR
 		this.background = guiHelper.createBlankDrawable(176, 166);
 	}
 
-	public static final Map<String, MultiblockInfoRecipeWrapper> multiblockRecipes = new HashMap<String, MultiblockInfoRecipeWrapper>() {{
-		put("assembly_line", new MultiblockInfoRecipeWrapper(new AssemblyLineInfo()));
-		put("fusion_reactor_1", new MultiblockInfoRecipeWrapper(new FusionReactor1Info()));
-		put("fusion_reactor_2", new MultiblockInfoRecipeWrapper(new FusionReactor2Info()));
-		put("fusion_reactor_3", new MultiblockInfoRecipeWrapper(new FusionReactor3Info()));
-		put("processing_array", new MultiblockInfoRecipeWrapper(new ProcessingArrayInfo()));
-	}};
+	public static ImmutableMap<String, MultiblockInfoRecipeWrapper> multiblockRecipes = ImmutableMap.of(
+		"assembly_line", new MultiblockInfoRecipeWrapper(new AssemblyLineInfo()),
+		"fusion_reactor_1", new MultiblockInfoRecipeWrapper(new FusionReactor1Info()),
+		"fusion_reactor_2", new MultiblockInfoRecipeWrapper(new FusionReactor2Info()),
+		"fusion_reactor_3", new MultiblockInfoRecipeWrapper(new FusionReactor3Info()),
+		"processing_array", new MultiblockInfoRecipeWrapper(new ProcessingArrayInfo()));
 
 
 	public static void registerRecipes(IModRegistry registry) {
