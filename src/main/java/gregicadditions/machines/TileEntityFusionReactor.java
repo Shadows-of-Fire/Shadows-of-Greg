@@ -218,12 +218,12 @@ public class TileEntityFusionReactor extends RecipeMapMultiblockController {
 		@Override
 		protected Recipe findRecipe(long maxVoltage, IItemHandlerModifiable inputs, IMultipleTankHandler fluidInputs) {
 			Recipe recipe = super.findRecipe(maxVoltage, inputs, fluidInputs);
-			return (recipe != null && recipe.getIntegerProperty("eu_to_start") <= energyContainer.getEnergyCapacity()) ? recipe : null;
+			return (recipe != null && (long)recipe.getRecipePropertyStorage().getRawRecipePropertyValue("eu_to_start") <= energyContainer.getEnergyCapacity()) ? recipe : null;
 		}
 
 		@Override
 		protected boolean setupAndConsumeRecipeInputs(Recipe recipe) {
-			int heatDiff = recipe.getIntegerProperty("eu_to_start") - heat;
+			int heatDiff = (int) recipe.getRecipePropertyStorage().getRawRecipePropertyValue("eu_to_start") - heat;
 			if (heatDiff <= 0) {
 				return super.setupAndConsumeRecipeInputs(recipe);
 			}
