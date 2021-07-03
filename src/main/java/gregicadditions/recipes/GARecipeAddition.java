@@ -555,7 +555,7 @@ public class GARecipeAddition {
 
 
 		//Fluid Regulators
-		for(int i = 5; i <= 7; i++) {
+		for(int i = GTValues.IV; i <= GTValues.ZPM; i++) {
 			RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder()
 					.inputs(MetaItems.PUMPS[i].getStackForm())
 					.input(OrePrefix.circuit, circuitTiers[i - 5], 2)
