@@ -555,10 +555,13 @@ public class GARecipeAddition {
 
 
 		//Fluid Regulators
+		//Note, although this loop starts at IV, it registers recipes for LuV-UV Fluid Regulators
+		//This is because the PUMPS array starts at LV, while GTValues starts at ULV, so we have to move back
+		//an index in PUMPs to match up
 		for(int i = GTValues.IV; i <= GTValues.ZPM; i++) {
 			RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder()
 					.inputs(MetaItems.PUMPS[i].getStackForm())
-					.input(OrePrefix.circuit, circuitTiers[i - 5], 2)
+					.input(OrePrefix.circuit, circuitTiers[i - GTValues.IV], 2)
 					.outputs(MetaItems.FLUID_REGULATORS[i].getStackForm())
 					.EUt((int) (GTValues.V[i + 1] * 30 / 32)).duration(100).buildAndRegister();
 		}
