@@ -24,7 +24,7 @@ public class GAMultiblockInfoCategory implements IRecipeCategory<MultiblockInfoR
 		this.background = guiHelper.createBlankDrawable(176, 166);
 	}
 
-	public static ImmutableMap<String, MultiblockInfoRecipeWrapper> multiblockRecipes = ImmutableMap.of(
+	public static final ImmutableMap<String, MultiblockInfoRecipeWrapper> multiblockRecipes = ImmutableMap.of(
 		"assembly_line", new MultiblockInfoRecipeWrapper(new AssemblyLineInfo()),
 		"fusion_reactor_1", new MultiblockInfoRecipeWrapper(new FusionReactor1Info()),
 		"fusion_reactor_2", new MultiblockInfoRecipeWrapper(new FusionReactor2Info()),
