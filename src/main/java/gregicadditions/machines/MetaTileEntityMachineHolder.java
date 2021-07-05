@@ -1,8 +1,6 @@
 package gregicadditions.machines;
 
 import gregicadditions.GACapabilities;
-import gregtech.api.block.machines.MachineItemBlock;
-import gregtech.api.metatileentity.ITieredMetaTileEntity;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.MetaTileEntityHolder;
 import gregtech.api.metatileentity.multiblock.IMultiblockAbilityPart;
@@ -82,13 +80,8 @@ public class MetaTileEntityMachineHolder extends MetaTileEntityItemBus implement
         @Override
         public boolean isItemValid(int slot, @Nonnull ItemStack stack) {
 
-            if(stack.getItem() instanceof MachineItemBlock) {
-                MetaTileEntity mte = MachineItemBlock.getMetaTileEntity(stack);
+            return TileEntityProcessingArray.ProcessingArrayWorkable.findRecipeMapAndCheckValid(stack) != null;
 
-                return mte instanceof ITieredMetaTileEntity;
-            }
-
-            return false;
         }
 
     }

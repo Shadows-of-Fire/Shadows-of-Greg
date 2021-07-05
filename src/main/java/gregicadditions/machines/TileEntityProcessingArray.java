@@ -364,7 +364,7 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 		}
 
 		//Finds the Recipe Map of the passed Machine Stack and checks if it is a valid Recipe Map
-		protected RecipeMap<?> findRecipeMapAndCheckValid(ItemStack machineStack) {
+		public static RecipeMap<?> findRecipeMapAndCheckValid(ItemStack machineStack) {
 
 			if(machineStack == null || machineStack.isEmpty()) {
 				return null;
@@ -378,6 +378,10 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			if(!findMachineInBlacklist(recipeMapName)) {
 
 				RecipeMap<?> rmap = RecipeMap.getByName(recipeMapName);
+
+				if(rmap == null) {
+					return null;
+				}
 
 				RecipeBuilder<?> rbuilder = rmap.recipeBuilder();
 
@@ -395,7 +399,7 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			return null;
 		}
 
-		public String findRecipeMapName(String unlocalizedName) {
+		protected static String findRecipeMapName(String unlocalizedName) {
 
 			String trimmedName = unlocalizedName.substring(0, unlocalizedName.lastIndexOf("."));
 			trimmedName = trimmedName.substring(trimmedName.lastIndexOf(".") + 1);
@@ -416,7 +420,7 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			return trimmedName;
 		}
 
-		public boolean findMachineInBlacklist(String unlocalizedName) {
+		protected static boolean findMachineInBlacklist(String unlocalizedName) {
 
 			String[] blacklist = GAConfig.processingArray.machineBlackList;
 
