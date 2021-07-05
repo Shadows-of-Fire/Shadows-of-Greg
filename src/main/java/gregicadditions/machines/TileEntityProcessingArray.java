@@ -474,11 +474,14 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 				recipe.matches(true, importInventory, importFluids);
 		}
 
+		/**
+		 * Will check if the previous machine stack and the current machine stack are different
+		 * @param newMachineStack - The current machine stack
+		 * @return - true if the machine stacks are not equal, false if they are equal
+		 */
 		protected boolean didMachinesChange(ItemStack newMachineStack) {
-
-			if(newMachineStack == null || this.oldMachineStack == null) {
-				return true;
-			}
+			if(newMachineStack == null || this.oldMachineStack == null)
+				return newMachineStack != this.oldMachineStack;
 
 			return !ItemStack.areItemStacksEqual(this.oldMachineStack, newMachineStack);
 		}
