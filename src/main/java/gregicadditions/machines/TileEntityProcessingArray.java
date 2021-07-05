@@ -431,11 +431,8 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			ItemStack machine = controller.getAbilities(GACapabilities.PA_MACHINE_CONTAINER).get(0).getStackInSlot(0);
 
 			RecipeMap<?> rmap = findRecipeMapAndCheckValid(machine);
-			if(rmap == null) {
-				return null;
-			}
 
-			return new Tuple<ItemStack, RecipeMap<?>>(machine, rmap);
+			return (rmap == null) ? null : new Tuple<>(machine, rmap);
 		}
 
 		@Override
@@ -529,7 +526,6 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 				//Update the previous recipe
 				if(currentRecipe != null) {
 					this.previousRecipe = currentRecipe;
-					newMachineStack = machineItemStack;
 				}
 
 				this.forceRecipeRecheck = false;
@@ -595,7 +591,6 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 					this.forceRecipeRecheck = false;
 					currentRecipe = findRecipe(maxVoltage, bus, importFluids);
 					if (currentRecipe != null) {
-						newMachineStack = machineItemStack;
 						this.previousRecipe = currentRecipe;
 					}
 				}
