@@ -55,16 +55,7 @@ public class MetaTileEntityMachineHolder extends MetaTileEntityItemBus implement
         return machineItemHandler;
     }
 
-    @Override
-    protected boolean openGUIOnRightClick() {
-        TileEntityProcessingArray controller = (TileEntityProcessingArray) getController();
-        if(controller != null && controller.getWorkable().isActive()) {
-            return false;
-        }
-        return true;
-    }
-
-    private static class MachineImportItemHandler extends ItemStackHandler {
+    private class MachineImportItemHandler extends ItemStackHandler {
 
         @Nonnull
         @Override
@@ -84,5 +75,16 @@ public class MetaTileEntityMachineHolder extends MetaTileEntityItemBus implement
 
         }
 
+        @Nonnull
+        @Override
+        public ItemStack extractItem(int slot, int amount, boolean simulate) {
+            TileEntityProcessingArray controller = (TileEntityProcessingArray) getController();
+
+            if(controller != null && controller.getWorkable().isActive()) {
+                return ItemStack.EMPTY;
+            }
+
+            return super.extractItem(slot, amount, simulate);
+        }
     }
 }
