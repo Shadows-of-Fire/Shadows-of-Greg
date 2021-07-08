@@ -553,11 +553,12 @@ public class GARecipeAddition {
 		ModHandler.addShapedRecipe("2x2_schematic", GAMetaItems.SCHEMATIC_2X2.getStackForm(), " d ", " S ", "   ", 'S', GAMetaItems.SCHEMATIC.getStackForm());
 		ModHandler.addShapedRecipe("dust_schematic", GAMetaItems.SCHEMATIC_DUST.getStackForm(), "   ", " S ", "  d", 'S', GAMetaItems.SCHEMATIC.getStackForm());
 
-
-		//Fluid Regulators
-		//Note, although this loop starts at IV, it registers recipes for LuV-UV Fluid Regulators
-		//This is because the PUMPS array starts at LV, while GTValues starts at ULV, so we have to move back
-		//an index in PUMPs to match up
+		/*
+		Fluid Regulators
+		Note, although this loop starts at IV, it registers recipes for LuV-UV Fluid Regulators
+		This is because the PUMPS array starts at LV, while GTValues starts at ULV, so we have to move back
+		an index in PUMPs to match up
+		 */
 		for(int i = GTValues.IV; i <= GTValues.ZPM; i++) {
 			RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder()
 					.inputs(MetaItems.PUMPS[i].getStackForm())
