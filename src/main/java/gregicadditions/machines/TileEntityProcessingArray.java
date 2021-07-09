@@ -151,18 +151,27 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			super(tileEntity);
 		}
 
+		/*
+		A safety method duplication, used to prevent people from calling findRecipe before the machine stack or
+		recipe map has been populated.
+		 */
 		@Override
 		protected Recipe findRecipe(long maxVoltage,
 									IItemHandlerModifiable inputs,
 									IMultipleTankHandler fluidInputs) {
 
+			return findRecipe(maxVoltage, inputs, fluidInputs, machineItemStack, recipeMap);
+
+		}
+
+		protected Recipe findRecipe(long maxVoltage, IItemHandlerModifiable inputs, IMultipleTankHandler fluidInputs, ItemStack machineStack, RecipeMap<?> rmap) {
 
 			//Check if passed a null recipemap or machine stack
-			if(recipeMap == null || machineItemStack == null) {
+			if(rmap == null || machineStack == null) {
 				return null;
 			}
 
-			MetaTileEntity mte = MachineItemBlock.getMetaTileEntity(machineItemStack);
+			MetaTileEntity mte = MachineItemBlock.getMetaTileEntity(machineStack);
 			if(mte == null) {
 				return null;
 			}
@@ -170,12 +179,12 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			//Find the voltage tier of the machine.
 			this.voltageTier = GTValues.V[((ITieredMetaTileEntity) mte).getTier()];
 			//Find the number of machines
-			this.numberOfMachines = Math.min(GAConfig.processingArray.processingArrayMachineLimit, machineItemStack.getCount());
+			this.numberOfMachines = Math.min(GAConfig.processingArray.processingArrayMachineLimit, machineStack.getCount());
 
-			Recipe recipe = recipeMap.findRecipe(voltageTier,
-												 inputs,
-												 fluidInputs,
-												 this.getMinTankCapacity(this.getOutputTank()));
+			Recipe recipe = rmap.findRecipe(voltageTier,
+					inputs,
+					fluidInputs,
+					this.getMinTankCapacity(this.getOutputTank()));
 
 			// No matching recipe.
 			if(recipe == null)
@@ -200,19 +209,19 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			List<ItemStack> outputI = new ArrayList<>();
 			List<FluidStack> outputF = new ArrayList<>();
 			this.multiplyInputsAndOutputs(newRecipeInputs,
-										  newFluidInputs,
-										  outputI,
-										  outputF,
-										  recipe,
-										  minMultiplier);
+					newFluidInputs,
+					outputI,
+					outputF,
+					recipe,
+					minMultiplier);
 
-			RecipeBuilder<?> newRecipe = recipeMap.recipeBuilder()
-												  .inputsIngredients(newRecipeInputs)
-												  .fluidInputs(newFluidInputs)
-												  .outputs(outputI)
-												  .fluidOutputs(outputF)
-												  .EUt(recipe.getEUt())
-												  .duration(recipe.getDuration());
+			RecipeBuilder<?> newRecipe = rmap.recipeBuilder()
+					.inputsIngredients(newRecipeInputs)
+					.fluidInputs(newFluidInputs)
+					.outputs(outputI)
+					.fluidOutputs(outputF)
+					.EUt(recipe.getEUt())
+					.duration(recipe.getDuration());
 
 			//Don't allow MV or LV macerators to have chanced outputs, because they do not have the slots for chanced outputs
 			if(!(mte instanceof MetaTileEntityMacerator && (((MetaTileEntityMacerator) mte).getTier() == 1 || ((MetaTileEntityMacerator) mte).getTier() == 2))) {
@@ -221,6 +230,7 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 
 			this.numberOfOperations = minMultiplier;
 			return newRecipe.build().getResult();
+
 		}
 
 		protected static void copyChancedItemOutputs(RecipeBuilder<?> newRecipe,
