@@ -160,6 +160,9 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 									IItemHandlerModifiable inputs,
 									IMultipleTankHandler fluidInputs) {
 
+			//Update the machine stack and recipe map
+			findMachineStack();
+
 			return findRecipe(maxVoltage, inputs, fluidInputs, machineItemStack, recipeMap);
 
 		}
@@ -525,7 +528,7 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			}
 			else {
 				//If the previous recipe was null, or does not match the current recipe, search for a new recipe
-				currentRecipe = findRecipe(maxVoltage, importInventory, importFluids);
+				currentRecipe = findRecipe(maxVoltage, importInventory, importFluids, machineItemStack, recipeMap);
 				oldMachineStack = null;
 
 				//Update the previous recipe
@@ -586,7 +589,7 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 				boolean dirty = checkRecipeInputsDirty(bus, importFluids, i);
 				if (dirty || forceRecipeRecheck) {
 					this.forceRecipeRecheck = false;
-					currentRecipe = findRecipe(maxVoltage, bus, importFluids);
+					currentRecipe = findRecipe(maxVoltage, bus, importFluids, machineItemStack, recipeMap);
 					if (currentRecipe != null) {
 						this.previousRecipe = currentRecipe;
 					}
