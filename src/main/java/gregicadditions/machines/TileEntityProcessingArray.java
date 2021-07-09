@@ -151,25 +151,14 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			super(tileEntity);
 		}
 
-		protected Recipe findRecipe(long maxVoltage, IItemHandlerModifiable inputs, IMultipleTankHandler fluidInputs, Tuple<ItemStack, RecipeMap<?>> itemStackRecipeMapTuple) {
-			if(itemStackRecipeMapTuple == null) {
-				return null;
-			}
-
-			this.machineItemStack = itemStackRecipeMapTuple.getFirst();
-			this.recipeMap = itemStackRecipeMapTuple.getSecond();
-
-			return findRecipe(maxVoltage, inputs, fluidInputs);
-		}
-
 		@Override
 		protected Recipe findRecipe(long maxVoltage,
 									IItemHandlerModifiable inputs,
 									IMultipleTankHandler fluidInputs) {
 
 
-			//Check if passed a null recipemap
-			if(recipeMap == null) {
+			//Check if passed a null recipemap or machine stack
+			if(recipeMap == null || machineItemStack == null) {
 				return null;
 			}
 
@@ -432,7 +421,7 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			return Arrays.asList(blacklist).contains(unlocalizedName);
 		}
 
-		public Tuple<ItemStack, RecipeMap<?>> findMachineStack() {
+		public void findMachineStack() {
 
 			RecipeMapMultiblockController controller = (RecipeMapMultiblockController) this.metaTileEntity;
 
@@ -441,7 +430,8 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 
 			RecipeMap<?> rmap = findRecipeMapAndCheckValid(machine);
 
-			return (rmap == null) ? null : new Tuple<>(machine, rmap);
+			this.machineItemStack = machine;
+			this.recipeMap = rmap;
 		}
 
 		@Override
@@ -506,21 +496,14 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			Recipe currentRecipe;
 			IItemHandlerModifiable importInventory = getInputInventory();
 			IMultipleTankHandler importFluids = getInputTank();
-			ItemStack newMachineStack;
 
-			Tuple<ItemStack, RecipeMap<?>> itemStackRecipeMapTuple = findMachineStack();
-
-			if(itemStackRecipeMapTuple == null) {
-				newMachineStack = null;
-			}
-			else {
-				newMachineStack = itemStackRecipeMapTuple.getFirst();
-			}
+			//Update the stored machine stack and recipe map variables
+			findMachineStack();
 
 			boolean dirty = checkRecipeInputsDirty(importInventory, importFluids);
 			if(dirty || forceRecipeRecheck) {
 				//Check if the machine that the PA is operating on has changed
-				if(didMachinesChange(newMachineStack)) {
+				if(didMachinesChange(machineItemStack)) {
 					previousRecipe = null;
 					oldMachineStack = null;
 				}
@@ -532,7 +515,7 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			}
 			else {
 				//If the previous recipe was null, or does not match the current recipe, search for a new recipe
-				currentRecipe = findRecipe(maxVoltage, importInventory, importFluids, itemStackRecipeMapTuple);
+				currentRecipe = findRecipe(maxVoltage, importInventory, importFluids);
 				oldMachineStack = null;
 
 				//Update the previous recipe
@@ -545,7 +528,7 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 
 			//Attempts to run the current recipe, if it is not null
 			if(currentRecipe != null && setupAndConsumeRecipeInputs(currentRecipe)) {
-				oldMachineStack = newMachineStack;
+				oldMachineStack = machineItemStack;
 				setupRecipe(currentRecipe);
 			}
 		}
@@ -560,17 +543,9 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			IMultipleTankHandler importFluids = getInputTank();
 			RecipeMapMultiblockController controller = (RecipeMapMultiblockController) this.metaTileEntity;
 			IItemHandlerModifiable machineBus = controller.getAbilities(GACapabilities.PA_MACHINE_CONTAINER).get(0);
-			ItemStack newMachineStack;
 
-			Tuple<ItemStack, RecipeMap<?>> itemStackRecipeMapTuple = findMachineStack();
-
-			if(itemStackRecipeMapTuple == null) {
-				newMachineStack = null;
-			}
-			else {
-				newMachineStack = itemStackRecipeMapTuple.getFirst();
-			}
-
+			//Update the stored machine stack and recipe map variables
+			findMachineStack();
 
 			//Check to see if the machine stack has changed first
 			//TODO Could this machine bus specific check be used in the combined code?
@@ -578,7 +553,7 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			if(machineDirty || forceRecipeRecheck) {
 				//Check if the machine that the PA is operating on has changed
 				//Is this check needed if machineDirty is true?
-				if(didMachinesChange(newMachineStack)) {
+				if(didMachinesChange(machineItemStack)) {
 					previousRecipe = null;
 					oldMachineStack = null;
 				}
@@ -589,7 +564,7 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 				currentRecipe = previousRecipe;
 				if(setupAndConsumeRecipeInputs(currentRecipe, lastRecipeIndex)) {
 					setupRecipe(currentRecipe);
-					oldMachineStack = newMachineStack;
+					oldMachineStack = machineItemStack;
 					return;
 				}
 			}
@@ -609,7 +584,7 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 				if(currentRecipe != null && setupAndConsumeRecipeInputs(currentRecipe, i)) {
 					lastRecipeIndex = i;
 					setupRecipe(currentRecipe);
-					oldMachineStack = newMachineStack;
+					oldMachineStack = machineItemStack;
 					break;
 				}
 			}
