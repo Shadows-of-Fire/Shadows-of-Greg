@@ -168,6 +168,11 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 									IMultipleTankHandler fluidInputs) {
 
 
+			//Check if passed a null recipemap
+			if(recipeMap == null) {
+				return null;
+			}
+
 			MetaTileEntity mte = MachineItemBlock.getMetaTileEntity(machineItemStack);
 			if(mte == null) {
 				return null;
