@@ -51,15 +51,11 @@ import static gregtech.loaders.oreprocessing.WireRecipeHandler.INSULATION_MATERI
 
 public class GARecipeAddition {
 
-	private static final MaterialStack[] cableFluids = { new MaterialStack(Materials.Rubber, 144), new MaterialStack(Materials.StyreneButadieneRubber, 108), new MaterialStack(Materials.SiliconeRubber, 72) };
-
 	private static final MaterialStack[] firstMetal = { new MaterialStack(Materials.Iron, 1), new MaterialStack(Materials.Nickel, 1), new MaterialStack(Materials.Invar, 2), new MaterialStack(Materials.Steel, 2), new MaterialStack(Materials.StainlessSteel, 3), new MaterialStack(Materials.Titanium, 3), new MaterialStack(Materials.Tungsten, 4), new MaterialStack(Materials.TungstenSteel, 5) };
 
 	private static final MaterialStack[] lastMetal = { new MaterialStack(Materials.Tin, 0), new MaterialStack(Materials.Zinc, 0), new MaterialStack(Materials.Aluminium, 1) };
 
 	private static final MaterialStack[] ironOres = { new MaterialStack(Materials.Pyrite, 1), new MaterialStack(Materials.BrownLimonite, 1), new MaterialStack(Materials.YellowLimonite, 1), new MaterialStack(Materials.Magnetite, 1), new MaterialStack(Materials.Iron, 1) };
-
-	private static final Material[] circuitTiers = new Material[] {Tier.Master, Tier.Ultimate, Tier.Superconductor };
 
 	/**
 	 * Where all Miscellaneous Crafting Recipe manipulation is done. These are the recipes that do not fit in other initialization classes.
@@ -665,21 +661,6 @@ public class GARecipeAddition {
 			BLAST_RECIPES.recipeBuilder().duration(500).EUt(120).blastFurnaceTemp(1500).input(ore, materials).input(dust, Materials.Calcite).outputs(OreDictUnifier.get(ingot, Materials.Iron, 3), OreDictUnifier.get(dustSmall, Materials.DarkAsh)).buildAndRegister();
 			BLAST_RECIPES.recipeBuilder().duration(500).EUt(120).blastFurnaceTemp(1500).input(ore, materials).input(dustTiny, Materials.Quicklime, 3).outputs(OreDictUnifier.get(ingot, Materials.Iron, 2), OreDictUnifier.get(dustSmall, Materials.DarkAsh)).buildAndRegister();
 		}
-
-		/*
-		Fluid Regulators
-		Note, although this loop starts at IV, it registers recipes for LuV-UV Fluid Regulators
-		This is because the PUMPS array starts at LV, while GTValues starts at ULV, so we have to move back
-		an index in PUMPs to match up
-		 */
-		for(int i = GTValues.IV; i <= GTValues.ZPM; i++) {
-			ASSEMBLER_RECIPES.recipeBuilder()
-					.inputs(MetaItems.PUMPS[i].getStackForm())
-					.input(circuit, circuitTiers[i - GTValues.IV], 2)
-					.outputs(MetaItems.FLUID_REGULATORS[i].getStackForm())
-					.EUt((int) (GTValues.V[i + 1] * 30 / 32)).duration(100).buildAndRegister();
-		}
-
 	}
 
 	public static void forestrySupport() {

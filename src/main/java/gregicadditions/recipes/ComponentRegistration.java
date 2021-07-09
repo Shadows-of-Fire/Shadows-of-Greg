@@ -2,12 +2,14 @@ package gregicadditions.recipes;
 
 import gregicadditions.GAEnums;
 import gregicadditions.GAMaterials;
+import gregtech.api.GTValues;
 import gregtech.api.recipes.ModHandler;
 import gregtech.api.recipes.RecipeMaps;
 import gregtech.api.unification.OreDictUnifier;
 import gregtech.api.unification.material.MarkerMaterials;
 import gregtech.api.unification.material.Materials;
 import gregtech.api.unification.material.type.IngotMaterial;
+import gregtech.api.unification.material.type.Material;
 import gregtech.api.unification.ore.OrePrefix;
 import gregtech.api.unification.stack.MaterialStack;
 import gregtech.common.items.MetaItems;
@@ -16,6 +18,8 @@ import net.minecraftforge.fluids.FluidStack;
 
 import static gregicadditions.recipes.helpers.HelperMethods.removeCraftingRecipes;
 import static gregicadditions.recipes.helpers.HelperMethods.removeRecipesByInputs;
+import static gregtech.api.recipes.RecipeMaps.ASSEMBLER_RECIPES;
+import static gregtech.api.unification.ore.OrePrefix.circuit;
 
 
 /**
@@ -24,6 +28,8 @@ import static gregicadditions.recipes.helpers.HelperMethods.removeRecipesByInput
 public class ComponentRegistration {
 
     private static final MaterialStack[] cableFluids = { new MaterialStack(Materials.Rubber, 144), new MaterialStack(Materials.StyreneButadieneRubber, 108), new MaterialStack(Materials.SiliconeRubber, 72) };
+
+    private static final Material[] circuitTiers = new Material[] {MarkerMaterials.Tier.Master, MarkerMaterials.Tier.Ultimate, MarkerMaterials.Tier.Superconductor };
 
     public static void init() {
 
@@ -116,8 +122,7 @@ public class ComponentRegistration {
             IngotMaterial material = (IngotMaterial) stackFluid.material;
             removeRecipesByInputs(RecipeMaps.ASSEMBLER_RECIPES, new ItemStack[] {OreDictUnifier.get(OrePrefix.plate, Materials.Tin, 2), OreDictUnifier.get(OrePrefix.cableGtSingle, Materials.Tin), OreDictUnifier.get(OrePrefix.screw, Materials.Tin), OreDictUnifier.get(OrePrefix.rotor, Materials.Tin), MetaItems.ELECTRIC_MOTOR_LV.getStackForm()}, new FluidStack[] {material.getFluid((int) stackFluid.amount)});
             removeRecipesByInputs(RecipeMaps.ASSEMBLER_RECIPES, new ItemStack[] {OreDictUnifier.get(OrePrefix.plate, Materials.Bronze, 2), OreDictUnifier.get(OrePrefix.cableGtSingle, Materials.Copper), OreDictUnifier.get(OrePrefix.screw, Materials.Bronze), OreDictUnifier.get(OrePrefix.rotor, Materials.Bronze), MetaItems.ELECTRIC_MOTOR_MV.getStackForm()}, new FluidStack[] {material.getFluid((int) stackFluid.amount)});
-            //TODO, fix cable type once it is fixed in GTCE (Copper -> Gold)
-            removeRecipesByInputs(RecipeMaps.ASSEMBLER_RECIPES, new ItemStack[] {OreDictUnifier.get(OrePrefix.plate, Materials.Steel, 2), OreDictUnifier.get(OrePrefix.cableGtSingle, Materials.Copper), OreDictUnifier.get(OrePrefix.screw, Materials.Steel), OreDictUnifier.get(OrePrefix.rotor, Materials.Steel), MetaItems.ELECTRIC_MOTOR_HV.getStackForm()}, new FluidStack[] {material.getFluid((int) stackFluid.amount)});
+            removeRecipesByInputs(RecipeMaps.ASSEMBLER_RECIPES, new ItemStack[] {OreDictUnifier.get(OrePrefix.plate, Materials.Steel, 2), OreDictUnifier.get(OrePrefix.cableGtSingle, Materials.Gold), OreDictUnifier.get(OrePrefix.screw, Materials.Steel), OreDictUnifier.get(OrePrefix.rotor, Materials.Steel), MetaItems.ELECTRIC_MOTOR_HV.getStackForm()}, new FluidStack[] {material.getFluid((int) stackFluid.amount)});
             removeRecipesByInputs(RecipeMaps.ASSEMBLER_RECIPES, new ItemStack[] {OreDictUnifier.get(OrePrefix.plate, Materials.StainlessSteel, 2), OreDictUnifier.get(OrePrefix.cableGtSingle, Materials.Aluminium), OreDictUnifier.get(OrePrefix.screw, Materials.StainlessSteel), OreDictUnifier.get(OrePrefix.rotor, Materials.StainlessSteel), MetaItems.ELECTRIC_MOTOR_EV.getStackForm()}, new FluidStack[] {material.getFluid((int) stackFluid.amount)});
             removeRecipesByInputs(RecipeMaps.ASSEMBLER_RECIPES, new ItemStack[] {OreDictUnifier.get(OrePrefix.plate, Materials.TungstenSteel, 2), OreDictUnifier.get(OrePrefix.cableGtSingle, Materials.Tungsten), OreDictUnifier.get(OrePrefix.screw, Materials.TungstenSteel), OreDictUnifier.get(OrePrefix.rotor, Materials.TungstenSteel), MetaItems.ELECTRIC_MOTOR_IV.getStackForm()}, new FluidStack[] {material.getFluid((int) stackFluid.amount)});
         }
@@ -479,6 +484,21 @@ public class ComponentRegistration {
                 .fluidInputs(Materials.SolderingAlloy.getFluid(576))
                 .outputs(MetaItems.SENSOR_UV.getStackForm())
                 .duration(600).EUt(245760).buildAndRegister();
+
+        //Fluid Regulator
+
+        /*
+		Note, although this loop starts at IV, it registers recipes for LuV-UV Fluid Regulators
+		This is because the PUMPS array starts at LV, while GTValues starts at ULV, so we have to move back
+		an index in PUMPs to match up
+		 */
+        for(int i = GTValues.IV; i <= GTValues.ZPM; i++) {
+            ASSEMBLER_RECIPES.recipeBuilder()
+                    .inputs(MetaItems.PUMPS[i].getStackForm())
+                    .input(circuit, circuitTiers[i - GTValues.IV], 2)
+                    .outputs(MetaItems.FLUID_REGULATORS[i].getStackForm())
+                    .EUt((int) (GTValues.V[i + 1] * 30 / 32)).duration(100).buildAndRegister();
+        }
 
     }
 }
