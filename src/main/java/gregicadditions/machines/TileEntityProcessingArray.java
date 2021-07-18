@@ -100,6 +100,9 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 		withHoverTextTranslate(button, "gtadditions.multiblock.processing_array.distinct.info");
 		buttonText.appendSibling(button);
 		textList.add(buttonText);
+		textList.add(new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct2", isDistinctInputBusMode ?
+				new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct.yes") :
+				new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct.no")));
 		if(this.recipeMapWorkable.isActive()) {
 			textList.add(new TextComponentTranslation("gtadditions.multiblock.processing_array.locked"));
 		}
