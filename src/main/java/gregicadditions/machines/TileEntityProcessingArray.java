@@ -139,6 +139,12 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 		this.isDistinctInputBusMode = buf.readBoolean();
 	}
 
+	@Override
+	public void invalidateStructure() {
+		super.invalidateStructure();
+		((ProcessingArrayWorkable) this.recipeMapWorkable).invalidate();
+	}
+
 	protected static class ProcessingArrayWorkable extends MultiblockRecipeLogic {
 		long voltageTier;
 		int numberOfMachines = 0;
@@ -371,6 +377,10 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			recipe.getFluidOutputs().forEach(fluidStack ->
 				outputFluids.add(copyFluidStackWithAmount(fluidStack,
 														  fluidStack.amount * numberOfOperations)));
+		}
+
+		public void invalidate() {
+			this.lastRecipeIndex = 0;
 		}
 
 		//Finds the Recipe Map of the passed Machine Stack and checks if it is a valid Recipe Map
