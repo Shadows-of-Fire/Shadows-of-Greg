@@ -19,6 +19,8 @@ import gregtech.api.util.*;
 import gregtech.common.blocks.BlockMetalCasing.*;
 import gregtech.common.blocks.*;
 import gregtech.common.metatileentities.electric.MetaTileEntityMacerator;
+import it.unimi.dsi.fastutil.*;
+import it.unimi.dsi.fastutil.objects.*;
 import net.minecraft.block.state.*;
 import net.minecraft.item.*;
 import net.minecraft.nbt.NBTTagCompound;
@@ -30,9 +32,14 @@ import net.minecraftforge.fluids.*;
 import net.minecraftforge.items.*;
 
 import java.util.*;
+import java.util.Arrays;
+import java.util.function.*;
+import java.util.function.Function;
+import java.util.stream.*;
 
 import static gregtech.api.gui.widgets.AdvancedTextWidget.withButton;
 import static gregtech.api.gui.widgets.AdvancedTextWidget.withHoverTextTranslate;
+import static gregtech.api.util.Predicates.not;
 
 public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 
@@ -56,18 +63,18 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 	protected BlockPattern createStructurePattern() {
 
 		return FactoryBlockPattern.start()
-								  .aisle("XXX", "XXX", "XXX")
-								  .aisle("XXX", "X#X", "XXX")
-								  .aisle("XXX", "XSX", "XXX")
-								  .setAmountAtLeast('L', 12)
-								  .setAmountLimit('M', 1, 1)
-								  .where('M', abilityPartPredicate(GACapabilities.PA_MACHINE_CONTAINER))
-								  .where('L', statePredicate(getCasingState()))
-								  .where('S', selfPredicate())
-								  .where('X',
-										 statePredicate(getCasingState())
-											 .or(abilityPartPredicate(ALLOWED_ABILITIES)))
-								  .where('#', isAirPredicate()).build();
+		                          .aisle("XXX", "XXX", "XXX")
+		                          .aisle("XXX", "X#X", "XXX")
+		                          .aisle("XXX", "XSX", "XXX")
+		                          .setAmountAtLeast('L', 12)
+		                          .setAmountLimit('M', 1, 1)
+		                          .where('M', abilityPartPredicate(GACapabilities.PA_MACHINE_CONTAINER))
+		                          .where('L', statePredicate(getCasingState()))
+		                          .where('S', selfPredicate())
+		                          .where('X',
+		                                 statePredicate(getCasingState())
+			                                 .or(abilityPartPredicate(ALLOWED_ABILITIES)))
+		                          .where('#', isAirPredicate()).build();
 	}
 
 	public IBlockState getCasingState() {
@@ -95,14 +102,14 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 		ITextComponent buttonText = new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct");
 		buttonText.appendText(" ");
 		ITextComponent button = withButton((isDistinctInputBusMode ?
-				new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct.yes") :
-				new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct.no")), "distinct");
+			new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct.yes") :
+			new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct.no")), "distinct");
 		withHoverTextTranslate(button, "gtadditions.multiblock.processing_array.distinct.info");
 		buttonText.appendSibling(button);
 		textList.add(buttonText);
 		textList.add(new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct2", isDistinctInputBusMode ?
-				new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct.yes") :
-				new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct.no")));
+			new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct.yes") :
+			new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct.no")));
 		if(this.recipeMapWorkable.isActive()) {
 			textList.add(new TextComponentTranslation("gtadditions.multiblock.processing_array.locked"));
 		}
@@ -161,13 +168,13 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 		}
 
 		/*
-        Overridden solely to update the machine stack and the recipe map at an early point.
-        Recipe multiplication will come at a later time.
-        */
+		  Overridden solely to update the machine stack and the recipe map at an early point.
+		  Recipe multiplication will come at a later time.
+		*/
 		@Override
 		protected Recipe findRecipe(long maxVoltage,
-									IItemHandlerModifiable inputs,
-									IMultipleTankHandler fluidInputs) {
+		                            IItemHandlerModifiable inputs,
+		                            IMultipleTankHandler fluidInputs) {
 
 			//Update the machine stack and recipe map
 			findMachineStack();
@@ -216,19 +223,19 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			List<ItemStack> outputI = new ArrayList<>();
 			List<FluidStack> outputF = new ArrayList<>();
 			this.multiplyInputsAndOutputs(newRecipeInputs,
-					newFluidInputs,
-					outputI,
-					outputF,
-					recipe,
-					minMultiplier);
+			                              newFluidInputs,
+			                              outputI,
+			                              outputF,
+			                              recipe,
+			                              minMultiplier);
 
 			RecipeBuilder<?> newRecipe = rmap.recipeBuilder()
-					.inputsIngredients(newRecipeInputs)
-					.fluidInputs(newFluidInputs)
-					.outputs(outputI)
-					.fluidOutputs(outputF)
-					.EUt(recipe.getEUt())
-					.duration(recipe.getDuration());
+			                                 .inputsIngredients(newRecipeInputs)
+			                                 .fluidInputs(newFluidInputs)
+			                                 .outputs(outputI)
+			                                 .fluidOutputs(outputF)
+			                                 .EUt(recipe.getEUt())
+			                                 .duration(recipe.getDuration());
 
 			//Don't allow MV or LV macerators to have chanced outputs, because they do not have the slots for chanced outputs
 			if(!(mte instanceof MetaTileEntityMacerator && (((MetaTileEntityMacerator) mte).getTier() == 1 || ((MetaTileEntityMacerator) mte).getTier() == 2))) {
@@ -241,8 +248,8 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 		}
 
 		protected static void copyChancedItemOutputs(RecipeBuilder<?> newRecipe,
-													 Recipe oldRecipe,
-													 int numberOfOperations) {
+		                                             Recipe oldRecipe,
+		                                             int numberOfOperations) {
 			for(ChanceEntry entry : oldRecipe.getChancedOutputs()) {
 				int chance = entry.getChance();
 				ItemStack itemStack = entry.getItemStack().copy();
@@ -259,32 +266,34 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 		}
 
 		protected static Set<ItemStack> findAllItemsInInputs(IItemHandlerModifiable inputs) {
-			Set<ItemStack> countIngredients = new HashSet<>();
-			for(int slot = 0; slot < inputs.getSlots(); slot++) {
-				ItemStack wholeItemStack = inputs.getStackInSlot(slot);
+			Hash.Strategy<ItemStack> strategy = ItemStackHashStrategy.comparingAllButCount();
+			final Supplier<Map<ItemStack, Integer>> mapSupplier =
+				() -> new Object2IntOpenCustomHashMap<>(strategy);
 
-				//Skip empty slots
-				if(wholeItemStack.isEmpty())
-					continue;
+			final Set<ItemStack> result = new ObjectOpenCustomHashSet<>(strategy);
 
-				boolean found = false;
-				for(ItemStack i : countIngredients)
-					if(areItemStacksEqual(i, wholeItemStack)) {
-						i.setCount(i.getCount() + wholeItemStack.getCount());
-						found = true;
-						break;
-					}
-
-				if(!found)
-					countIngredients.add(wholeItemStack.copy());
-
-			}
-			return countIngredients;
+			StreamUtils.streamFrom(inputs)
+			           // keep only non-empty item stacks
+			           .filter(not(ItemStack::isEmpty))
+			           // Track the number of identical items
+			           .collect(Collectors.toMap(Function.identity(),
+			                                     ItemStack::getCount,
+			                                     Math::addExact,
+			                                     mapSupplier))
+			           // Create a single stack of the combined count for each item
+			           .entrySet().stream()
+			           .map(entry -> {
+				           ItemStack combined = entry.getKey().copy();
+				           combined.setCount(entry.getValue());
+				           return combined;
+			           })
+			           .forEach(result::add);
+			return result;
 		}
 
 		protected int getMinRatioItem(Set<ItemStack> countIngredients,
-									  Recipe recipe,
-									  int numberOfMachines) {
+		                              Recipe recipe,
+		                              int numberOfMachines) {
 
 			int minMultiplier = Integer.MAX_VALUE;
 			for(CountableIngredient recipeInputs : recipe.getInputs()) {
@@ -324,8 +333,8 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 		}
 
 		protected int getMinRatioFluid(Map<String, Integer> countFluid,
-									   Recipe recipe,
-									   int numberOfMachines) {
+		                               Recipe recipe,
+		                               int numberOfMachines) {
 
 			int minMultiplier = Integer.MAX_VALUE;
 			for(FluidStack fs : recipe.getFluidInputs()) {
@@ -351,27 +360,27 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 		}
 
 		protected void multiplyInputsAndOutputs(List<CountableIngredient> newRecipeInputs,
-												List<FluidStack> newFluidInputs,
-												List<ItemStack> outputItems,
-												List<FluidStack> outputFluids,
-												Recipe recipe,
-												int numberOfOperations) {
+		                                        List<FluidStack> newFluidInputs,
+		                                        List<ItemStack> outputItems,
+		                                        List<FluidStack> outputFluids,
+		                                        Recipe recipe,
+		                                        int numberOfOperations) {
 
 			recipe.getInputs().forEach(ci ->
-					newRecipeInputs.add(new CountableIngredient(ci.getIngredient(),
-																ci.getCount() * numberOfOperations)));
+				                           newRecipeInputs.add(new CountableIngredient(ci.getIngredient(),
+				                                                                       ci.getCount() * numberOfOperations)));
 
 			recipe.getFluidInputs().forEach(fluidStack ->
-					newFluidInputs.add(new FluidStack(fluidStack.getFluid(),
-													  fluidStack.amount * numberOfOperations)));
+				                                newFluidInputs.add(new FluidStack(fluidStack.getFluid(),
+				                                                                  fluidStack.amount * numberOfOperations)));
 
 			recipe.getOutputs().forEach(itemStack ->
-				outputItems.add(copyItemStackWithCount(itemStack,
-													   itemStack.getCount() * numberOfOperations)));
+				                            outputItems.add(copyItemStackWithCount(itemStack,
+				                                                                   itemStack.getCount() * numberOfOperations)));
 
 			recipe.getFluidOutputs().forEach(fluidStack ->
-				outputFluids.add(copyFluidStackWithAmount(fluidStack,
-														  fluidStack.amount * numberOfOperations)));
+				                                 outputFluids.add(copyFluidStackWithAmount(fluidStack,
+				                                                                           fluidStack.amount * numberOfOperations)));
 		}
 
 		public void invalidate() {
@@ -403,10 +412,10 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 				//Find the RecipeMap of the MTE and ensure that the Processing Array only works on SimpleRecipeBuilders
 				//For some reason GTCE has specialized recipe maps for some machines, when it does not need them
 				if (rbuilder instanceof SimpleRecipeBuilder ||
-						rbuilder instanceof IntCircuitRecipeBuilder ||
-						rbuilder instanceof ArcFurnaceRecipeBuilder ||
-						rbuilder instanceof CutterRecipeBuilder ||
-						rbuilder instanceof UniversalDistillationRecipeBuilder) {
+					rbuilder instanceof IntCircuitRecipeBuilder ||
+					rbuilder instanceof ArcFurnaceRecipeBuilder ||
+					rbuilder instanceof CutterRecipeBuilder ||
+					rbuilder instanceof UniversalDistillationRecipeBuilder) {
 
 					return rmap;
 				}
@@ -486,8 +495,8 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 				return false;
 
 			return MetaTileEntity.addItemsToItemHandler(exportInventory,
-														true,
-														recipe.getAllItemOutputs(exportInventory.getSlots())) &&
+			                                            true,
+			                                            recipe.getAllItemOutputs(exportInventory.getSlots())) &&
 				MetaTileEntity.addFluidsToFluidHandler(exportFluids, true, recipe.getFluidOutputs()) &&
 				recipe.matches(true, importInventory, importFluids);
 		}
@@ -534,7 +543,7 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			}
 
 			if(previousRecipe != null &&
-					previousRecipe.matches(false, importInventory, importFluids)) {
+				previousRecipe.matches(false, importInventory, importFluids)) {
 				currentRecipe = previousRecipe;
 			}
 			else {
@@ -653,11 +662,11 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 				FluidStack currentStack = fluidInputs.getTankAt(i).getFluid();
 				FluidStack lastStack = lastFluidInputs[i];
 				if ((currentStack == null && lastStack != null) ||
-						(currentStack != null && !currentStack.isFluidEqual(lastStack))) {
+					(currentStack != null && !currentStack.isFluidEqual(lastStack))) {
 					this.lastFluidInputs[i] = currentStack == null ? null : currentStack.copy();
 					shouldRecheckRecipe = true;
 				} else if (currentStack != null && lastStack != null &&
-						currentStack.amount != lastStack.amount) {
+					currentStack.amount != lastStack.amount) {
 					lastStack.amount = currentStack.amount;
 					shouldRecheckRecipe = true;
 				}
@@ -677,10 +686,10 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 				IMultipleTankHandler importFluids = getInputTank();
 				IMultipleTankHandler exportFluids = getOutputTank();
 				boolean setup = (totalEUt >= 0 ? getEnergyStored() >= (totalEUt > getEnergyCapacity() / 2 ? resultOverclock[0] : totalEUt) :
-						(getEnergyStored() - resultOverclock[0] <= getEnergyCapacity())) &&
-						MetaTileEntity.addItemsToItemHandler(exportInventory, true, recipe.getAllItemOutputs(exportInventory.getSlots())) &&
-						MetaTileEntity.addFluidsToFluidHandler(exportFluids, true, recipe.getFluidOutputs()) &&
-						recipe.matches(true, importInventory, importFluids);
+					(getEnergyStored() - resultOverclock[0] <= getEnergyCapacity())) &&
+					MetaTileEntity.addItemsToItemHandler(exportInventory, true, recipe.getAllItemOutputs(exportInventory.getSlots())) &&
+					MetaTileEntity.addFluidsToFluidHandler(exportFluids, true, recipe.getFluidOutputs()) &&
+					recipe.matches(true, importInventory, importFluids);
 
 				if (setup) {
 					controller.checkRecipe(recipe, true);
@@ -702,8 +711,8 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			this.fluidOutputs = GTUtility.copyFluidList(recipe.getFluidOutputs());
 			int tier = getMachineTierForRecipe(recipe);
 			this.itemOutputs = GTUtility.copyStackList(recipe.getResultItemOutputs(getOutputInventory().getSlots(),
-																				   random,
-																				   tier));
+			                                                                       random,
+			                                                                       tier));
 
 			if(this.wasActiveAndNeedsUpdate)
 				this.wasActiveAndNeedsUpdate = false;
