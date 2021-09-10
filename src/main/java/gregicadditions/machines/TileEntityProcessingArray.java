@@ -269,7 +269,7 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 
 				boolean found = false;
 				for(ItemStack i : countIngredients)
-					if(ItemStack.areItemStacksEqual(i, wholeItemStack)) {
+					if(areItemStacksEqual(i, wholeItemStack)) {
 						i.setCount(i.getCount() + wholeItemStack.getCount());
 						found = true;
 						break;
