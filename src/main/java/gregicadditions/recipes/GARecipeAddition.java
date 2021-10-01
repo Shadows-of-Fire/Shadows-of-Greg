@@ -716,7 +716,7 @@ public class GARecipeAddition {
 
 				// No ingredients
 				List<Ingredient> ingredients = recipe.getIngredients();
-				if(ingredients.size() <= 0)
+				if(ingredients.isEmpty())
 					continue;
 
 				// Recipe's own inputs are rejected
