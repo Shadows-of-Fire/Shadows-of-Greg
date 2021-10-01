@@ -43,6 +43,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.oredict.OreDictionary;
@@ -710,16 +711,31 @@ public class GARecipeAddition {
 		for (IRecipe recipe : CraftingManager.REGISTRY) {
 			if (recipe.getRecipeOutput().isEmpty()) continue;
 			for (int i : OreDictionary.getOreIDs(recipe.getRecipeOutput())) {
+
+				// Skip cursed recipes:
+
+				// No ingredients
+				List<Ingredient> ingredients = recipe.getIngredients();
+				if(ingredients.size() <= 0)
+					continue;
+
+				// Recipe's own inputs are rejected
+				ItemStack[] matchingStacks = ingredients.get(0).getMatchingStacks();
+				if(matchingStacks.length == 0)
+					continue;
+
+				ItemStack matchingStack = matchingStacks[0];
+
 				if (OreDictionary.getOreName(i).equals("plankWood") && recipe.getIngredients().size() == 1 && recipe.getRecipeOutput().getCount() == 4) {
 					if (GAConfig.GT5U.GeneratedSawingRecipes) {
 						ModHandler.removeRecipeByName(recipe.getRegistryName());
-						ModHandler.addShapelessRecipe("log_to_4_" + recipe.getRecipeOutput().toString(), GTUtility.copyAmount(4, recipe.getRecipeOutput()), recipe.getIngredients().get(0).getMatchingStacks()[0], ToolDictNames.craftingToolSaw);
-						ModHandler.addShapelessRecipe("log_to_2_" + recipe.getRecipeOutput().toString(), GTUtility.copyAmount(2, recipe.getRecipeOutput()), recipe.getIngredients().get(0).getMatchingStacks()[0]);
+						ModHandler.addShapelessRecipe("log_to_4_" + recipe.getRecipeOutput().toString(), GTUtility.copyAmount(4, recipe.getRecipeOutput()), matchingStack, ToolDictNames.craftingToolSaw);
+						ModHandler.addShapelessRecipe("log_to_2_" + recipe.getRecipeOutput().toString(), GTUtility.copyAmount(2, recipe.getRecipeOutput()), matchingStack);
 					}
-					RecipeMaps.CUTTER_RECIPES.recipeBuilder().duration(200).EUt(8).inputs(recipe.getIngredients().get(0).getMatchingStacks()[0]).fluidInputs(Materials.Lubricant.getFluid(1)).outputs(GTUtility.copyAmount(6, recipe.getRecipeOutput()), OreDictUnifier.get(OrePrefix.dust, Materials.Wood, 2)).buildAndRegister();
+					RecipeMaps.CUTTER_RECIPES.recipeBuilder().duration(200).EUt(8).inputs(matchingStack).fluidInputs(Materials.Lubricant.getFluid(1)).outputs(GTUtility.copyAmount(6, recipe.getRecipeOutput()), OreDictUnifier.get(OrePrefix.dust, Materials.Wood, 2)).buildAndRegister();
 				}
 				if (OreDictionary.getOreName(i).equals("slabWood") && recipe.getRecipeOutput().getCount() == 6) {
-					RecipeMaps.CUTTER_RECIPES.recipeBuilder().duration(50).EUt(4).inputs(recipe.getIngredients().get(0).getMatchingStacks()[0]).outputs(GTUtility.copyAmount(2, recipe.getRecipeOutput())).buildAndRegister();
+					RecipeMaps.CUTTER_RECIPES.recipeBuilder().duration(50).EUt(4).inputs(matchingStack).outputs(GTUtility.copyAmount(2, recipe.getRecipeOutput())).buildAndRegister();
 				}
 			}
 		}
