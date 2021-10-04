@@ -431,7 +431,7 @@ public class GATileEntities {
 
 
 		// 2214 - 2221
-		IntStream.range(0, GAConfig.Misc.highTierBundler ? 8 : 4).forEach(tier -> {
+		IntStream.range(0, GAConfig.GT5U.highTierBundler ? 8 : 4).forEach(tier -> {
 			BUNDLER[tier] =
 				GregTechAPI.registerMetaTileEntity(
 					2214 + tier,

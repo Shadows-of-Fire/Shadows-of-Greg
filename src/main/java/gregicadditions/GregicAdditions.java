@@ -1,10 +1,13 @@
 package gregicadditions;
 
+import java.util.Objects;
 import java.util.function.Function;
 
 import forestry.api.core.ForestryAPI;
 import forestry.core.config.Constants;
 import forestry.modules.ForestryModuleUids;
+import gregicadditions.recipes.*;
+import gregtech.api.unification.ore.OrePrefix;
 import gregicadditions.bees.*;
 import net.minecraft.util.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
@@ -13,11 +16,6 @@ import org.apache.logging.log4j.Logger;
 import gregicadditions.item.GAMetaBlocks;
 import gregicadditions.item.GAMetaItems;
 import gregicadditions.machines.GATileEntities;
-import gregicadditions.recipes.GAMachineRecipeRemoval;
-import gregicadditions.recipes.GARecipeAddition;
-import gregicadditions.recipes.GeneratorFuels;
-import gregicadditions.recipes.MachineCraftingRecipes;
-import gregicadditions.recipes.MatterReplication;
 import gregicadditions.tconstruct.TinkersMaterials;
 import gregtech.common.blocks.VariantItemBlock;
 import net.minecraft.block.Block;
@@ -97,17 +95,30 @@ public class GregicAdditions {
 		}
 	}
 
+	@SubscribeEvent
+	public void registerOrePrefix(RegistryEvent.Register<IRecipe> event) {
+		LOGGER.info("Registering ore prefix...");
+
+		// Register GTCE Material Handlers
+		RecipeHandler.register();
+
+		// Run GTCE Material Handlers
+		OrePrefix.runMaterialHandlers();
+	}
+
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public void registerRecipes(RegistryEvent.Register<IRecipe> event) {
+		LOGGER.info("Registering Recipes...");
 		GAMachineRecipeRemoval.init();
-		GARecipeAddition.init();
-		GARecipeAddition.init2();
+		GARecipeAddition.miscCraftingRecipes();
+		GARecipeAddition.miscSingleblockMachineRecipes();
+		GARecipeAddition.miscMultiblockRecipes();
 		GARecipeAddition.forestrySupport();
+		ComponentRegistration.init();
 		MatterReplication.init();
 		MachineCraftingRecipes.init();
 		GeneratorFuels.init();
 		GAMetaItems.registerOreDict();
-		GAMetaItems.registerRecipes();
 		GARecipeAddition.generatedRecipes();
 		if (!isForestryBeesDisabled()) {
 			GTMachineCombRecipes.init();
@@ -116,7 +127,7 @@ public class GregicAdditions {
 
 	private <T extends Block> ItemBlock createItemBlock(T block, Function<T, ItemBlock> producer) {
 		ItemBlock itemBlock = producer.apply(block);
-		itemBlock.setRegistryName(block.getRegistryName());
+		itemBlock.setRegistryName(Objects.requireNonNull(block.getRegistryName()));
 		return itemBlock;
 	}
 }

@@ -21,7 +21,6 @@ import net.minecraft.util.EnumFacing;
 public class ProcessingArrayInfo extends MultiblockInfoPage {
 
 	public ProcessingArrayInfo() {
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override

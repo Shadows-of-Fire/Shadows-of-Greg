@@ -3,15 +3,15 @@ package gregicadditions.recipes;
 import forestry.core.fluids.Fluids;
 import gregicadditions.GAConfig;
 import gregicadditions.GAMaterials;
-import gregicadditions.GregicAdditions;
 import gregtech.api.GTValues;
 import gregtech.api.recipes.RecipeMaps;
-import gregtech.api.recipes.machines.FuelRecipeMap;
 import gregtech.api.recipes.recipes.FuelRecipe;
 import gregtech.api.unification.material.Materials;
 import gregtech.loaders.recipe.FuelRecipes;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.common.Loader;
+
+import static gregicadditions.recipes.helpers.HelperMethods.removeFuelRecipe;
 
 public class GeneratorFuels {
 	public static void init() {
@@ -55,12 +55,5 @@ public class GeneratorFuels {
 		GARecipeMaps.NAQUADAH_REACTOR_FUELS.addRecipe(new FuelRecipe(fuelStack, duration, GTValues.V[tier]));
 	}
 
-	private static void removeFuelRecipe(FuelRecipeMap map, FluidStack fluidStack) {
-		if(map.removeRecipe(map.findRecipe(Integer.MAX_VALUE, fluidStack))) {
-			GregicAdditions.LOGGER.debug("Removed Generator Recipe for {} for Fluid: {}", map.getUnlocalizedName(), fluidStack.getLocalizedName());
-		}
-		else {
-			GregicAdditions.LOGGER.warn("Failed to remove Generator Recipe for {} for Fluid: {}", map.getUnlocalizedName(), fluidStack.getLocalizedName());
-		}
-	}
+
 }
