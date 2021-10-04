@@ -30,6 +30,7 @@ import gregtech.api.unification.material.type.Material;
 import gregtech.api.unification.ore.OrePrefix;
 import gregtech.api.unification.stack.MaterialStack;
 import gregtech.api.unification.stack.UnificationEntry;
+import gregtech.api.util.GTLog;
 import gregtech.api.util.GTUtility;
 import gregtech.common.blocks.BlockMachineCasing;
 import gregtech.common.blocks.BlockMultiblockCasing.MultiblockCasingType;
@@ -714,15 +715,17 @@ public class GARecipeAddition {
 
 				// Skip cursed recipes:
 
-				// No ingredients
 				List<Ingredient> ingredients = recipe.getIngredients();
-				if(ingredients.isEmpty())
+				if(ingredients.isEmpty()) {
+					GTLog.logger.warn("Skipping recipe with no ingredients: {}", recipe.getRegistryName());
 					continue;
+				}
 
-				// Recipe's own inputs are rejected
 				ItemStack[] matchingStacks = ingredients.get(0).getMatchingStacks();
-				if(matchingStacks.length == 0)
+				if(matchingStacks.length == 0) {
+					GTLog.logger.warn("Skipping recipe whose own inputs were rejected: {}}", recipe.getRegistryName());
 					continue;
+				}
 
 				ItemStack matchingStack = matchingStacks[0];
 
