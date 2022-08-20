@@ -500,6 +500,7 @@ gtadditions.multiblock.processing_array.distinct2=[Click %s to Toggle]
 gtadditions.multiblock.processing_array.distinct.yes=§aYes
 gtadditions.multiblock.processing_array.distinct.no=§cNo
 gtadditions.multiblock.processing_array.distinct.info=If enabled, each bus will be treated as fully distinct from each other for recipe lookup. Useful for things like Extruder Shapes, Laser Lenses, etc..
+gtadditions.multiblock.processing_array.distinct.no_bus=There must be at least 1 item input for distinct mode to be enabled
 gtadditions.multiblock.processing_array.locked=§cMachine Hatch Locked
 
 # Assembly Line

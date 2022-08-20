@@ -96,17 +96,22 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 	protected void addDisplayText(List<ITextComponent> textList) {
 		super.addDisplayText(textList);
 
-		ITextComponent buttonText = new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct");
-		buttonText.appendText(" ");
-		ITextComponent button = withButton((isDistinctInputBusMode ?
-			new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct.yes") :
-			new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct.no")), "distinct");
-		withHoverTextTranslate(button, "gtadditions.multiblock.processing_array.distinct.info");
-		buttonText.appendSibling(button);
-		textList.add(buttonText);
-		textList.add(new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct2", isDistinctInputBusMode ?
-			new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct.yes") :
-			new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct.no")));
+		if(inputInventory.getSlots() > 0) {
+			ITextComponent buttonText = new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct");
+			buttonText.appendText(" ");
+			ITextComponent button = withButton((isDistinctInputBusMode ?
+					new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct.yes") :
+					new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct.no")), "distinct");
+			withHoverTextTranslate(button, "gtadditions.multiblock.processing_array.distinct.info");
+			buttonText.appendSibling(button);
+			textList.add(buttonText);
+			textList.add(new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct2", isDistinctInputBusMode ?
+					new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct.yes") :
+					new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct.no")));
+		}
+		else {
+			textList.add(new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct.no_bus"));
+		}
 		if(this.recipeMapWorkable.isActive()) {
 			textList.add(new TextComponentTranslation("gtadditions.multiblock.processing_array.locked"));
 		}
