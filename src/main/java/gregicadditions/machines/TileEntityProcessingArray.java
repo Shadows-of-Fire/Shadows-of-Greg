@@ -96,20 +96,40 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 	protected void addDisplayText(List<ITextComponent> textList) {
 		super.addDisplayText(textList);
 
-		ITextComponent buttonText = new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct");
-		buttonText.appendText(" ");
-		ITextComponent button = withButton((isDistinctInputBusMode ?
-			new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct.yes") :
-			new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct.no")), "distinct");
-		withHoverTextTranslate(button, "gtadditions.multiblock.processing_array.distinct.info");
-		buttonText.appendSibling(button);
-		textList.add(buttonText);
-		textList.add(new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct2", isDistinctInputBusMode ?
-			new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct.yes") :
-			new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct.no")));
+		// if the structure isn't formed, no need to add extra text
+		if(!isStructureFormed())
+			return;
+
+		final boolean isDistinctModeAvailable = inputInventory.getSlots() > 0;
+
+		// Display a clickable toggle button with accompanying hint text
+		if(isDistinctModeAvailable) {
+			final String modeTranslationKey = "gtadditions.multiblock.processing_array.distinct." +
+				(isDistinctInputBusMode ? "yes" : "no");
+			textList.add(makeDistinctModeToggleButton(modeTranslationKey));
+			textList.add(new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct2",
+			                                          new TextComponentTranslation(modeTranslationKey)));
+		}
+		else
+			textList.add(makeDistinctModeUnavailableTextComponent());
+
 		if(this.recipeMapWorkable.isActive()) {
 			textList.add(new TextComponentTranslation("gtadditions.multiblock.processing_array.locked"));
 		}
+	}
+
+	private ITextComponent makeDistinctModeToggleButton(String translationKey) {
+		ITextComponent label = new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct");
+		ITextComponent modeButton = withButton(new TextComponentTranslation(translationKey), "distinct");
+		withHoverTextTranslate(modeButton, "gtadditions.multiblock.processing_array.distinct.info");
+		return label.appendText(" ").appendSibling(modeButton);
+	}
+
+	private ITextComponent makeDistinctModeUnavailableTextComponent() {
+		ITextComponent label = new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct");
+		ITextComponent modeText = new TextComponentTranslation("gtadditions.multiblock.processing_array.distinct.disabled");
+		withHoverTextTranslate(modeText, "gtadditions.multiblock.processing_array.distinct.no_bus");
+		return label.appendText(" ").appendSibling(modeText);
 	}
 
 	@Override
@@ -563,7 +583,9 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			//Update the stored machine stack and recipe map variables
 			findMachineStack();
 			if (machineItemStack.isEmpty()) return;
-			if (metaTileEntity instanceof TileEntityProcessingArray && ((TileEntityProcessingArray) metaTileEntity).isDistinctInputBusMode) {
+			if(metaTileEntity instanceof TileEntityProcessingArray &&
+			   getInputInventory().getSlots() > 0 &&
+			   ((TileEntityProcessingArray) metaTileEntity).isDistinctInputBusMode) {
 				trySearchNewRecipeDistinct();
 			} else {
 				trySearchNewRecipeCombined();
