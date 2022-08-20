@@ -570,7 +570,9 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 
 		@Override
 		protected void trySearchNewRecipe() {
-			if(metaTileEntity instanceof TileEntityProcessingArray && ((TileEntityProcessingArray) metaTileEntity).isDistinctInputBusMode) {
+			if(metaTileEntity instanceof TileEntityProcessingArray &&
+			   getInputInventory().getSlots() > 0 &&
+			   ((TileEntityProcessingArray) metaTileEntity).isDistinctInputBusMode) {
 				trySearchNewRecipeDistinct();
 			}
 			else {
