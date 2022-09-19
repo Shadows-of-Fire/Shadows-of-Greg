@@ -654,8 +654,10 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 				multipliedRecipe = multiplyRecipe(importInventory.get(lastRecipeIndex), importFluids, currentRecipe, machineItemStack, recipeMap);
 				if(setupAndConsumeRecipeInputs(multipliedRecipe, lastRecipeIndex)) {
 					setupRecipe(multipliedRecipe);
-					return;
 				}
+				//if the recipe matches return true we HAVE enough of the input to proceed, but are not proceeding due to either lack of energy or output space.
+				//return earlier to avoid refreshing the input cache too early and missing the inventory change when this recipe is actually invalid.
+				return;
 			}
 
 			//If the previous recipe is null, check for a new recipe
@@ -676,9 +678,13 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 					multipliedRecipe = multiplyRecipe(bus, importFluids, currentRecipe, machineItemStack, recipeMap);
 				}
 
-				if(multipliedRecipe != null && setupAndConsumeRecipeInputs(multipliedRecipe, i)) {
+				if(multipliedRecipe != null) {
+					if(setupAndConsumeRecipeInputs(multipliedRecipe, i)) {
+						setupRecipe(multipliedRecipe);
+					}
+					//if the recipe matches return true we HAVE enough of the input to proceed, but are not proceeding due to either lack of energy or output space.
+					//return earlier to avoid refreshing the input cache too early and missing the inventory change when this recipe is actually invalid.
 					lastRecipeIndex = i;
-					setupRecipe(multipliedRecipe);
 					break;
 				}
 			}
