@@ -402,6 +402,9 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			this.machineTier = 0;
 			this.numberOfMachines = 0;
 			this.numberOfOperations = 0;
+			this.lastItemInputsMatrix = null;
+			this.lastItemInputs = null;
+			this.lastFluidInputs = null;
 		}
 
 		//Finds the Recipe Map of the passed Machine Stack and checks if it is a valid Recipe Map
@@ -475,6 +478,11 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 
 			//The Processing Array is limited to 1 Machine Interface per multiblock, and only has 1 slot
 			ItemStack currentMachine = controller.getAbilities(GACapabilities.PA_MACHINE_CONTAINER).get(0).getStackInSlot(0);
+
+			if (currentMachine.isEmpty()) {
+				invalidate();
+				return;
+			}
 
 			if (!ItemStack.areItemStacksEqual(this.machineItemStack, currentMachine)) {
 				RecipeMap<?> rmap = findRecipeMapAndCheckValid(currentMachine);
