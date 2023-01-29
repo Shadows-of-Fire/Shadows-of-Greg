@@ -22,6 +22,6 @@ Some features implemented specifically in this mod are:
 
 ----
 
-This mod was originally created by [Shadows-of-Fire](https://github.com/Shadows-of-Fire), but has had development and bug fixes taken over by the [Omnifactory Development Team](https://github.com/OmnifactoryDevs) for Minecraft 1.12.2. 
+This mod was originally created by [Shadows-of-Fire](https://github.com/Shadows-of-Fire), but has had development and bug fixes taken over by the [Nomifactory Team](https://github.com/Nomifactory) for Minecraft 1.12.2. 
 
-[Omnifactory](https://www.curseforge.com/minecraft/modpacks/omnifactory) is a Gregtech CE based modpack, heavily focused on automation and factory creation and features Shadows-of-Greg as one of the key endgame mods. 
+[Nomifactory](https://www.curseforge.com/minecraft/modpacks/nomifactory) is a Gregtech CE based modpack, heavily focused on automation and factory creation and features Shadows-of-Greg as one of the key endgame mods. 
