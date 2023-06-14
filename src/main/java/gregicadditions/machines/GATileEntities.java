@@ -2,6 +2,7 @@ package gregicadditions.machines;
 
 import gregicadditions.GAConfig;
 import gregicadditions.GregicAdditions;
+import gregicadditions.Tags;
 import gregicadditions.client.ClientHandler;
 import gregicadditions.recipes.GARecipeMaps;
 import gregtech.api.GTValues;
@@ -443,6 +444,6 @@ public class GATileEntities {
 	}
 
 	private static ResourceLocation location(String name) {
-		return new ResourceLocation(GregicAdditions.MODID, name);
+		return new ResourceLocation(Tags.MODID, name);
 	}
 }

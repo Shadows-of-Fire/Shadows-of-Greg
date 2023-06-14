@@ -1,6 +1,7 @@
 package gregicadditions.client;
 
 import gregicadditions.GregicAdditions;
+import gregicadditions.Tags;
 import gregicadditions.item.GAMetaBlocks;
 import gregicadditions.machines.CrateRenderer;
 import gregicadditions.machines.DrumRenderer;
@@ -12,7 +13,7 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
-@EventBusSubscriber(modid = GregicAdditions.MODID, value = Side.CLIENT)
+@EventBusSubscriber(modid = Tags.MODID, value = Side.CLIENT)
 public class ClientHandler {
 
 	public static SimpleCubeRenderer FUSION_TEXTURE = new SimpleCubeRenderer("casings/fusion/machine_casing_fusion_glass");

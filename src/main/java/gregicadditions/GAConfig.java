@@ -6,8 +6,8 @@ import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-@Mod.EventBusSubscriber(modid = GregicAdditions.MODID)
-@Config(modid = GregicAdditions.MODID)
+@Mod.EventBusSubscriber(modid = Tags.MODID)
+@Config(modid = Tags.MODID)
 public class GAConfig {
 
 	@Config.Comment("Config options for GT6 features")
@@ -271,8 +271,8 @@ public class GAConfig {
 
 	@SubscribeEvent
 	static void configChanged(final ConfigChangedEvent.OnConfigChangedEvent event) {
-		if(GregicAdditions.MODID.equals(event.getModID())) {
-			ConfigManager.sync(GregicAdditions.MODID, Config.Type.INSTANCE);
+		if(Tags.MODID.equals(event.getModID())) {
+			ConfigManager.sync(Tags.MODID, Config.Type.INSTANCE);
 		}
 	}
 
