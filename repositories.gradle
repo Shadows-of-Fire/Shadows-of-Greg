@@ -1,10 +1,10 @@
 // Add any additional repositories for your dependencies here
 
-repositories {
-
-    maven {
-        name = "Forestry Maven"
-        url = "http://maven.ic2.player.to"
-    }
-
-}
+//repositories {
+//
+//    maven {
+//        name = "Forestry Maven"
+//        url = "http://maven.ic2.player.to"
+//    }
+//
+//}
