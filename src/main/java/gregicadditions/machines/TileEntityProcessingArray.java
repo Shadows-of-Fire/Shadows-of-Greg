@@ -39,6 +39,8 @@ import static gregtech.api.gui.widgets.AdvancedTextWidget.*;
 import static gregtech.api.util.Predicates.*;
 
 public class TileEntityProcessingArray extends RecipeMapMultiblockController {
+	// start out true so that PAs aren't stuck on world load
+	private boolean machineChanged = true;
 
 	private static final MultiblockAbility<?>[] ALLOWED_ABILITIES = {
 		MultiblockAbility.IMPORT_ITEMS,
@@ -169,7 +171,11 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 		((ProcessingArrayWorkable) this.recipeMapWorkable).invalidate();
 	}
 
-	protected static class ProcessingArrayWorkable extends MultiblockRecipeLogic {
+	public void notifyMachineChanged() {
+		machineChanged = true;
+	}
+
+	protected class ProcessingArrayWorkable extends MultiblockRecipeLogic {
 		/** The voltage this machine operates at */
 		long machineVoltage;
 		/** The GTValues.V tier ordinal for the machine's tier */
@@ -178,12 +184,53 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 		int numberOfOperations = 0;
 		ItemStack machineItemStack = ItemStack.EMPTY;
 		RecipeMap<?> recipeMap = null;
-		// Fields used for distinct mode
-		protected int lastRecipeIndex = 0;
-		protected ItemStack[][] lastItemInputsMatrix;
+
+		// Stuff for Distinct Mode
+		/** Index of the last bus used for distinct mode */
+		int lastRecipeIndex = 0;
+		/** Records invalidated inputs for Distinct Mode logic */
+		List<IItemHandlerModifiable> invalidatedInputList = new ArrayList<>();
 
 		public ProcessingArrayWorkable(RecipeMapMultiblockController tileEntity) {
 			super(tileEntity);
+		}
+
+		@Override
+		public void invalidate() {
+			super.invalidate();
+			lastRecipeIndex = 0;
+			invalidatedInputList.clear();
+			machineItemStack = ItemStack.EMPTY;
+			machineChanged = true;
+			machineTier = 0;
+			machineVoltage = 0L;
+			recipeMap = null;
+		}
+
+		@Override
+		protected boolean shouldSearchForRecipes() {
+			return canWorkWithMachines() && super.shouldSearchForRecipes();
+		}
+
+		/**
+		 * Determines whether the machines in the holder are usable.<br />
+		 * If the machine stack is dirty, it will perform validation first.
+		 *
+		 * @return {@code true} if the current machine stack is usable.
+		 */
+		public boolean canWorkWithMachines() {
+			if(machineChanged) {
+				findMachineStack();
+				machineChanged = false;
+				previousRecipe = null;
+				if(isDistinctInputBusMode) {
+					invalidatedInputList.clear();
+				} else {
+					invalidInputsForRecipes = false;
+				}
+			}
+
+			return (!machineItemStack.isEmpty() && this.recipeMap != null);
 		}
 
 		/*
@@ -394,19 +441,6 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 				                                                                           fluidStack.amount * numberOfOperations)));
 		}
 
-		public void invalidate() {
-			this.lastRecipeIndex = 0;
-			this.machineItemStack = ItemStack.EMPTY;
-			this.recipeMap = null;
-			this.machineVoltage = 0L;
-			this.machineTier = 0;
-			this.numberOfMachines = 0;
-			this.numberOfOperations = 0;
-			this.lastItemInputsMatrix = null;
-			this.lastItemInputs = null;
-			this.lastFluidInputs = null;
-		}
-
 		//Finds the Recipe Map of the passed Machine Stack and checks if it is a valid Recipe Map
 		public static RecipeMap<?> findRecipeMapAndCheckValid(ItemStack machineStack) {
 
@@ -531,6 +565,21 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			return setupAndConsumeRecipeInputs(recipe, getInputBuses().get(index));
 		}
 
+		private static class SetupResult {
+			boolean hadEnoughPower;
+			boolean hadRoomForFluids;
+			boolean hadRoomForItems;
+			boolean recipeMatched;
+
+			public boolean succeeded() {
+				return hadEnoughPower && hadRoomForFluids && hadRoomForItems && recipeMatched;
+			}
+
+			public boolean outputsFull() {
+				return !(hadRoomForItems && hadRoomForFluids);
+			}
+		}
+
 		/**
 		 * If possible, consumes the ingredients for a recipe from the target inventory in preparation for starting the
 		 * craft.
@@ -545,14 +594,24 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			IMultipleTankHandler importFluids = getInputTank();
 			IMultipleTankHandler exportFluids = getOutputTank();
 
+			// Check if there's enough energy to even start this recipe
 			if(!haveEnoughPowerToProceed(recipe, machineVoltage, this.numberOfOperations))
 				return false;
 
-			return MetaTileEntity.addItemsToItemHandler(exportInventory,
-			                                            true,
-			                                            recipe.getAllItemOutputs(exportInventory.getSlots())) &&
-				MetaTileEntity.addFluidsToFluidHandler(exportFluids, true, recipe.getFluidOutputs()) &&
-				recipe.matches(true, importInventory, importFluids);
+			// Ensure there's enough room for items, otherwise mark outputs read and bail out
+			if(!MetaTileEntity.addItemsToItemHandler(exportInventory, true, recipe.getAllItemOutputs(exportInventory.getSlots()))) {
+				this.isOutputsFull = true;
+				return false;
+			}
+
+			// Ensure there's enough room for fluids, otherwise mark outputs read and bail out
+			if(!MetaTileEntity.addFluidsToFluidHandler(exportFluids, true, recipe.getFluidOutputs())) {
+				this.isOutputsFull = true;
+				return false;
+			}
+
+			this.isOutputsFull = false;
+			return recipe.matches(true, importInventory, importFluids);
 		}
 
 		/**
@@ -586,14 +645,93 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			return enoughPower;
 		}
 
+		private boolean useDistinctLogic() {
+			return metaTileEntity instanceof TileEntityProcessingArray &&
+				((TileEntityProcessingArray) metaTileEntity).isDistinctInputBusMode &&
+				getInputInventory().getSlots() > 0;
+		}
+
+		@Override
+		protected boolean canWorkWithInputs() {
+			return useDistinctLogic() ? canWorkWithDistinctInputs() : super.canWorkWithInputs();
+		}
+
+		/**
+		 * Determines if any input buses have changed since the last distinct mode recipe check.
+		 * All such buses are marked valid and the change notification cleared.
+		 *
+		 * @return {@code true} if any buses were validated during this check.
+		 */
+		private boolean validateChangedInputBuses() {
+			boolean anyValidated = false;
+
+			// Iterate over all input buses that have reported a change
+			Iterator<IItemHandlerModifiable> notifiedIter = metaTileEntity.getNotifiedItemInputList().iterator();
+			while (notifiedIter.hasNext()) {
+				IItemHandlerModifiable bus = notifiedIter.next();
+
+				// Find and validate this bus, if it is currently listed as invalid
+				Iterator<IItemHandlerModifiable> invalidatedIter = invalidatedInputList.iterator();
+				while (invalidatedIter.hasNext()) {
+					IItemHandler invalidatedHandler = invalidatedIter.next();
+
+					// recurse into handler lists; we need the specific handler
+					if (invalidatedHandler instanceof ItemHandlerList) {
+						for (IItemHandler ih : ((ItemHandlerList) invalidatedHandler).getBackingHandlers()) {
+							if (ih == bus) {
+								anyValidated = true;
+								invalidatedIter.remove();
+								break;
+							}
+						}
+					} else if (invalidatedHandler == bus) {
+						anyValidated = true;
+						invalidatedIter.remove();
+					}
+				}
+				notifiedIter.remove();
+			}
+
+			return anyValidated;
+		}
+
+		/**
+		 * Handles the logic for determining whether work can be done in distinct mode
+		 */
+		protected boolean canWorkWithDistinctInputs() {
+			// if we haven't marked any buses invalid, proceed
+			if (invalidatedInputList.isEmpty())
+				return true;
+
+			// If a fluid input changed, clear notifications/invalidations and proceed from scratch.
+			if (!metaTileEntity.getNotifiedFluidInputList().isEmpty()) {
+				invalidatedInputList.clear();
+				metaTileEntity.getNotifiedFluidInputList().clear();
+				metaTileEntity.getNotifiedItemInputList().clear();
+				return true;
+			}
+
+			// If any of the invalid buses changed since last check, proceed.
+			if(validateChangedInputBuses())
+				return true;
+
+			// If we're here, no inputs have changed since the last check but at least one is invalid.
+			// Proceed if at least one item handler hasn't been marked invalid.
+
+			// Collect all item handlers
+			ArrayList<IItemHandler> flattenedHandlers = new ArrayList<>();
+			for(IItemHandler ih : getInputBuses()) {
+				if (ih instanceof ItemHandlerList)
+					flattenedHandlers.addAll(((ItemHandlerList) ih).getBackingHandlers());
+				flattenedHandlers.add(ih);
+			}
+
+			return (!invalidatedInputList.containsAll(flattenedHandlers));
+		}
+
 		@Override
 		protected void trySearchNewRecipe() {
-			//Update the stored machine stack and recipe map variables
-			findMachineStack();
-			if (machineItemStack.isEmpty()) return;
-			if(metaTileEntity instanceof TileEntityProcessingArray &&
-			   getInputInventory().getSlots() > 0 &&
-			   ((TileEntityProcessingArray) metaTileEntity).isDistinctInputBusMode) {
+			if(useDistinctLogic()) {
 				trySearchNewRecipeDistinct();
 			} else {
 				trySearchNewRecipeCombined();
@@ -603,132 +741,86 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 		private void trySearchNewRecipeCombined() {
 			long maxVoltage = getMaxVoltage();
 			Recipe currentRecipe = null;
-			Recipe multipliedRecipe = null;
 			IItemHandlerModifiable importInventory = getInputInventory();
 			IMultipleTankHandler importFluids = getInputTank();
 
-			if (previousRecipe != null &&
-					previousRecipe.matches(false, importInventory, importFluids)) {
-				currentRecipe = previousRecipe;
-			}
-
-			boolean dirty = checkRecipeInputsDirty(importInventory, importFluids);
-			if (dirty || forceRecipeRecheck) {
-				this.forceRecipeRecheck = false;
-				//If the previous recipe was null, or does not match the current recipe, search for a new recipe
+			// see if the last recipe we used still works
+			if (this.previousRecipe != null &&
+				this.previousRecipe.matches(false, importInventory, importFluids))
+				currentRecipe = this.previousRecipe;
+				// If there is no active recipe, then we need to find one.
+			else
 				currentRecipe = findRecipe(maxVoltage, importInventory, importFluids);
 
-				//Update the previous recipe
-				if (currentRecipe != null) {
-					this.previousRecipe = currentRecipe;
-				}
-			}
+			// If a recipe was found, then inputs were valid. Cache found recipe.
+			if (currentRecipe != null)
+				this.previousRecipe = currentRecipe;
 
+			this.invalidInputsForRecipes = (currentRecipe == null);
+
+			// proceed if we have a usable recipe.
 			if (currentRecipe != null) {
-				multipliedRecipe = multiplyRecipe(importInventory, importFluids, currentRecipe, machineItemStack, recipeMap);
+				Recipe multipliedRecipe = multiplyRecipe(importInventory, importFluids, currentRecipe, machineItemStack, recipeMap);
+
+				//Attempts to run the current recipe, if it is not null
+				if (multipliedRecipe != null && setupAndConsumeRecipeInputs(multipliedRecipe))
+					setupRecipe(multipliedRecipe);
 			}
 
-			//Attempts to run the current recipe, if it is not null
-			if (multipliedRecipe != null && setupAndConsumeRecipeInputs(multipliedRecipe)) {
-				setupRecipe(multipliedRecipe);
-			}
+			// Inputs have been inspected.
+			metaTileEntity.getNotifiedItemInputList().clear();
+			metaTileEntity.getNotifiedFluidInputList().clear();
 		}
-
-		// ------------------------------ Distinct Bus Logic -----------------------------------------------
-		// Distinct bus logic thanks to dan
 
 		private void trySearchNewRecipeDistinct() {
 			long maxVoltage = getMaxVoltage();
 			Recipe currentRecipe = null;
-			Recipe multipliedRecipe = null;
 			List<IItemHandlerModifiable> importInventory = getInputBuses();
 			IMultipleTankHandler importFluids = getInputTank();
 
-			// Cache the old fluid inputs
-			final FluidStack[] cachedLastFluids =
-				(lastFluidInputs == null) ? null : Arrays.copyOf(this.lastFluidInputs, lastFluidInputs.length);
+			// Can we reuse the cached recipe?
+			if (previousRecipe != null &&
+				previousRecipe.matches(false, importInventory.get(lastRecipeIndex), importFluids)) {
 
-			//Check if the previous recipe is null, to avoid having to iterate the distinct inputs
-			if(previousRecipe != null && previousRecipe.matches(false, importInventory.get(lastRecipeIndex), importFluids)) {
 				currentRecipe = previousRecipe;
-				multipliedRecipe = multiplyRecipe(importInventory.get(lastRecipeIndex), importFluids, currentRecipe, machineItemStack, recipeMap);
+				Recipe multipliedRecipe = multiplyRecipe(importInventory.get(lastRecipeIndex), importFluids, currentRecipe, machineItemStack, recipeMap);
 				if(setupAndConsumeRecipeInputs(multipliedRecipe, lastRecipeIndex)) {
 					setupRecipe(multipliedRecipe);
 				}
 				//if the recipe matches return true we HAVE enough of the input to proceed, but are not proceeding due to either lack of energy or output space.
-				//return earlier to avoid refreshing the input cache too early and missing the inventory change when this recipe is actually invalid.
 				return;
 			}
 
 			//If the previous recipe is null, check for a new recipe
-			for (int i = 0; i < importInventory.size(); i++) {
+			for(int i = 0; i < importInventory.size(); i++) {
 				IItemHandlerModifiable bus = importInventory.get(i);
-				// Restore the cached fluid inputs before each per-bus dirty check to prevent false negatives
-				lastFluidInputs =
-					(cachedLastFluids == null) ? null : Arrays.copyOf(cachedLastFluids, cachedLastFluids.length);
-				boolean dirty = checkRecipeInputsDirty(bus, importFluids, i);
-				if (dirty || forceRecipeRecheck) {
-					this.forceRecipeRecheck = false;
-					currentRecipe = findRecipe(maxVoltage, bus, importFluids);
-					if(currentRecipe != null) {
-						this.previousRecipe = currentRecipe;
-					}
-				}
-				if(currentRecipe != null) {
-					multipliedRecipe = multiplyRecipe(bus, importFluids, currentRecipe, machineItemStack, recipeMap);
+
+				// skip this bus if nothing's changed since last check
+				if (invalidatedInputList.contains(bus))
+					continue;
+
+				// see if another recipe can be run
+				currentRecipe = findRecipe(maxVoltage, bus, importFluids);
+
+				// if no valid recipe was found, mark this bus invalid and try the next one.
+				if(currentRecipe == null) {
+					invalidatedInputList.add(bus);
+					continue;
 				}
 
-				if(multipliedRecipe != null) {
-					if(setupAndConsumeRecipeInputs(multipliedRecipe, i)) {
-						setupRecipe(multipliedRecipe);
-					}
-					//if the recipe matches return true we HAVE enough of the input to proceed, but are not proceeding due to either lack of energy or output space.
-					//return earlier to avoid refreshing the input cache too early and missing the inventory change when this recipe is actually invalid.
+				// Cache the base recipe
+				this.previousRecipe = currentRecipe;
+
+				// Scale the recipe
+				Recipe multipliedRecipe = multiplyRecipe(bus, importFluids, currentRecipe, machineItemStack, recipeMap);
+
+				// Got a usable multiplied recipe, proceed with that.
+				if(multipliedRecipe != null && setupAndConsumeRecipeInputs(multipliedRecipe, i)) {
+					setupRecipe(multipliedRecipe);
 					lastRecipeIndex = i;
-					break;
+					return; // success, stop here.
 				}
 			}
-		}
-
-		// Replacing this for optimization reasons
-		protected boolean checkRecipeInputsDirty(IItemHandler inputs, IMultipleTankHandler fluidInputs, int index) {
-			boolean shouldRecheckRecipe = false;
-
-			if (lastItemInputsMatrix == null || lastItemInputsMatrix.length != getInputBuses().size()) {
-				lastItemInputsMatrix = new ItemStack[getInputBuses().size()][];
-			}
-			if (lastItemInputsMatrix[index] == null || lastItemInputsMatrix[index].length != inputs.getSlots()) {
-				this.lastItemInputsMatrix[index] = new ItemStack[inputs.getSlots()];
-				Arrays.fill(lastItemInputsMatrix[index], ItemStack.EMPTY);
-			}
-			if (lastFluidInputs == null || lastFluidInputs.length != fluidInputs.getTanks()) {
-				this.lastFluidInputs = new FluidStack[fluidInputs.getTanks()];
-			}
-			for (int i = 0; i < lastItemInputsMatrix[index].length; i++) {
-				ItemStack currentStack = inputs.getStackInSlot(i);
-				ItemStack lastStack = lastItemInputsMatrix[index][i];
-				if (!areItemStacksEqual(currentStack, lastStack)) {
-					this.lastItemInputsMatrix[index][i] = currentStack.isEmpty() ? ItemStack.EMPTY : currentStack.copy();
-					shouldRecheckRecipe = true;
-				} else if (currentStack.getCount() != lastStack.getCount()) {
-					lastStack.setCount(currentStack.getCount());
-					shouldRecheckRecipe = true;
-				}
-			}
-			for (int i = 0; i < lastFluidInputs.length; i++) {
-				FluidStack currentStack = fluidInputs.getTankAt(i).getFluid();
-				FluidStack lastStack = lastFluidInputs[i];
-				if ((currentStack == null && lastStack != null) ||
-					(currentStack != null && !currentStack.isFluidEqual(lastStack))) {
-					this.lastFluidInputs[i] = currentStack == null ? null : currentStack.copy();
-					shouldRecheckRecipe = true;
-				} else if (currentStack != null && lastStack != null &&
-					currentStack.amount != lastStack.amount) {
-					lastStack.amount = currentStack.amount;
-					shouldRecheckRecipe = true;
-				}
-			}
-			return shouldRecheckRecipe;
 		}
 
 		// ------------------------------- End Distinct Bus Logic ------------------------------------------------
