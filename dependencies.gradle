@@ -24,10 +24,8 @@
 dependencies {
 
     compileOnlyApi rfg.deobf("CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-4.1.20.689")
-    compileOnlyApi rfg.deobf("curse.maven:forestry-59751:2684780") // Forestry 5.8.2.387
-    //compileOnlyApi rfg.deobf("net.sengir.forestry:forestry_1.12.2:5.8.2.422")
+    compileOnlyApi rfg.deobf("curse.maven:forestry-59751:2918418") // Forestry 5.8.2.422
     implementation rfg.deobf("curse.maven:gregtechce-293327:3388082")
-    //deobfCompile "codechicken:ChickenASM:1.12-+"
     implementation rfg.deobf("curse.maven:codechicken-lib-1-8-242818:2779848")
     compileOnlyApi rfg.deobf("curse.maven:mantle-74924:2713386")
     compileOnlyApi rfg.deobf("curse.maven:TConstruct-74072:2902483")
