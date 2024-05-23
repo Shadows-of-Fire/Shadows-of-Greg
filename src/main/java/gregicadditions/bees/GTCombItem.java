@@ -10,6 +10,7 @@ import forestry.api.core.Tabs;
 import forestry.core.items.IColoredItem;
 import forestry.core.utils.ItemTooltipUtil;
 import gregicadditions.GregicAdditions;
+import gregicadditions.Tags;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
@@ -28,8 +29,8 @@ public class GTCombItem extends Item implements IColoredItem, IItemModelRegister
 		setMaxDamage(0);
 		setHasSubtypes(true);
 		setCreativeTab(Tabs.tabApiculture);
-		setRegistryName(GregicAdditions.MODID, "comb");
-		setTranslationKey(GregicAdditions.MODID + ":comb");
+		setRegistryName(Tags.MODID, "comb");
+		setTranslationKey(Tags.MODID + ":comb");
 	}
 
 	@Optional.Method(modid = "forestry")
@@ -49,7 +50,7 @@ public class GTCombItem extends Item implements IColoredItem, IItemModelRegister
 	@Override
 	public void registerModel(Item item, IModelManager manager) {
 		for (int i = 0; i < GTCombs.VALUES.length; i++) {
-			manager.registerItemModel(item, i, GregicAdditions.MODID, "comb");
+			manager.registerItemModel(item, i, Tags.MODID, "comb");
 		}
 	}
 
