@@ -1,6 +1,7 @@
 package gregicadditions.machines;
 
 import gregicadditions.GACapabilities;
+import gregtech.api.capability.impl.NotifiableItemStackHandler;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.MetaTileEntityHolder;
 import gregtech.api.metatileentity.multiblock.IMultiblockAbilityPart;
@@ -21,7 +22,7 @@ public class MetaTileEntityMachineHolder extends MetaTileEntityItemBus implement
 
     public MetaTileEntityMachineHolder(ResourceLocation metaTileEntityId) {
         super(metaTileEntityId, 0, false);
-        machineItemHandler = new MachineImportItemHandler();
+        machineItemHandler = new MachineImportItemHandler(this);
         initializeInventory();
     }
 
@@ -55,7 +56,11 @@ public class MetaTileEntityMachineHolder extends MetaTileEntityItemBus implement
         return machineItemHandler;
     }
 
-    private class MachineImportItemHandler extends ItemStackHandler {
+    private class MachineImportItemHandler extends NotifiableItemStackHandler {
+
+        public MachineImportItemHandler(MetaTileEntity entityToNotify) {
+            super(1, entityToNotify, false);
+        }
 
         @Nonnull
         @Override
@@ -85,6 +90,12 @@ public class MetaTileEntityMachineHolder extends MetaTileEntityItemBus implement
             }
 
             return super.extractItem(slot, amount, simulate);
+        }
+
+        @Override
+        public <T> void addToNotifiedList(MetaTileEntity metaTileEntity, T handler, boolean isExport) {
+            if(metaTileEntity instanceof TileEntityProcessingArray && metaTileEntity.isValid())
+                ((TileEntityProcessingArray) metaTileEntity).notifyMachineChanged();
         }
     }
 }
