@@ -53,7 +53,7 @@ jobs:
       - name: Publish to Curseforge
         uses: gradle/gradle-build-action@v2
         env:
-          CURSEFORGE_API_KEY: "${{secrets.CURSEFORGE_API_KEY}}"
+          CURSEFORGE_API_KEY: "${{secrets.CURSEFORGE_API_TOKEN}}"
           CURSEFORGE_PROJECT_ID: "${{secrets.CURSEFORGE_PROJECT_ID}}"
           CHANGELOG_LOCATION: "${{env.CHANGELOG_LOCATION}}"
         with:
