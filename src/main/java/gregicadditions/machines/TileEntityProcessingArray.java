@@ -124,10 +124,11 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			if(getWorkable().isJammed()) {
 				MachineStats rs = getDetectedMachineStats();
 
+				// Only show if machines are the issue, otherwise it would be confusing
 				if(rs == null)
 					// "N/A"
 					textList.add(new TextComponentTranslation("gtadditions.multiblock.processing_array.detected.no"));
-				else
+				else if(!rs.satisfies(activeRecipeMachineStats))
 					textList.add(new TextComponentTranslation("gtadditions.multiblock.processing_array.detected.yes",
 								 new TextComponentTranslation("recipemap." + rs.recipeMap.unlocalizedName + ".name"),
 								 GTValues.VN[rs.machineTier],
