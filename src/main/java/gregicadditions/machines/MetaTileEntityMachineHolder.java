@@ -11,7 +11,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
-import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -56,7 +55,12 @@ public class MetaTileEntityMachineHolder extends MetaTileEntityItemBus implement
         return machineItemHandler;
     }
 
-    private class MachineImportItemHandler extends NotifiableItemStackHandler {
+    @Override
+    public boolean canPartShare() {
+        return false;
+    }
+
+    private static class MachineImportItemHandler extends NotifiableItemStackHandler {
 
         public MachineImportItemHandler(MetaTileEntity entityToNotify) {
             super(1, entityToNotify, false);
@@ -78,18 +82,6 @@ public class MetaTileEntityMachineHolder extends MetaTileEntityItemBus implement
 
             return TileEntityProcessingArray.ProcessingArrayWorkable.findRecipeMapAndCheckValid(stack) != null;
 
-        }
-
-        @Nonnull
-        @Override
-        public ItemStack extractItem(int slot, int amount, boolean simulate) {
-            TileEntityProcessingArray controller = (TileEntityProcessingArray) getController();
-
-            if(controller != null && controller.getWorkable().isActive()) {
-                return ItemStack.EMPTY;
-            }
-
-            return super.extractItem(slot, amount, simulate);
         }
 
         @Override

@@ -29,6 +29,7 @@ import net.minecraft.util.text.*;
 import net.minecraftforge.fluids.*;
 import net.minecraftforge.items.*;
 
+import javax.annotation.*;
 import java.util.Arrays;
 import java.util.*;
 import java.util.function.Function;
@@ -39,8 +40,17 @@ import static gregtech.api.gui.widgets.AdvancedTextWidget.*;
 import static gregtech.api.util.Predicates.*;
 
 public class TileEntityProcessingArray extends RecipeMapMultiblockController {
-	// start out true so that PAs aren't stuck on world load
+	/**
+	 * Indicates whether the machine stack has been changed.
+	 * Will remain true if it happens during a recipe run, otherwise cleared during the next recipe setup.
+	 */
 	private boolean machineChanged = true;
+
+	/**
+	 * Cached details about the machines used in the active recipe. Persists until the recipe is completed,
+	 * even if the structure is deformed and reformed, or the machine stack is modified.
+ 	 */
+	private MachineStats activeRecipeMachineStats;
 
 	private static final MultiblockAbility<?>[] ALLOWED_ABILITIES = {
 		MultiblockAbility.IMPORT_ITEMS,
@@ -102,6 +112,29 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 		if(!isStructureFormed())
 			return;
 
+		// If a recipe is running
+		if(activeRecipeMachineStats != null) {
+			// display the recipe's stats
+			textList.add(new TextComponentTranslation("gtadditions.multiblock.processing_array.recipe",
+						 new TextComponentTranslation("recipemap." + activeRecipeMachineStats.recipeMap.unlocalizedName + ".name"),
+						 GTValues.VN[activeRecipeMachineStats.machineTier],
+						 activeRecipeMachineStats.parallels));
+
+			// If jammed, display the detected machine (if any)
+			if(getWorkable().isJammed()) {
+				MachineStats rs = getDetectedMachineStats();
+
+				if(rs == null)
+					// "N/A"
+					textList.add(new TextComponentTranslation("gtadditions.multiblock.processing_array.detected.no"));
+				else
+					textList.add(new TextComponentTranslation("gtadditions.multiblock.processing_array.detected.yes",
+								 new TextComponentTranslation("recipemap." + rs.recipeMap.unlocalizedName + ".name"),
+								 GTValues.VN[rs.machineTier],
+								 rs.parallels));
+			}
+		}
+
 		final boolean isDistinctModeAvailable = inputInventory.getSlots() > 0;
 
 		// Display a clickable toggle button with accompanying hint text
@@ -114,10 +147,28 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 		}
 		else
 			textList.add(makeDistinctModeUnavailableTextComponent());
+	}
 
-		if(this.recipeMapWorkable.isActive()) {
-			textList.add(new TextComponentTranslation("gtadditions.multiblock.processing_array.locked"));
-		}
+	/**
+	 * @return information about the contents of the machine holder, or {@code null} if the holder is empty.
+	 */
+	@Nullable
+	private MachineStats getDetectedMachineStats() {
+		ItemStack stack = getAbilities(GACapabilities.PA_MACHINE_CONTAINER).get(0).getStackInSlot(0);
+
+		if(stack == ItemStack.EMPTY)
+			return null;
+
+		RecipeMap<?> rmap = ProcessingArrayWorkable.findRecipeMapAndCheckValid(stack);
+		if(rmap == null)
+			return null;
+		MetaTileEntity mte = MachineItemBlock.getMetaTileEntity(stack);
+		//Find the voltage tier of the machine.
+		int machineTier = 0;
+		if(mte instanceof ITieredMetaTileEntity tmte)
+			machineTier = tmte.getTier();
+
+		return new MachineStats(machineTier, stack.getCount(), rmap);
 	}
 
 	private ITextComponent makeDistinctModeToggleButton(String translationKey) {
@@ -144,6 +195,15 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 	public NBTTagCompound writeToNBT(NBTTagCompound data) {
 		super.writeToNBT(data);
 		data.setBoolean("Distinct", isDistinctInputBusMode);
+
+		// Serialize the MachineStats details so it works across reloads
+		if(activeRecipeMachineStats != null) {
+			NBTTagCompound activeRecipeTag = new NBTTagCompound();
+			activeRecipeTag.setString("RecipeMap", activeRecipeMachineStats.recipeMap.unlocalizedName);
+			activeRecipeTag.setInteger("Tier", activeRecipeMachineStats.machineTier);
+			activeRecipeTag.setInteger("Parallels", activeRecipeMachineStats.parallels);
+			data.setTag("ActiveRecipe", activeRecipeTag);
+		}
 		return data;
 	}
 
@@ -151,6 +211,17 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 	public void readFromNBT(NBTTagCompound data) {
 		super.readFromNBT(data);
 		isDistinctInputBusMode = data.getBoolean("Distinct");
+
+		// Deserialize active recipe if present
+		if(data.hasKey("ActiveRecipe")) {
+			NBTTagCompound activeRecipeTag = data.getCompoundTag("ActiveRecipe");
+
+			RecipeMap<?> recipeMap = RecipeMap.getByName(activeRecipeTag.getString("RecipeMap"));
+			if(recipeMap != null)
+				activeRecipeMachineStats = new MachineStats(activeRecipeTag.getInteger("Tier"),
+															activeRecipeTag.getInteger("Parallels"),
+															recipeMap);
+		}
 	}
 
 	@Override
@@ -172,7 +243,24 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 	}
 
 	public void notifyMachineChanged() {
-		machineChanged = true;
+		getWorkable().invalidate();
+	}
+
+	@Override
+	public boolean checkRecipe(Recipe recipe, boolean consumeIfSuccess) {
+		// if the structure is intact we don't need to do any additional checks
+		if (!machineChanged)
+			return true;
+
+		// If the structure was broken and reformed, we need to see if the current machines are suitable
+		MachineStats stats = getDetectedMachineStats();
+
+		// No machine, can't proceed
+		if(stats == null)
+			return false;
+
+		// Proceed if the detected stack is sufficient to complete the ongoing recipe
+		return stats.satisfies(activeRecipeMachineStats);
 	}
 
 	protected class ProcessingArrayWorkable extends MultiblockRecipeLogic {
@@ -198,6 +286,7 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 		@Override
 		public void invalidate() {
 			super.invalidate();
+			isOutputsFull = false;
 			lastRecipeIndex = 0;
 			invalidatedInputList.clear();
 			machineItemStack = ItemStack.EMPTY;
@@ -483,19 +572,13 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			trimmedName = trimmedName.substring(trimmedName.lastIndexOf(".") + 1);
 
 			//Catch some cases where the machine's name is not the same as its recipe map's name
-			switch (trimmedName) {
-				case "cutter":
-					trimmedName = "cutting_saw";
-					break;
-				case "electric_furnace":
-					trimmedName = "furnace";
-					break;
-				case "ore_washer":
-					trimmedName = "orewasher";
-					break;
-				case "brewery":
-					trimmedName = "brewer";
-			}
+			trimmedName = switch(trimmedName) {
+				case "cutter" -> "cutting_saw";
+				case "electric_furnace" -> "furnace";
+				case "ore_washer" -> "orewasher";
+				case "brewery" -> "brewer";
+				default -> trimmedName;
+			};
 
 			return trimmedName;
 		}
@@ -524,9 +607,7 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 				MetaTileEntity mte = MachineItemBlock.getMetaTileEntity(currentMachine);
 
 				//Find the voltage tier of the machine.
-				this.machineTier = mte instanceof ITieredMetaTileEntity
-						? ((ITieredMetaTileEntity) mte).getTier()
-						: 0;
+				this.machineTier = mte instanceof ITieredMetaTileEntity tmte ? tmte.getTier() : 0;
 
 				this.machineVoltage = GTValues.V[this.machineTier];
 
@@ -563,21 +644,6 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 		protected boolean setupAndConsumeRecipeInputs(Recipe recipe, int index) {
 			// use the specified input bus
 			return setupAndConsumeRecipeInputs(recipe, getInputBuses().get(index));
-		}
-
-		private static class SetupResult {
-			boolean hadEnoughPower;
-			boolean hadRoomForFluids;
-			boolean hadRoomForItems;
-			boolean recipeMatched;
-
-			public boolean succeeded() {
-				return hadEnoughPower && hadRoomForFluids && hadRoomForItems && recipeMatched;
-			}
-
-			public boolean outputsFull() {
-				return !(hadRoomForItems && hadRoomForFluids);
-			}
 		}
 
 		/**
@@ -646,9 +712,9 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 		}
 
 		private boolean useDistinctLogic() {
-			return metaTileEntity instanceof TileEntityProcessingArray &&
-				((TileEntityProcessingArray) metaTileEntity).isDistinctInputBusMode &&
-				getInputInventory().getSlots() > 0;
+			return metaTileEntity instanceof TileEntityProcessingArray tepa &&
+				   tepa.isDistinctInputBusMode &&
+				   getInputInventory().getSlots() > 0;
 		}
 
 		@Override
@@ -676,8 +742,8 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 					IItemHandler invalidatedHandler = invalidatedIter.next();
 
 					// recurse into handler lists; we need the specific handler
-					if (invalidatedHandler instanceof ItemHandlerList) {
-						for (IItemHandler ih : ((ItemHandlerList) invalidatedHandler).getBackingHandlers()) {
+					if (invalidatedHandler instanceof ItemHandlerList ihl) {
+						for (IItemHandler ih : ihl.getBackingHandlers()) {
 							if (ih == bus) {
 								anyValidated = true;
 								invalidatedIter.remove();
@@ -719,11 +785,15 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			// Proceed if at least one item handler hasn't been marked invalid.
 
 			// Collect all item handlers
-			ArrayList<IItemHandler> flattenedHandlers = new ArrayList<>();
+			ArrayList<IItemHandlerModifiable> flattenedHandlers = new ArrayList<>();
 			for(IItemHandler ih : getInputBuses()) {
-				if (ih instanceof ItemHandlerList)
-					flattenedHandlers.addAll(((ItemHandlerList) ih).getBackingHandlers());
-				flattenedHandlers.add(ih);
+				if (ih instanceof ItemHandlerList ihl) {
+					for(IItemHandler backingHandler : ihl.getBackingHandlers())
+						if(backingHandler instanceof IItemHandlerModifiable bhm)
+							flattenedHandlers.add(bhm);
+				}
+				if (ih instanceof IItemHandlerModifiable ihl)
+					flattenedHandlers.add(ihl);
 			}
 
 			return (!invalidatedInputList.containsAll(flattenedHandlers));
@@ -841,6 +911,51 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 				this.wasActiveAndNeedsUpdate = false;
 			else
 				setActive(true);
+
+			if(metaTileEntity instanceof TileEntityProcessingArray tepa)
+				tepa.activeRecipeMachineStats = new MachineStats(tier, numberOfOperations, recipeMap);
+		}
+
+		@Override
+		protected void completeRecipe() {
+			super.completeRecipe();
+
+			// if the recipe has actually finished (i.e. not jammed), clear the cached MachineStats
+			if(!isJammed)
+				activeRecipeMachineStats = null;
+		}
+	}
+
+	/**
+	 * Container for caching information about a machine stack. Used for display text and Jammed state checking,
+	 * namely when the structure has been broken and reformed (which nukes much of the active recipe information).
+ 	 */
+	private static class MachineStats {
+		/** The tier the recipe is being run at as a GTValues ordinal */
+		public final int machineTier;
+		/** The number of parallel operations being performed */
+		public final int parallels;
+		/** The RecipeMap the recipe originated from */
+		public final RecipeMap<?> recipeMap;
+
+		public MachineStats(int tier, int parallels, @Nonnull RecipeMap<?> recipeMap) {
+			assert tier >= 0;
+			assert parallels > 0;
+
+			this.machineTier = tier;
+			this.parallels = parallels;
+			this.recipeMap = recipeMap;
+		}
+
+		/**
+		 * @param other the basis of comparison
+		 * @return {@code true} if the recipe map is the same and the tier and parallels are at least that of {@code other},
+		 * {@code false} otherwise.
+		 */
+		public boolean satisfies(@Nonnull MachineStats other) {
+			return this.recipeMap == other.recipeMap
+				   && this.machineTier >= other.machineTier
+				   && this.parallels >= other.parallels;
 		}
 	}
 }

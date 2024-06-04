@@ -55,12 +55,24 @@ public class TileEntityFusionReactor extends RecipeMapMultiblockController {
 		this.recipeMapWorkable = new FusionRecipeLogic(this);
 		this.tier = tier;
 		this.reinitializeStructurePattern();
-		this.energyContainer = new EnergyContainerHandler(this, Integer.MAX_VALUE, 0, 0, 0, 0) {
-			@Override
-			public String getName() {
-				return "EnergyContainerInternal";
-			}
-		};
+		this.energyContainer = new EnergyContainerInternal(this, Integer.MAX_VALUE, 0, 0, 0, 0);
+	}
+
+	private static class EnergyContainerInternal extends EnergyContainerHandler {
+
+		public EnergyContainerInternal(MetaTileEntity tileEntity,
+									   long maxCapacity,
+									   long maxInputVoltage,
+									   long maxInputAmperage,
+									   long maxOutputVoltage, long maxOutputAmperage)
+		{
+			super(tileEntity, maxCapacity, maxInputVoltage, maxInputAmperage, maxOutputVoltage, maxOutputAmperage);
+		}
+
+		@Override
+		public String getName() {
+			return "EnergyContainerInternal";
+		}
 	}
 
 	@Override
@@ -145,13 +157,8 @@ public class TileEntityFusionReactor extends RecipeMapMultiblockController {
 		this.outputFluidInventory = new FluidTankList(true, getAbilities(MultiblockAbility.EXPORT_FLUIDS));
 		List<IEnergyContainer> energyInputs = getAbilities(MultiblockAbility.INPUT_ENERGY);
 		this.inputEnergyContainers = new EnergyContainerList(energyInputs);
-		long euCapacity = energyInputs.size() * 10000000L * (long) Math.pow(2, tier - 6);
-		this.energyContainer = new EnergyContainerHandler(this, euCapacity, GTValues.V[tier], 0, 0, 0) {
-			@Override
-			public String getName() {
-				return "EnergyContainerInternal";
-			}
-		};
+		long euCapacity = energyInputs.size() * 10_000_000L * (long) Math.pow(2, tier - 6);
+		this.energyContainer = new EnergyContainerInternal(this, euCapacity, GTValues.V[tier], 0, 0, 0);
 	}
 
 	@Override
