@@ -49,6 +49,7 @@ public class TileEntityFusionReactor extends RecipeMapMultiblockController {
 	private final int tier;
 	private EnergyContainerList inputEnergyContainers;
 	private long heat = 0; // defined in TileEntityFusionReactor but serialized in FusionRecipeLogic
+	private long recipeHeat = 0;
 
 	public TileEntityFusionReactor(ResourceLocation metaTileEntityId, int tier) {
 		super(metaTileEntityId, RecipeMaps.FUSION_RECIPES);
@@ -143,11 +144,78 @@ public class TileEntityFusionReactor extends RecipeMapMultiblockController {
 	}
 
 	@Override
+	public boolean checkRecipe(Recipe recipe, boolean consumeIfSuccess) {
+
+		long requiredHeat;
+
+		// if the recipe produces energy then we don't need to worry about heat mechanics
+		if(recipeMapWorkable.getRecipeEUt() < 0)
+			return true;
+
+		// The recipe may be null on world reload. Use recipeHeat instead.
+		if(recipe == null)
+			requiredHeat = recipeHeat;
+		else
+			// Ensure sufficient heat for the recipe to be running
+			requiredHeat = recipe.getRecipePropertyStorage()
+								 .getRecipePropertyValue(FusionEUToStartProperty.getInstance(), 0L);
+
+		// can't run that hot
+		if(requiredHeat > energyContainer.getEnergyCapacity())
+			return false;
+
+		// already hot enough
+		if(requiredHeat <= heat) return true;
+
+		long heatDiff = requiredHeat - heat;
+		// not hot enough, but is there enough energy to heat back up?
+		if(energyContainer.getEnergyStored() >= heatDiff) {
+			// Don't modify heat unless asked
+			if(consumeIfSuccess) {
+				// reheat the reactor and continue
+				long energyRemoved = energyContainer.removeEnergy(heatDiff);
+				// add to heat what was removed from the buffer (the resulting value is negative)
+				heat -= energyRemoved;
+			}
+			return true;
+		}
+
+		// Can't reach required temperature. Jammed.
+		return false;
+	}
+
+	@Override
+	public void update() {
+		// check to reduce heat every tick, even when unformed, except on the first game tick
+		if(!getWorld().isRemote && heat > 0 && getTimer() > 0)
+			// if the structure isn't formed, or is formed and not operational
+			if(!isStructureFormed() ||
+			   (recipeMapWorkable.isJammed() || !recipeMapWorkable.isActive()))
+				// reduce the heat
+				heat = heat <= 10_000 ? 0 : (heat - 10_000);
+
+		// then do the usual stuff
+		super.update();
+	}
+
+	@Override
+	public void invalidateStructure() {
+		// superclass deletes this, so cache it before that happens
+		IEnergyContainer temp = this.energyContainer;
+		super.invalidateStructure();
+		// restore it
+		this.energyContainer = temp;
+	}
+
+	@Override
 	protected void formStructure(PatternMatchContext context) {
 		long energyStored = this.energyContainer.getEnergyStored();
 		super.formStructure(context);
 		this.initializeAbilities();
-		((EnergyContainerHandler) this.energyContainer).setEnergyStored(energyStored);
+
+		// refill buffered energy, voiding any excess
+		if(this.energyContainer instanceof EnergyContainerHandler c)
+			c.setEnergyStored(Math.min(c.getEnergyCapacity(), energyStored));
 	}
 
 	private void initializeAbilities() {
@@ -181,7 +249,10 @@ public class TileEntityFusionReactor extends RecipeMapMultiblockController {
 			if (!this.recipeMapWorkable.isWorkingEnabled()) {
 				textList.add(new TextComponentTranslation("gregtech.multiblock.work_paused"));
 			} else if (this.recipeMapWorkable.isActive()) {
-				textList.add(new TextComponentTranslation("gregtech.multiblock.running"));
+				if(!this.recipeMapWorkable.isJammed())
+					textList.add(new TextComponentTranslation("gregtech.multiblock.running"));
+				else
+					textList.add(new TextComponentTranslation("gregtech.multiblock.jammed"));
 				int currentProgress;
 				if (energyContainer.getEnergyCapacity() > 0) {
 					currentProgress = (int) (this.recipeMapWorkable.getProgressPercent() * 100.0D);
@@ -218,9 +289,6 @@ public class TileEntityFusionReactor extends RecipeMapMultiblockController {
 		@Override
 		public void updateWorkable() {
 			super.updateWorkable();
-			if (!isActive && heat > 0) {
-				heat = heat <= 10000 ? 0 : (heat - 10000);
-			}
 		}
 
 		@Override
@@ -230,23 +298,10 @@ public class TileEntityFusionReactor extends RecipeMapMultiblockController {
 		}
 
 		@Override
-		protected boolean setupAndConsumeRecipeInputs(Recipe recipe) {
-			long heatDiff = recipe.getRecipePropertyStorage().getRecipePropertyValue(FusionEUToStartProperty.getInstance(), 0L) - heat;
-			if (heatDiff <= 0) {
-				return super.setupAndConsumeRecipeInputs(recipe);
-			}
-			if (energyContainer.getEnergyStored() < heatDiff || !super.setupAndConsumeRecipeInputs(recipe)) {
-				return false;
-			}
-			energyContainer.removeEnergy(heatDiff);
-			heat += heatDiff;
-			return true;
-		}
-
-		@Override
 		public NBTTagCompound serializeNBT() {
 			NBTTagCompound tag = super.serializeNBT();
 			tag.setLong("Heat", heat);
+			tag.setLong("RecipeHeat", recipeHeat);
 			return tag;
 		}
 
@@ -254,6 +309,7 @@ public class TileEntityFusionReactor extends RecipeMapMultiblockController {
 		public void deserializeNBT(NBTTagCompound compound) {
 			super.deserializeNBT(compound);
 			heat = compound.getLong("Heat");
+			recipeHeat = compound.getLong("RecipeHeat");
 		}
 	}
 }
