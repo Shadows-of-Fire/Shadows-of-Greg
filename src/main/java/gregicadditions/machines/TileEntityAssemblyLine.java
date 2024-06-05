@@ -1,8 +1,6 @@
 package gregicadditions.machines;
 
-import static gregtech.api.multiblock.BlockPattern.RelativeDirection.BACK;
-import static gregtech.api.multiblock.BlockPattern.RelativeDirection.DOWN;
-import static gregtech.api.multiblock.BlockPattern.RelativeDirection.LEFT;
+import static gregtech.api.multiblock.BlockPattern.RelativeDirection.*;
 
 import gregicadditions.item.GAMetaBlocks;
 import gregicadditions.item.GAMultiblockCasing;
@@ -15,6 +13,8 @@ import gregtech.api.metatileentity.multiblock.MultiblockAbility;
 import gregtech.api.metatileentity.multiblock.RecipeMapMultiblockController;
 import gregtech.api.multiblock.BlockPattern;
 import gregtech.api.multiblock.FactoryBlockPattern;
+import gregtech.api.multiblock.PatternMatchContext;
+import gregtech.api.recipes.Recipe;
 import gregtech.api.render.ICubeRenderer;
 import gregtech.api.render.Textures;
 import gregtech.common.blocks.BlockMetalCasing;
@@ -22,9 +22,21 @@ import gregtech.common.blocks.BlockMultiblockCasing;
 import gregtech.common.blocks.MetaBlocks;
 import gregtech.common.metatileentities.MetaTileEntities;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
+
+import java.util.List;
 
 public class TileEntityAssemblyLine extends RecipeMapMultiblockController {
+
+	/** Number of input-type slices detected on structure formation */
+	private int inputSlices = 0;
+
+	/** Number of slices required to run the active recipe */
+	private int recipeSlices = 0;
+
 	public TileEntityAssemblyLine(ResourceLocation metaTileEntityId) {
 		super(metaTileEntityId, GARecipeMaps.ASSEMBLY_LINE_RECIPES);
 	}
@@ -36,10 +48,10 @@ public class TileEntityAssemblyLine extends RecipeMapMultiblockController {
 
 	@Override
 	protected BlockPattern createStructurePattern() {
-		return FactoryBlockPattern.start(LEFT, DOWN, BACK)
-					.aisle("#Y#", "GAG", "RTR", "COC")
-					.aisle("#Y#", "GAG", "RTR", "FIF").setRepeatable(3, 15)
+		return FactoryBlockPattern.start(LEFT, DOWN, FRONT)
 					.aisle("#Y#", "GSG", "RTR", "FIF")
+					.aisle("#Y#", "GAG", "RTR", "FIF").setRepeatable(3, 15)
+					.aisle("#Y#", "GAG", "RTR", "COC")
 					.where('S', selfPredicate())
 					.where('C', statePredicate(getCasingState()))
 					.where('F', statePredicate(getCasingState()).or(abilityPartPredicate(MultiblockAbility.IMPORT_FLUIDS)))
@@ -55,13 +67,6 @@ public class TileEntityAssemblyLine extends RecipeMapMultiblockController {
 						return true; })
 					.build();
 
-		/*return FactoryBlockPattern.start(RIGHT, UP, FRONT)
-		        .aisle("YXX", "XXX")
-		        .aisle("YXX", "XXX")
-		        .where('X', statePredicate(getCasingState()).or(abilityPartPredicate(MultiblockAbility.IMPORT_ITEMS, MultiblockAbility.INPUT_ENERGY, MultiblockAbility.EXPORT_ITEMS)))
-		        //.where('#', blockPredicate(Blocks.AIR))
-		        .where('Y', selfPredicate())
-		        .build();*/
 	}
 
 	@Override
@@ -73,4 +78,41 @@ public class TileEntityAssemblyLine extends RecipeMapMultiblockController {
 		return MetaBlocks.METAL_CASING.getState(BlockMetalCasing.MetalCasingType.STEEL_SOLID);
 	}
 
+	@Override
+	protected void addDisplayText(List<ITextComponent> textList) {
+		super.addDisplayText(textList);
+		if(isStructureFormed()) {
+			textList.add(new TextComponentTranslation("gtadditions.machine.assembly_line.slices", inputSlices + 1));
+			if(getRecipeMapWorkable().isJammed() && inputSlices < recipeSlices)
+				textList.add(new TextComponentTranslation("gtadditions.machine.assembly_line.recipe_slices", recipeSlices + 1));
+		}
+	}
+
+	@Override
+	protected void formStructure(PatternMatchContext context) {
+		super.formStructure(context);
+		inputSlices = getInputInventory().getSlots();
+	}
+
+	@Override
+	public boolean checkRecipe(Recipe recipe, boolean consumeIfSuccess) {
+		if(recipe != null)
+			recipeSlices = recipe.getInputs().size();
+
+		return inputSlices >= recipeSlices
+			   && super.checkRecipe(recipe, consumeIfSuccess);
+	}
+
+	@Override
+	public NBTTagCompound writeToNBT(NBTTagCompound data) {
+		if(getRecipeMapWorkable().isActive())
+			data.setInteger("Slices", recipeSlices);
+		return super.writeToNBT(data);
+	}
+
+	@Override
+	public void readFromNBT(NBTTagCompound data) {
+		recipeSlices = data.getInteger("Slices");
+		super.readFromNBT(data);
+	}
 }

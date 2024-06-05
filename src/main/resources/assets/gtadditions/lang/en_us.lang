@@ -509,6 +509,8 @@ gtadditions.multiblock.processing_array.detected.no=§cDetected: §7N/A
 # Assembly Line
 recipemap.assembly_line.name=Assembly Line
 gtadditions.machine.assembly_line.name=Assembly Line
+gtadditions.machine.assembly_line.slices=§bSlices: %d
+gtadditions.machine.assembly_line.recipe_slices=§cRequired Slices: %d
 gregtech.multiblock.assembly_line.description=The Assembly Line is a large multiblock structure consisting of 5 to 17 "slices". In theory, it's a large Assembling Machine, used for creating advanced crafting components.
 
 

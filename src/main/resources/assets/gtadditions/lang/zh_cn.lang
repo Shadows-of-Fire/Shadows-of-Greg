@@ -509,6 +509,8 @@ gtadditions.multiblock.processing_array.detected.no=§cDetected: §7N/A
 # Assembly Line
 recipemap.assembly_line.name=装配线
 gtadditions.machine.assembly_line.name=装配线
+gtadditions.machine.assembly_line.slices=§bSlices: %d
+gtadditions.machine.assembly_line.recipe_slices=§cRequired Slices: %d
 gregtech.multiblock.assembly_line.description=装配线是一台大型多方块机器，包含有5到16片相似的重复结构。从理论上来讲，它是一个可以生产高级元件的大型的组装机。
 
 
