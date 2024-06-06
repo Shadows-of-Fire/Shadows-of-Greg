@@ -502,11 +502,15 @@ gtadditions.multiblock.processing_array.distinct.no=§cNo
 gtadditions.multiblock.processing_array.distinct.disabled=§7N/A
 gtadditions.multiblock.processing_array.distinct.info=If enabled, each bus will be treated as fully distinct from each other for recipe lookup. Useful for things like Extruder Shapes, Laser Lenses, etc..
 gtadditions.multiblock.processing_array.distinct.no_bus=There must be at least 1 item input for distinct mode to be enabled
-gtadditions.multiblock.processing_array.locked=§cMachine Hatch Locked
+gtadditions.multiblock.processing_array.recipe=§bUsing: %s (%s) x%d
+gtadditions.multiblock.processing_array.detected.yes=§cDetected: %s (%s) x%d
+gtadditions.multiblock.processing_array.detected.no=§cDetected: §7N/A
 
 # Assembly Line
 recipemap.assembly_line.name=Assembly Line
 gtadditions.machine.assembly_line.name=Assembly Line
+gtadditions.machine.assembly_line.slices=§bSlices: %d
+gtadditions.machine.assembly_line.recipe_slices=§cRequired Slices: %d
 gregtech.multiblock.assembly_line.description=The Assembly Line is a large multiblock structure consisting of 5 to 17 "slices". In theory, it's a large Assembling Machine, used for creating advanced crafting components.
 
 
