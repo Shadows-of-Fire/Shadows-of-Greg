@@ -122,17 +122,17 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 
 			// If jammed, display the detected machine (if any)
 			if(getWorkable().isJammed()) {
-				MachineStats rs = getDetectedMachineStats();
+				MachineStats detectedStats = getDetectedMachineStats();
 
 				// Only show if machines are the issue, otherwise it would be confusing
-				if(rs == null)
+				if(detectedStats == null)
 					// "N/A"
 					textList.add(new TextComponentTranslation("gtadditions.multiblock.processing_array.detected.no"));
-				else if(!rs.satisfies(activeRecipeMachineStats))
+				else if(!detectedStats.satisfies(activeRecipeMachineStats))
 					textList.add(new TextComponentTranslation("gtadditions.multiblock.processing_array.detected.yes",
-								 new TextComponentTranslation("recipemap." + rs.recipeMap.unlocalizedName + ".name"),
-								 GTValues.VN[rs.machineTier],
-								 rs.parallels));
+								 new TextComponentTranslation("recipemap." + detectedStats.recipeMap.unlocalizedName + ".name"),
+								 GTValues.VN[detectedStats.machineTier],
+								 detectedStats.parallels));
 			}
 		}
 
@@ -249,6 +249,11 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 
 	@Override
 	public boolean checkRecipe(Recipe recipe, boolean consumeIfSuccess) {
+		// if stats are null here, this is a recipe started in SoG 3.0.0 or earlier.
+		// Let it proceed to completion for now, and the next run will have the data available.
+		if(activeRecipeMachineStats == null)
+			return true;
+
 		// if the structure is intact we don't need to do any additional checks
 		if (!machineChanged)
 			return true;
