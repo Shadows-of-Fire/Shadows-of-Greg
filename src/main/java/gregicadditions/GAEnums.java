@@ -17,8 +17,6 @@ public class GAEnums {
 	public static void preInit() {
 		EnumHelper.addEnum(Element.class, "Nt", new Class[] { long.class, long.class, long.class, String.class, String.class, boolean.class }, 0L, 5000L, -1L, null, "NEUTRONIUM", false);
 
-		EnumHelper.addEnum(MaterialIconSet.class, "COKE", new Class[0]);
-
 		if (GAConfig.GT6.addCurvedPlates) {
 			EnumHelper.addEnum(MaterialIconType.class, "plateCurved", new Class[0]);
 			EnumHelper.addEnum(OrePrefix.class, "plateCurved", new Class[] { String.class, long.class, Material.class, MaterialIconType.class, long.class, Predicate.class }, "Curved Plate", GTValues.M, null, MaterialIconType.valueOf("plateCurved"), OrePrefix.Flags.ENABLE_UNIFICATION, pred(mat -> ingot.test(mat) && mat.hasFlag(DustMaterial.MatFlags.GENERATE_PLATE)));
