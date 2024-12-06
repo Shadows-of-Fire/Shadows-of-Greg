@@ -671,7 +671,7 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 				return false;
 
 			// Ensure there's enough room for items, otherwise mark outputs read and bail out
-			if(!MetaTileEntity.addItemsToItemHandler(exportInventory, true, recipe.getAllItemOutputs(exportInventory.getSlots()))) {
+			if(!MetaTileEntity.addItemsToItemHandler(exportInventory, true, recipe.getAllItemOutputs(Integer.MAX_VALUE))) {
 				this.isOutputsFull = true;
 				return false;
 			}
