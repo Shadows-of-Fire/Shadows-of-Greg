@@ -30,5 +30,4 @@ dependencies {
     compileOnlyApi rfg.deobf("curse.maven:mantle-74924:2713386")
     compileOnlyApi rfg.deobf("curse.maven:TConstruct-74072:2902483")
     implementation rfg.deobf("curse.maven:CTM-267602:2915363")
-    testImplementation "junit:junit:4.13.1"
 }
