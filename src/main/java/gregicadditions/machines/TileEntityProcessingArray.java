@@ -18,6 +18,7 @@ import gregtech.api.util.*;
 import gregtech.common.blocks.BlockMetalCasing.*;
 import gregtech.common.blocks.*;
 import gregtech.common.metatileentities.electric.*;
+import gregtech.common.sound.GTSoundEvents;
 import it.unimi.dsi.fastutil.*;
 import it.unimi.dsi.fastutil.objects.*;
 import net.minecraft.block.state.*;
@@ -66,6 +67,24 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 	public TileEntityProcessingArray(ResourceLocation metaTileEntityId) {
 		super(metaTileEntityId, GARecipeMaps.PROCESSING_ARRAY_RECIPES);
 		this.recipeMapWorkable = new ProcessingArrayWorkable(this);
+	}
+
+	/** Payload for recipe map packet when the map is null */
+	private static final String NONE = "NONE";
+
+	/** Max length of Recipe Map name payload in custom data packet */
+	private static final int MAP_NAME_LENGTH = 512;
+
+	@Override
+	@Nullable
+	public SoundEvent getSound() {
+		return ((ProcessingArrayWorkable)this.recipeMapWorkable).getSound();
+	}
+
+	@Override
+	protected void updateFormedValid() {
+		super.updateFormedValid();
+		((ProcessingArrayWorkable) recipeMapWorkable).findMachineStack();
 	}
 
 	@Override
@@ -229,12 +248,19 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 	public void writeInitialSyncData(PacketBuffer buf) {
 		super.writeInitialSyncData(buf);
 		buf.writeBoolean(isDistinctInputBusMode);
+
+		if(recipeMapWorkable instanceof ProcessingArrayWorkable paw && paw.recipeMap != null)
+			buf.writeString(paw.recipeMap.unlocalizedName);
+		else
+			buf.writeString(NONE);
 	}
 
 	@Override
 	public void receiveInitialSyncData(PacketBuffer buf) {
 		super.receiveInitialSyncData(buf);
 		this.isDistinctInputBusMode = buf.readBoolean();
+		if(this.recipeMapWorkable instanceof ProcessingArrayWorkable paw)
+			paw.recipeMap = RecipeMap.getByName(buf.readString(MAP_NAME_LENGTH));
 	}
 
 	@Override
@@ -279,6 +305,9 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 		ItemStack machineItemStack = ItemStack.EMPTY;
 		RecipeMap<?> recipeMap = null;
 
+		/** dataID for recipe map update packets, to sync with client */
+		private static final int RECIPEMAP_CHANGED = -999;
+
 		// Stuff for Distinct Mode
 		/** Index of the last bus used for distinct mode */
 		int lastRecipeIndex = 0;
@@ -287,6 +316,16 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 
 		public ProcessingArrayWorkable(RecipeMapMultiblockController tileEntity) {
 			super(tileEntity);
+		}
+
+		@Override
+		@Nullable
+		public SoundEvent getSound() {
+			if (isActive && (isJammed || hasNotEnoughEnergy))
+				return GTSoundEvents.INTERRUPTED;
+			if (this.recipeMap != null)
+				return this.recipeMap.getSound();
+			return null;
 		}
 
 		@Override
@@ -596,6 +635,13 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			return Arrays.asList(blacklist).contains(unlocalizedName);
 		}
 
+		@Override
+		public void receiveCustomData(int dataId, PacketBuffer buf) {
+			super.receiveCustomData(dataId, buf);
+			if(dataId == RECIPEMAP_CHANGED)
+				recipeMap = RecipeMap.getByName(buf.readString(MAP_NAME_LENGTH));
+		}
+
 		public void findMachineStack() {
 			RecipeMapMultiblockController controller = (RecipeMapMultiblockController) this.metaTileEntity;
 
@@ -623,6 +669,9 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 				//we make a copy here to account for changes in the amount of machines in the hatch
 				this.machineItemStack = currentMachine.copy();
 				this.recipeMap = rmap;
+
+				// Send packet to client, so it knows what recipe map is loaded
+				writeCustomData(RECIPEMAP_CHANGED, buf -> buf.writeString(rmap.unlocalizedName));
 			}
 		}
 
