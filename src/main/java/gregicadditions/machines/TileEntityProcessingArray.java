@@ -958,9 +958,10 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 			this.recipeEUt = resultOverclock[0] * this.numberOfOperations;
 			this.fluidOutputs = GTUtility.copyFluidList(recipe.getFluidOutputs());
 			int tier = Math.min(getMachineTierForRecipe(recipe), machineTier);
+			int overclocks = tier - recipe.getBaseTier();
 			this.itemOutputs = GTUtility.copyStackList(recipe.getResultItemOutputs(getOutputInventory().getSlots(),
 			                                                                       random,
-			                                                                       tier));
+			                                                                       overclocks));
 
 			if(this.wasActiveAndNeedsUpdate)
 				this.wasActiveAndNeedsUpdate = false;
