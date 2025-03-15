@@ -746,7 +746,7 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 		 */
 		protected boolean haveEnoughPowerToProceed(Recipe recipe, long voltageTier, int numOperations) {
 			//Format: EU/t, duration
-			int[] resultOverclock = calculateOverclock(recipe.getEUt(), voltageTier, recipe.getDuration());
+			int[] resultOverclock = calculateOverclock(recipe, voltageTier);
 			int totalEU = resultOverclock[0] * resultOverclock[1] * numOperations;
 			int EUt = resultOverclock[0] * numOperations;
 
@@ -952,13 +952,15 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 
 		@Override
 		protected void setupRecipe(Recipe recipe) {
-			int[] resultOverclock = calculateOverclock(recipe.getEUt(), machineVoltage, recipe.getDuration());
+			int[] resultOverclock = calculateOverclock(recipe, machineVoltage);
 			this.progressTime = 1;
 			setMaxProgress(resultOverclock[1]);
 			this.recipeEUt = resultOverclock[0] * this.numberOfOperations;
 			this.fluidOutputs = GTUtility.copyFluidList(recipe.getFluidOutputs());
 			int tier = Math.min(getMachineTierForRecipe(recipe), machineTier);
 			int overclocks = tier - recipe.getBaseTier();
+			this.nonChancedItemAmt = recipe.getOutputs().size();
+			this.chancedItemOutputs = recipe.getChancedRecipeOutputsAtTier(overclocks);
 			this.itemOutputs = GTUtility.copyStackList(recipe.getResultItemOutputs(getOutputInventory().getSlots(),
 			                                                                       random,
 			                                                                       overclocks));
