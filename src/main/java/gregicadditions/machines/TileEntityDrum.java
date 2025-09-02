@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import gregtech.api.metatileentity.IMaterial;
 import gregtech.api.recipes.ModHandler;
 import gregtech.api.util.FluidTooltipUtil;
 import net.minecraft.util.text.TextFormatting;
@@ -45,7 +46,7 @@ import net.minecraftforge.fluids.capability.templates.FluidHandlerItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class TileEntityDrum extends MetaTileEntity {
+public class TileEntityDrum extends MetaTileEntity implements IMaterial {
 	private final int tankSize;
 	private final SolidMaterial material;
 	private SyncFluidTank fluidTank;
@@ -239,6 +240,11 @@ public class TileEntityDrum extends MetaTileEntity {
 	@Override
 	protected boolean shouldSerializeInventories() {
 		return false;
+	}
+
+	@Override
+	public Material getMaterial() {
+		return material;
 	}
 
 	private class SyncFluidTank extends WatchedFluidTank {

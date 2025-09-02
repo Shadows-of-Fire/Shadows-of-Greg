@@ -73,6 +73,7 @@ public class GATileEntities {
 	public static TileEntityDrum STAINLESS_STEEL_DRUM;
 	public static TileEntityDrum TITANIUM_DRUM;
 	public static TileEntityDrum TUNGSTENSTEEL_DRUM;
+	public static TileEntityDrum[] DRUMS = new TileEntityDrum[6];
 
 	public static TileEntityCrate WOODEN_CRATE;
 	public static TileEntityCrate BRONZE_CRATE;
@@ -398,12 +399,12 @@ public class GATileEntities {
 		PROCESSING_ARRAY = GregTechAPI.registerMetaTileEntity(2507, new TileEntityProcessingArray(location("processing_array")));
 
 		if (GAConfig.GT6.registerDrums) {
-			WOODEN_DRUM = GregTechAPI.registerMetaTileEntity(2195, new TileEntityDrum(location("drum.wood"), Materials.Wood, 16000));
-			BRONZE_DRUM = GregTechAPI.registerMetaTileEntity(2196, new TileEntityDrum(location("drum.bronze"), Materials.Bronze, 32000));
-			STEEL_DRUM = GregTechAPI.registerMetaTileEntity(2197, new TileEntityDrum(location("drum.steel"), Materials.Steel, 64000));
-			STAINLESS_STEEL_DRUM = GregTechAPI.registerMetaTileEntity(2198, new TileEntityDrum(location("drum.stainless_steel"), Materials.StainlessSteel, 128000));
-			TITANIUM_DRUM = GregTechAPI.registerMetaTileEntity(2199, new TileEntityDrum(location("drum.titanium"), Materials.Titanium, 192000));
-			TUNGSTENSTEEL_DRUM = GregTechAPI.registerMetaTileEntity(2200, new TileEntityDrum(location("drum.tungstensteel"), Materials.TungstenSteel, 256000));
+			DRUMS[0] = WOODEN_DRUM = GregTechAPI.registerMetaTileEntity(2195, new TileEntityDrum(location("drum.wood"), Materials.Wood, 16000));
+			DRUMS[1] = BRONZE_DRUM = GregTechAPI.registerMetaTileEntity(2196, new TileEntityDrum(location("drum.bronze"), Materials.Bronze, 32000));
+			DRUMS[2] = STEEL_DRUM = GregTechAPI.registerMetaTileEntity(2197, new TileEntityDrum(location("drum.steel"), Materials.Steel, 64000));
+			DRUMS[3] = STAINLESS_STEEL_DRUM = GregTechAPI.registerMetaTileEntity(2198, new TileEntityDrum(location("drum.stainless_steel"), Materials.StainlessSteel, 128000));
+			DRUMS[4] = TITANIUM_DRUM = GregTechAPI.registerMetaTileEntity(2199, new TileEntityDrum(location("drum.titanium"), Materials.Titanium, 192000));
+			DRUMS[5] = TUNGSTENSTEEL_DRUM = GregTechAPI.registerMetaTileEntity(2200, new TileEntityDrum(location("drum.tungstensteel"), Materials.TungstenSteel, 256000));
 		}
 
 		if (GAConfig.GT5U.highTierPumps) {
