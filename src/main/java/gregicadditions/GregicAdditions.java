@@ -46,8 +46,6 @@ public class GregicAdditions {
 	public static final Logger LOGGER = LogManager.getLogger(Tags.MODID);
 
 	public GregicAdditions() {
-		GAEnums.preInit();
-
 	}
 
 	@EventHandler

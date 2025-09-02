@@ -17,7 +17,7 @@ import net.minecraftforge.oredict.OreDictionary;
 
 public class GAMetaItems {
 
-	private static List<MetaItem<?>> ITEMS = MetaItem.getMetaItems();
+	private static final List<MetaItem<?>> ITEMS = MetaItem.getMetaItems();
 
 	public static MetaItem<?>.MetaValueItem PETRI_DISH;
 	public static MetaItem<?>.MetaValueItem COMPRESSED_COKE_CLAY;
@@ -58,34 +58,30 @@ public class GAMetaItems {
 		tool.setRegistryName("ga_meta_tool");
 	}
 
-	public static OrePrefix[] gatherRegisteredPrefixes() {
+	private static OrePrefix[] gatherRegisteredPrefixes() {
 		OrePrefix[] temp = new OrePrefix[32];
 
-		if(GAConfig.GT6.addCurvedPlates) {
-			temp[0] = OrePrefix.valueOf("plateCurved");
-		}
+		if(GAConfig.GT6.addCurvedPlates)
+			temp[0] = OrePrefix.plateCurved;
 
-		if(GAConfig.GT6.addDoubleIngots) {
-			temp[1] = OrePrefix.valueOf("ingotDouble");
-		}
+		if(GAConfig.GT6.addDoubleIngots)
+			temp[1] = OrePrefix.ingotDouble;
 
-		temp[2] = OrePrefix.valueOf("round");
+		temp[2] = OrePrefix.round;
 
 		return temp;
 	}
 
 	public static void registerOreDict() {
-		for (MetaItem<?> item : ITEMS) {
-			if (item instanceof GAMetaItem) {
-				((GAMetaItem) item).registerOreDict();
-			}
-		}
+		for (MetaItem<?> item : ITEMS)
+			if (item instanceof GAMetaItem m)
+				m.registerOreDict();
 	}
 
 	public static void registerRecipes() {
-		for (MetaItem<?> item : ITEMS) {
-			if (item instanceof GAMetaTool) ((GAMetaTool) item).registerRecipes();
-		}
+		for (MetaItem<?> item : ITEMS)
+			if (item instanceof GAMetaTool tool)
+				tool.registerRecipes();
 	}
 
 	public static ItemStack getFilledCell(Fluid fluid, int count) {
