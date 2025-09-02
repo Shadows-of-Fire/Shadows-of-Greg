@@ -1,12 +1,13 @@
 package gregicadditions.jei;
 
-import gregicadditions.item.*;
 import gregtech.integration.jei.multiblock.MultiblockInfoPage;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.JEIPlugin;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
+
+import static gregicadditions.item.GAMultiblockCasing.CasingType.*;
 
 @JEIPlugin
 public class JEIGAPlugin implements IModPlugin {
@@ -22,8 +23,7 @@ public class JEIGAPlugin implements IModPlugin {
 		// Workaround - hide the Coke Oven blocks until we can remove them without ID shift
 		registry.getJeiHelpers()
 		        .getIngredientBlacklist()
-		        .addIngredientToBlacklist(GAMetaBlocks.MUTLIBLOCK_CASING
-			                                  .getItemVariant(GAMultiblockCasing.CasingType.COKE_OVEN_BRICKS));
+		        .addIngredientToBlacklist(COKE_OVEN_BRICKS.getStack());
 
 
 		//Multiblock info page registration

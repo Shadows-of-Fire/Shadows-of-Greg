@@ -1,10 +1,5 @@
 package gregicadditions.recipes;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.IntStream;
-import java.util.stream.Collectors;
-
 import forestry.core.ModuleCore;
 import forestry.core.items.EnumElectronTube;
 import gregicadditions.GAConfig;
@@ -33,9 +28,7 @@ import gregtech.api.unification.stack.MaterialStack;
 import gregtech.api.unification.stack.UnificationEntry;
 import gregtech.api.util.GTLog;
 import gregtech.api.util.GTUtility;
-import gregtech.common.blocks.BlockMachineCasing;
 import gregtech.common.blocks.BlockMultiblockCasing.MultiblockCasingType;
-import gregtech.common.blocks.BlockWireCoil;
 import gregtech.common.blocks.MetaBlocks;
 import gregtech.common.items.MetaItems;
 import gregtech.common.metatileentities.MetaTileEntities;
@@ -49,6 +42,14 @@ import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.oredict.OreDictionary;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import static gregtech.common.blocks.BlockMachineCasing.MachineCasingType.*;
+import static gregtech.common.blocks.BlockWireCoil.CoilType.*;
 
 public class GARecipeAddition {
 
@@ -454,11 +455,11 @@ public class GARecipeAddition {
 			GARecipeMaps.ASSEMBLY_LINE_RECIPES.recipeBuilder().inputs(OreDictUnifier.get(OrePrefix.plate, GAMaterials.NEUTRONIUM, 16), MetaItems.WETWARE_MAINFRAME_MAX.getStackForm(4), MetaItems.ENERGY_LAPOTRONIC_ORB2.getStackForm(8), MetaItems.FIELD_GENERATOR_UV.getStackForm(2), MetaItems.HIGH_POWER_INTEGRATED_CIRCUIT.getStackForm(64), MetaItems.HIGH_POWER_INTEGRATED_CIRCUIT.getStackForm(64), MetaItems.SMD_DIODE.getStackForm(16), OreDictUnifier.get(OrePrefix.wireGtSingle, Tier.Superconductor, 32)).fluidInputs(Materials.SolderingAlloy.getFluid(2880), Materials.Water.getFluid(16000)).outputs(last_bat).duration(2000).EUt(300000).buildAndRegister();
 		}
 
-		GARecipeMaps.ASSEMBLY_LINE_RECIPES.recipeBuilder().inputs(MetaBlocks.WIRE_COIL.getItemVariant(BlockWireCoil.CoilType.FUSION_COIL), OreDictUnifier.get(OrePrefix.plate, Materials.Plutonium241), OreDictUnifier.get(OrePrefix.plate, Materials.NetherStar), MetaItems.FIELD_GENERATOR_IV.getStackForm(2), MetaItems.HIGH_POWER_INTEGRATED_CIRCUIT.getStackForm(32), OreDictUnifier.get(OrePrefix.wireGtSingle, Tier.Superconductor, 32)).input(OrePrefix.circuit, Tier.Ultimate, 4).fluidInputs(Materials.SolderingAlloy.getFluid(2880)).outputs(GATileEntities.FUSION_REACTOR[0].getStackForm()).duration(1000).EUt(30000).buildAndRegister();
+		GARecipeMaps.ASSEMBLY_LINE_RECIPES.recipeBuilder().inputs(FUSION_COIL.getStack(), OreDictUnifier.get(OrePrefix.plate, Materials.Plutonium241), OreDictUnifier.get(OrePrefix.plate, Materials.NetherStar), MetaItems.FIELD_GENERATOR_IV.getStackForm(2), MetaItems.HIGH_POWER_INTEGRATED_CIRCUIT.getStackForm(32), OreDictUnifier.get(OrePrefix.wireGtSingle, Tier.Superconductor, 32)).input(OrePrefix.circuit, Tier.Ultimate, 4).fluidInputs(Materials.SolderingAlloy.getFluid(2880)).outputs(GATileEntities.FUSION_REACTOR[0].getStackForm()).duration(1000).EUt(30000).buildAndRegister();
 
-		GARecipeMaps.ASSEMBLY_LINE_RECIPES.recipeBuilder().inputs(MetaBlocks.WIRE_COIL.getItemVariant(BlockWireCoil.CoilType.FUSION_COIL), OreDictUnifier.get(OrePrefix.plate, Materials.Europium, 4), MetaItems.FIELD_GENERATOR_LUV.getStackForm(2), MetaItems.HIGH_POWER_INTEGRATED_CIRCUIT.getStackForm(48), OreDictUnifier.get(OrePrefix.wireGtDouble, Tier.Superconductor, 32)).input(OrePrefix.circuit, Tier.Superconductor, 4).fluidInputs(Materials.SolderingAlloy.getFluid(2880)).outputs(GATileEntities.FUSION_REACTOR[1].getStackForm()).duration(1000).EUt(60000).buildAndRegister();
+		GARecipeMaps.ASSEMBLY_LINE_RECIPES.recipeBuilder().inputs(FUSION_COIL.getStack(), OreDictUnifier.get(OrePrefix.plate, Materials.Europium, 4), MetaItems.FIELD_GENERATOR_LUV.getStackForm(2), MetaItems.HIGH_POWER_INTEGRATED_CIRCUIT.getStackForm(48), OreDictUnifier.get(OrePrefix.wireGtDouble, Tier.Superconductor, 32)).input(OrePrefix.circuit, Tier.Superconductor, 4).fluidInputs(Materials.SolderingAlloy.getFluid(2880)).outputs(GATileEntities.FUSION_REACTOR[1].getStackForm()).duration(1000).EUt(60000).buildAndRegister();
 
-		GARecipeMaps.ASSEMBLY_LINE_RECIPES.recipeBuilder().inputs(MetaBlocks.WIRE_COIL.getItemVariant(BlockWireCoil.CoilType.FUSION_COIL), MetaItems.WETWARE_MAINFRAME_MAX.getStackForm(4), OreDictUnifier.get(OrePrefix.plate, Materials.Americium, 4), MetaItems.FIELD_GENERATOR_ZPM.getStackForm(2), MetaItems.HIGH_POWER_INTEGRATED_CIRCUIT.getStackForm(64), OreDictUnifier.get(OrePrefix.wireGtQuadruple, Tier.Superconductor, 32)).fluidInputs(Materials.SolderingAlloy.getFluid(2880)).outputs(GATileEntities.FUSION_REACTOR[2].getStackForm()).duration(1000).EUt(90000).buildAndRegister();
+		GARecipeMaps.ASSEMBLY_LINE_RECIPES.recipeBuilder().inputs(FUSION_COIL.getStack(), MetaItems.WETWARE_MAINFRAME_MAX.getStackForm(4), OreDictUnifier.get(OrePrefix.plate, Materials.Americium, 4), MetaItems.FIELD_GENERATOR_ZPM.getStackForm(2), MetaItems.HIGH_POWER_INTEGRATED_CIRCUIT.getStackForm(64), OreDictUnifier.get(OrePrefix.wireGtQuadruple, Tier.Superconductor, 32)).fluidInputs(Materials.SolderingAlloy.getFluid(2880)).outputs(GATileEntities.FUSION_REACTOR[2].getStackForm()).duration(1000).EUt(90000).buildAndRegister();
 
 		//Star Recipes
 		RecipeMaps.CHEMICAL_RECIPES.recipeBuilder().duration(60000).EUt(8).input(OrePrefix.ingot, Materials.Plutonium, 3).outputs(OreDictUnifier.get(OrePrefix.dust, Materials.Plutonium, 3)).fluidOutputs(Materials.Radon.getFluid(50)).buildAndRegister();
@@ -491,11 +492,11 @@ public class GARecipeAddition {
 		RecipeMaps.FUSION_RECIPES.recipeBuilder().fluidInputs(Materials.Lanthanum.getFluid(16), Materials.Silicon.getFluid(16)).fluidOutputs(Materials.Lutetium.getFluid(16)).duration(16).EUt(8192).EUToStart(80000000).buildAndRegister();
 
 		//Fusion Casing Recipes
-		ModHandler.addShapedRecipe("fusion_casing_1", MetaBlocks.MUTLIBLOCK_CASING.getItemVariant(MultiblockCasingType.FUSION_CASING), "PhP", "PHP", "PwP", 'P', "plateTungstenSteel", 'H', MetaBlocks.MACHINE_CASING.getItemVariant(BlockMachineCasing.MachineCasingType.LuV));
-		ModHandler.addShapedRecipe("fusion_casing_2", MetaBlocks.MUTLIBLOCK_CASING.getItemVariant(MultiblockCasingType.FUSION_CASING_MK2), "PhP", "PHP", "PwP", 'P', "plateAmericium", 'H', MetaBlocks.MUTLIBLOCK_CASING.getItemVariant(MultiblockCasingType.FUSION_CASING));
-		RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder().EUt(16).inputs(MetaBlocks.MUTLIBLOCK_CASING.getItemVariant(MultiblockCasingType.FUSION_CASING)).input(OrePrefix.plate, Materials.Americium, 6).outputs(MetaBlocks.MUTLIBLOCK_CASING.getItemVariant(MultiblockCasingType.FUSION_CASING_MK2)).duration(50).buildAndRegister();
+		ModHandler.addShapedRecipe("fusion_casing_1", MultiblockCasingType.FUSION_CASING.getStack(), "PhP", "PHP", "PwP", 'P', "plateTungstenSteel", 'H', LuV.getStack());
+		ModHandler.addShapedRecipe("fusion_casing_2", MultiblockCasingType.FUSION_CASING_MK2.getStack(), "PhP", "PHP", "PwP", 'P', "plateAmericium", 'H', MultiblockCasingType.FUSION_CASING.getStack());
+		RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder().EUt(16).inputs(MultiblockCasingType.FUSION_CASING.getStack()).input(OrePrefix.plate, Materials.Americium, 6).outputs(MultiblockCasingType.FUSION_CASING_MK2.getStack()).duration(50).buildAndRegister();
 
-		ModHandler.addShapedRecipe("fusion_coil", MetaBlocks.WIRE_COIL.getItemVariant(BlockWireCoil.CoilType.FUSION_COIL), "CRC", "FSF", "CRC", 'C', "circuitMaster", 'R', MetaItems.NEUTRON_REFLECTOR.getStackForm(), 'F', MetaItems.FIELD_GENERATOR_MV.getStackForm(), 'S', MetaBlocks.WIRE_COIL.getItemVariant(BlockWireCoil.CoilType.SUPERCONDUCTOR));
+		ModHandler.addShapedRecipe("fusion_coil", FUSION_COIL.getStack(), "CRC", "FSF", "CRC", 'C', "circuitMaster", 'R', MetaItems.NEUTRON_REFLECTOR.getStackForm(), 'F', MetaItems.FIELD_GENERATOR_MV.getStackForm(), 'S', SUPERCONDUCTOR.getStack());
 
 		//Explosive Recipes
 		ModHandler.removeRecipes(new ItemStack(Blocks.TNT));
@@ -522,10 +523,10 @@ public class GARecipeAddition {
 		//MAX Machine Hull
 		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:casing_max"));
 		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:hull_max"));
-		ModHandler.addShapedRecipe("ga_casing_max", MetaBlocks.MACHINE_CASING.getItemVariant(BlockMachineCasing.MachineCasingType.MAX), "PPP", "PwP", "PPP", 'P', new UnificationEntry(OrePrefix.plate, GAMaterials.NEUTRONIUM));
-		ModHandler.addShapedRecipe("ga_hull_max", MetaTileEntities.HULL[GTValues.MAX].getStackForm(), "PHP", "CMC", 'M', MetaBlocks.MACHINE_CASING.getItemVariant(BlockMachineCasing.MachineCasingType.MAX), 'C', new UnificationEntry(OrePrefix.wireGtSingle, Tier.Superconductor), 'H', new UnificationEntry(OrePrefix.plate, GAMaterials.NEUTRONIUM), 'P', new UnificationEntry(OrePrefix.plate, Materials.Polytetrafluoroethylene));
-		RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder().duration(50).EUt(16).input(OrePrefix.plate, GAMaterials.NEUTRONIUM, 8).outputs(MetaBlocks.MACHINE_CASING.getItemVariant(BlockMachineCasing.MachineCasingType.MAX)).circuitMeta(8).duration(50).buildAndRegister();
-		RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder().duration(50).EUt(16).inputs(MetaBlocks.MACHINE_CASING.getItemVariant(BlockMachineCasing.MachineCasingType.MAX)).input(OrePrefix.wireGtSingle, Tier.Superconductor, 2).fluidInputs(Materials.Polytetrafluoroethylene.getFluid(288)).outputs(MetaTileEntities.HULL[9].getStackForm()).buildAndRegister();
+		ModHandler.addShapedRecipe("ga_casing_max", MAX.getStack(), "PPP", "PwP", "PPP", 'P', new UnificationEntry(OrePrefix.plate, GAMaterials.NEUTRONIUM));
+		ModHandler.addShapedRecipe("ga_hull_max", MetaTileEntities.HULL[GTValues.MAX].getStackForm(), "PHP", "CMC", 'M', MAX.getStack(), 'C', new UnificationEntry(OrePrefix.wireGtSingle, Tier.Superconductor), 'H', new UnificationEntry(OrePrefix.plate, GAMaterials.NEUTRONIUM), 'P', new UnificationEntry(OrePrefix.plate, Materials.Polytetrafluoroethylene));
+		RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder().duration(50).EUt(16).input(OrePrefix.plate, GAMaterials.NEUTRONIUM, 8).outputs(MAX.getStack()).circuitMeta(8).duration(50).buildAndRegister();
+		RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder().duration(50).EUt(16).inputs(MAX.getStack()).input(OrePrefix.wireGtSingle, Tier.Superconductor, 2).fluidInputs(Materials.Polytetrafluoroethylene.getFluid(288)).outputs(MetaTileEntities.HULL[9].getStackForm()).buildAndRegister();
 
 		//Redstone and glowstone melting
 		RecipeMaps.FLUID_EXTRACTION_RECIPES.recipeBuilder().duration(80).EUt(32).input(OrePrefix.dust, Materials.Redstone).fluidOutputs(Materials.Redstone.getFluid(144)).buildAndRegister();

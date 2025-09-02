@@ -1,10 +1,6 @@
 package gregicadditions.recipes;
 
-import static gregtech.api.GTValues.W;
-
 import gregicadditions.GAMaterials;
-import gregicadditions.item.GAMetaBlocks;
-import gregicadditions.item.GATransparentCasing;
 import gregtech.api.items.OreDictNames;
 import gregtech.api.unification.material.MarkerMaterials;
 import gregtech.api.unification.material.Materials;
@@ -14,6 +10,9 @@ import gregtech.common.items.MetaItems;
 import gregtech.common.metatileentities.MetaTileEntities;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
+
+import static gregicadditions.item.GATransparentCasing.CasingType.*;
+import static gregtech.api.GTValues.W;
 
 public enum GACraftingComponents {
 	CIRCUIT {
@@ -208,7 +207,7 @@ public enum GACraftingComponents {
 			case 6:
 			case 7:
 			case 8:
-				return GAMetaBlocks.TRANSPARENT_CASING.getItemVariant(GATransparentCasing.CasingType.REINFORCED_GLASS);
+				return REINFORCED_GLASS.getStack();
 			default:
 				return new ItemStack(Blocks.GLASS, 1, W);
 			}
