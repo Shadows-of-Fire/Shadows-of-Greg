@@ -15,12 +15,19 @@ import gregtech.api.unification.ore.OrePrefix;
 import gregtech.api.unification.stack.UnificationEntry;
 import gregtech.common.items.MetaItems;
 
+import static gregicadditions.item.GAOreDictNames.*;
+
 public class GAMetaTool extends ToolMetaItem<ToolMetaItem<?>.MetaToolValueItem> {
 
 	@Override
 	public void registerSubItems() {
-		GAMetaItems.BENDING_CYLINDER = addItem(0, "tool.bending_cylinder").setToolStats(new BendingCylinder()).addOreDict("craftingToolBendingCylinder");
-		GAMetaItems.SMALL_BENDING_CYLINDER = addItem(1, "tool.bending_cylinder_small").setToolStats(new SmallBendingCylinder()).addOreDict("craftingToolBendingCylinderSmall");
+		GAMetaItems.BENDING_CYLINDER = addItem(0, "tool.bending_cylinder")
+			.setToolStats(new BendingCylinder())
+			.addOreDict(craftingToolBendingCylinder.name());
+
+		GAMetaItems.SMALL_BENDING_CYLINDER = addItem(1, "tool.bending_cylinder_small")
+			.setToolStats(new SmallBendingCylinder())
+			.addOreDict(craftingToolBendingCylinderSmall.name());
 	}
 
 	public void registerRecipes() {
