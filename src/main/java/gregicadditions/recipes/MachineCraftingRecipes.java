@@ -142,7 +142,7 @@ public class MachineCraftingRecipes {
 			sub('M', WORSE_HULL),
 			sub('C', XF_CABLE),
 			sub('B', XF_CABLE_WORSE),
-			sub('K', TRANSFORMER_ITEM));
+			sub('K', XF_ITEM));
 
 		//Steam Machines
 		ModHandler.addShapedRecipe(

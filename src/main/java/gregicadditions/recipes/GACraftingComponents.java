@@ -5,6 +5,7 @@ import gregicadditions.GAMaterials;
 import gregicadditions.item.GAMetaItems;
 import gregicadditions.item.GATransparentCasing;
 import gregtech.api.items.metaitem.MetaItem;
+import gregtech.api.unification.OreDictUnifier;
 import gregtech.api.unification.material.Materials;
 import gregtech.api.unification.material.type.Material;
 import gregtech.api.unification.ore.OrePrefix;
@@ -16,6 +17,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 
 import static gregtech.api.GTValues.*;
+import static gregtech.api.unification.material.MarkerMaterials.*;
 
 /**
  * Holder of {@link Component} used for programmatic recipe generation of voltage-tiered items.
@@ -89,7 +91,7 @@ public class GACraftingComponents extends CraftingComponent {
 	};
 
 	/** Additional item used in place of circuits for higher tier Transformers. */
-	public static final Component<MetaItem<?>.MetaValueItem> TRANSFORMER_ITEM = tier -> switch(tier) {
+	public static final Component<MetaItem<?>.MetaValueItem> XF_ITEM = tier -> switch(tier) {
 		case EV, IV -> MetaItems.SMALL_COIL;
 		case LuV, ZPM -> MetaItems.POWER_INTEGRATED_CIRCUIT;
 		default -> MetaItems.HIGH_POWER_INTEGRATED_CIRCUIT;
@@ -117,4 +119,94 @@ public class GACraftingComponents extends CraftingComponent {
 		// tier below ZPM or no relevant override
 		return CraftingComponent.BATTERY.getIngredient(tier);
 	};
+
+	/** Tiered Screws used in crafting recipes */
+	public static final Component<ItemStack> SCREW = tier ->
+		OreDictUnifier.get(OrePrefix.screw, MATERIAL_COMPONENT.getIngredient(tier));
+
+	/** Tier metals for Assembly Line recipe components */
+	public static final Component<Material> AL_METAL = tier -> switch(tier) {
+		case LuV -> Materials.HSSG;
+		case ZPM -> Materials.HSSE;
+		default -> GAMaterials.NEUTRONIUM;
+	};
+	public static final Component<UnificationEntry> AL_PLATE =
+		bind(OrePrefix.plate, AL_METAL);
+
+	public static final Component<UnificationEntry> AL_GEAR =
+		bind(OrePrefix.gear, AL_METAL);
+
+	public static final Component<UnificationEntry> AL_STICK =
+		bind(OrePrefix.stick, AL_METAL);
+
+	public static final Component<UnificationEntry> AL_STICK_LONG =
+		bind(OrePrefix.stickLong, AL_METAL);
+
+	public static final Component<UnificationEntry> AL_INGOT =
+		bind(OrePrefix.ingot, AL_METAL);
+
+	public static final Component<Material> AL_CABLE_MATERIAL = tier -> switch(tier) {
+		case LuV -> Materials.YttriumBariumCuprate;
+		case ZPM -> Materials.VanadiumGallium;
+		case UV -> Materials.NiobiumTitanium;
+		default -> CABLE_MATERIALS.getIngredient(tier);
+	};
+
+	public static final Component<UnificationEntry> AL_CABLE =
+		bind(OrePrefix.cableGtSingle, AL_CABLE_MATERIAL);
+
+	public static final Component<UnificationEntry> AL_CABLE_2x =
+		bind(OrePrefix.cableGtDouble, AL_CABLE_MATERIAL);
+
+	public static final Component<UnificationEntry> AL_WIRE_2x =
+		bind(OrePrefix.wireGtDouble, AL_CABLE_MATERIAL);
+
+	public static final Component<UnificationEntry> AL_MOTOR_FINE_WIRE = tier -> switch(tier) {
+		case LuV -> new UnificationEntry(OrePrefix.wireFine, Materials.AnnealedCopper);
+		case ZPM -> new UnificationEntry(OrePrefix.wireFine, Materials.Platinum);
+		default -> new UnificationEntry(OrePrefix.wireGtSingle, Tier.Superconductor);
+	};
+
+	public static final Component<UnificationEntry> AL_RING =
+		bind(OrePrefix.ring, AL_METAL);
+
+	public static final Component<UnificationEntry> AL_ROUND =
+		bind(OrePrefix.round, AL_METAL);
+
+	public static final Component<UnificationEntry> AL_SCREW =
+		bind(OrePrefix.screw, AL_METAL);
+
+	public static final Component<UnificationEntry> AL_ROTOR =
+		bind(OrePrefix.rotor, AL_METAL);
+
+	public static final Component<UnificationEntry> AL_GEAR_SMALL =
+		bind(OrePrefix.gearSmall, AL_METAL);
+
+	public static final Component<UnificationEntry> AL_FOIL = tier ->  {
+		var material = switch(tier) {
+			case LuV -> Materials.Electrum;
+			case ZPM -> Materials.Platinum;
+			default -> Materials.Osmiridium;
+		};
+
+		return new UnificationEntry(OrePrefix.foil, material);
+	};
+
+	public static final Component<UnificationEntry> AL_FRAME =
+		bind(OrePrefix.frameGt, AL_METAL);
+
+	public static final Component<Material> AL_GEM_MATERIAL = tier -> switch(tier) {
+		case LuV -> Materials.Ruby;
+		case ZPM -> Materials.Emerald;
+		default -> Materials.Diamond;
+	};
+
+	public static final Component<UnificationEntry> AL_GEM =
+		bind(OrePrefix.gem, AL_GEM_MATERIAL);
+
+	public static final Component<MetaItem<?>.MetaValueItem> AL_STAR =
+		tier -> switch(tier) {
+			case LuV, ZPM -> MetaItems.QUANTUM_STAR;
+			default -> MetaItems.GRAVI_STAR;
+		};
 }
