@@ -5,15 +5,10 @@ import gregicadditions.machines.GATileEntities;
 import gregtech.api.items.OreDictNames;
 import gregtech.api.metatileentity.ITiered;
 import gregtech.api.metatileentity.MetaTileEntity;
-import gregtech.api.recipes.CountableIngredient;
 import gregtech.api.recipes.ModHandler;
 import gregtech.api.recipes.Recipe;
 import gregtech.api.recipes.RecipeMaps;
-import gregtech.api.unification.OreDictUnifier;
-import gregtech.api.unification.material.MarkerMaterials.Tier;
-import gregtech.api.unification.material.Materials;
 import gregtech.api.unification.material.type.Material;
-import gregtech.api.unification.ore.OrePrefix;
 import gregtech.api.unification.stack.UnificationEntry;
 import gregtech.common.items.MetaItems;
 import gregtech.common.metatileentities.MetaTileEntities;
@@ -31,6 +26,8 @@ import static gregicadditions.recipes.GACraftingComponents.*;
 import static gregtech.api.GTValues.*;
 import static gregtech.api.recipes.ModHandler.Substitution;
 import static gregtech.api.recipes.ModHandler.Substitution.*;
+import static gregtech.api.unification.material.Materials.*;
+import static gregtech.api.unification.ore.OrePrefix.*;
 import static gregtech.common.blocks.BlockMachineCasing.MachineCasingType.BRONZE_HULL;
 import static gregtech.common.blocks.BlockMachineCasing.MachineCasingType.STEEL_HULL;
 import static gregtech.common.blocks.BlockMachineCasing.MachineCasingType.BRONZE_BRICKS_HULL;
@@ -125,7 +122,7 @@ public class MachineCraftingRecipes {
 				"BCB"
 			},
 			sub('M', HULL),
-			sub('W', bind(OrePrefix.wireGtHex, XF_CABLE_MATERIAL)),
+			sub('W', bind(wireGtHex, XF_CABLE_MATERIAL)),
 			sub('T', OreDictNames.chestWood),
 			sub('B', GA_BATTERY),
 			sub('C', CIRCUIT));
@@ -153,9 +150,9 @@ public class MachineCraftingRecipes {
 				"SSS",
 				"PMP"
 			},
-			sub('M', BRONZE_BRICKS_HULL.getStack()),
-			sub('P', new UnificationEntry(OrePrefix.pipeSmall, Materials.Bronze)),
-			sub('S', new UnificationEntry(OrePrefix.plate, Materials.Silver)),
+			sub('M', BRONZE_BRICKS_HULL),
+			sub('P', pipeSmall, Bronze),
+			sub('S', plate, Silver),
 			sub('G', new ItemStack(Blocks.GLASS)));
 
 		ModHandler.addShapedRecipe(
@@ -166,8 +163,8 @@ public class MachineCraftingRecipes {
 				"XMX",
 				"XFX"
 			},
-			sub('M', BRONZE_BRICKS_HULL.getStack()),
-			sub('X', new UnificationEntry(OrePrefix.pipeSmall, Materials.Bronze)),
+			sub('M', BRONZE_BRICKS_HULL),
+			sub('X', pipeSmall, Bronze),
 			sub('F', OreDictNames.craftingFurnace));
 
 		ModHandler.addShapedRecipe(
@@ -178,8 +175,8 @@ public class MachineCraftingRecipes {
 				"XMX",
 				"XFX"
 			},
-			sub('M', STEEL_BRICKS_HULL.getStack()),
-			sub('X', new UnificationEntry(OrePrefix.pipeSmall, Materials.Steel)),
+			sub('M', STEEL_BRICKS_HULL),
+			sub('X', pipeSmall, Steel),
 			sub('F', OreDictNames.craftingFurnace));
 
 		ModHandler.addShapedRecipe(
@@ -190,8 +187,8 @@ public class MachineCraftingRecipes {
 				"XMX",
 				"PXP"
 			},
-			sub('M', BRONZE_HULL.getStack()),
-			sub('X', new UnificationEntry(OrePrefix.pipeSmall, Materials.Bronze)),
+			sub('M', BRONZE_HULL),
+			sub('X', pipeSmall, Bronze),
 			sub('P', OreDictNames.craftingPiston),
 			sub('D', new ItemStack(Items.FLINT)));
 
@@ -203,8 +200,8 @@ public class MachineCraftingRecipes {
 				"XMX",
 				"PXP"
 			},
-			sub('M', STEEL_HULL.getStack()),
-			sub('X', new UnificationEntry(OrePrefix.pipeSmall, Materials.Steel)),
+			sub('M', STEEL_HULL),
+			sub('X', pipeSmall, Steel),
 			sub('P', OreDictNames.craftingPiston),
 			sub('D', new ItemStack(Items.FLINT)));
 
@@ -216,8 +213,8 @@ public class MachineCraftingRecipes {
 				"PMG",
 				"XXX"
 			},
-			sub('M', BRONZE_HULL.getStack()),
-			sub('X', new UnificationEntry(OrePrefix.pipeSmall, Materials.Bronze)),
+			sub('M', BRONZE_HULL),
+			sub('X', pipeSmall, Bronze),
 			sub('P', OreDictNames.craftingPiston),
 			sub('G', new ItemStack(Blocks.GLASS)));
 
@@ -229,8 +226,8 @@ public class MachineCraftingRecipes {
 				"PMG",
 				"XXX"
 			},
-			sub('M', STEEL_HULL.getStack()),
-			sub('X', new UnificationEntry(OrePrefix.pipeSmall, Materials.Steel)),
+			sub('M', STEEL_HULL),
+			sub('X', pipeSmall, Steel),
 			sub('P', OreDictNames.craftingPiston),
 			sub('G', new ItemStack(Blocks.GLASS)));
 
@@ -242,8 +239,8 @@ public class MachineCraftingRecipes {
 				"XMX",
 				"XAX"
 			},
-			sub('M', BRONZE_HULL.getStack()),
-			sub('X', new UnificationEntry(OrePrefix.pipeSmall, Materials.Bronze)),
+			sub('M', BRONZE_HULL),
+			sub('X', pipeSmall, Bronze),
 			sub('P', OreDictNames.craftingPiston),
 			sub('A', OreDictNames.craftingAnvil));
 
@@ -255,8 +252,8 @@ public class MachineCraftingRecipes {
 				"XMX",
 				"XAX"
 			},
-			sub('M', STEEL_HULL.getStack()),
-			sub('X', new UnificationEntry(OrePrefix.pipeSmall, Materials.Steel)),
+			sub('M', STEEL_HULL),
+			sub('X', pipeSmall, Steel),
 			sub('P', OreDictNames.craftingPiston),
 			sub('A', OreDictNames.craftingAnvil));
 
@@ -268,8 +265,8 @@ public class MachineCraftingRecipes {
 				"PMP",
 				"XXX"
 			},
-			sub('M', BRONZE_HULL.getStack()),
-			sub('X', new UnificationEntry(OrePrefix.pipeSmall, Materials.Bronze)),
+			sub('M', BRONZE_HULL),
+			sub('X', pipeSmall, Bronze),
 			sub('P', OreDictNames.craftingPiston));
 
 		ModHandler.addShapedRecipe(
@@ -280,8 +277,8 @@ public class MachineCraftingRecipes {
 				"PMP",
 				"XXX"
 			},
-			sub('M', STEEL_HULL.getStack()),
-			sub('X', new UnificationEntry(OrePrefix.pipeSmall, Materials.Steel)),
+			sub('M', STEEL_HULL),
+			sub('X', pipeSmall, Steel),
 			sub('P', OreDictNames.craftingPiston));
 
 		ModHandler.addShapedRecipe(
@@ -292,8 +289,8 @@ public class MachineCraftingRecipes {
 				"FMF",
 				"XXX"
 			},
-			sub('M', BRONZE_BRICKS_HULL.getStack()),
-			sub('X', new UnificationEntry(OrePrefix.pipeSmall, Materials.Bronze)),
+			sub('M', BRONZE_BRICKS_HULL),
+			sub('X', pipeSmall, Bronze),
 			sub('F', OreDictNames.craftingFurnace));
 
 		ModHandler.addShapedRecipe(
@@ -304,8 +301,8 @@ public class MachineCraftingRecipes {
 				"FMF",
 				"XXX"
 			},
-			sub('M', STEEL_BRICKS_HULL.getStack()),
-			sub('X', new UnificationEntry(OrePrefix.pipeSmall, Materials.Steel)),
+			sub('M', STEEL_BRICKS_HULL),
+			sub('X', pipeSmall, Steel),
 			sub('F', OreDictNames.craftingFurnace));
 
 		//MultiBlocks
@@ -317,10 +314,10 @@ public class MachineCraftingRecipes {
 				"PBR",
 				"dRS"
 			},
-			sub('R', OreDictUnifier.get(OrePrefix.stick, Materials.Iron)),
-			sub('S', OreDictUnifier.get(OrePrefix.screw, Materials.Iron)),
-			sub('P', new UnificationEntry(OrePrefix.plate, Materials.Iron)),
-			sub('B', PRIMITIVE_BRICKS.getStack()));
+			sub('R', stick, Iron),
+			sub('S', screw, Iron),
+			sub('P', plate, Iron),
+			sub('B', PRIMITIVE_BRICKS));
 
 		ModHandler.addShapedRecipe(
 			"ga_electric_blast_furnace",
@@ -332,7 +329,7 @@ public class MachineCraftingRecipes {
 			},
 			resolveComponents(
 				LV,
-				sub('M', INVAR_HEATPROOF.getStack()),
+				sub('M', INVAR_HEATPROOF),
 				sub('F', OreDictNames.craftingFurnace),
 				sub('C', CIRCUIT),
 				sub('W', CABLE)));
@@ -347,7 +344,7 @@ public class MachineCraftingRecipes {
 			},
 			resolveComponents(
 				HV,
-				sub('M', ALUMINIUM_FROSTPROOF.getStack()),
+				sub('M', ALUMINIUM_FROSTPROOF),
 				sub('P', PUMP),
 				sub('C', BETTER_CIRCUIT),
 				sub('W', CABLE)));
@@ -360,10 +357,10 @@ public class MachineCraftingRecipes {
 				"CMC",
 				"WCW"
 			},
-			sub('M', STEEL_SOLID.getStack()),
-			sub('O', new UnificationEntry(OrePrefix.stone, Materials.Obsidian)),
-			sub('C', CIRCUIT.getIngredient(HV)),
-			sub('W', CABLE.getIngredient(EV)));
+			sub('M', STEEL_SOLID),
+			sub('O', stone, Obsidian),
+			sub('C', HV, CIRCUIT),
+			sub('W', EV, CABLE));
 
 		ModHandler.addShapedRecipe(
 			"ga_pyrolyse_oven",
@@ -395,7 +392,7 @@ public class MachineCraftingRecipes {
 				sub('P', PISTON),
 				sub('E', MOTOR),
 				sub('C', BETTER_CIRCUIT),
-				sub('W', new UnificationEntry(OrePrefix.wireGtSingle, Materials.TungstenSteel)),
+				sub('W', wireGtSingle, TungstenSteel),
 				sub('G', GEAR)));
 
 		ModHandler.addShapedRecipe(
@@ -406,9 +403,9 @@ public class MachineCraftingRecipes {
 				"RFR",
 				"PwP"
 			},
-			sub('R', PIPE.getIngredient(EV)),
-			sub('F', TITANIUM_STABLE.getStack()),
-			sub('P', new UnificationEntry(OrePrefix.rotor, Materials.Titanium)));
+			sub('R', EV, PIPE),
+			sub('F', TITANIUM_STABLE),
+			sub('P', rotor, Titanium));
 
 		ModHandler.addShapedRecipe(
 			"ga_multi_furnace",
@@ -419,9 +416,9 @@ public class MachineCraftingRecipes {
 				"CAC"
 			},
 			sub('P', Blocks.FURNACE),
-			sub('A', CIRCUIT.getIngredient(HV)),
-			sub('S', INVAR_HEATPROOF.getStack()),
-			sub('C', new UnificationEntry(OrePrefix.cableGtSingle, Materials.AnnealedCopper)));
+			sub('A', HV, CIRCUIT),
+			sub('S', INVAR_HEATPROOF),
+			sub('C', cableGtSingle, AnnealedCopper));
 
 
 		ModHandler.addShapedRecipe(
@@ -432,10 +429,10 @@ public class MachineCraftingRecipes {
 				"SAS",
 				"CSC"
 			},
-			sub('S', GEAR.getIngredient(LV)),
-			sub('P', CIRCUIT.getIngredient(HV)),
-			sub('A', HULL.getIngredient(HV)),
-			sub('C', PIPE_LARGE.getIngredient(LV)));
+			sub('S', LV, GEAR),
+			sub('P', HV, CIRCUIT),
+			sub('A', HV, HULL),
+			sub('C', LV, PIPE_LARGE));
 
 		ModHandler.addShapedRecipe(
 			"ga_large_gas_turbine",
@@ -445,10 +442,10 @@ public class MachineCraftingRecipes {
 				"SAS",
 				"CSC"
 			},
-			sub('S', GEAR.getIngredient(HV)),
-			sub('P', CIRCUIT.getIngredient(EV)),
-			sub('A', HULL.getIngredient(EV)),
-			sub('C', PIPE_LARGE.getIngredient(HV)));
+			sub('S', HV, GEAR),
+			sub('P', EV, CIRCUIT),
+			sub('A', EV, HULL),
+			sub('C', HV, PIPE_LARGE));
 
 		ModHandler.addShapedRecipe(
 			"ga_large_plasma_turbine",
@@ -458,10 +455,10 @@ public class MachineCraftingRecipes {
 				"SAS",
 				"CSC"
 			},
-			sub('S', new UnificationEntry(OrePrefix.gear, Materials.TungstenSteel)),
-			sub('P', CIRCUIT.getIngredient(LuV)),
-			sub('A', HULL.getIngredient(UV)),
-			sub('C', OreDictUnifier.get(OrePrefix.pipeLarge, Materials.TungstenSteel)));
+			sub('S', gear, TungstenSteel),
+			sub('P', LuV, CIRCUIT),
+			sub('A', UV, HULL),
+			sub('C', pipeLarge, TungstenSteel));
 
 		ModHandler.addShapedRecipe(
 			"ga_large_bronze_boiler",
@@ -475,7 +472,7 @@ public class MachineCraftingRecipes {
 				LV,
 				sub('P', CABLE),
 				sub('S', CIRCUIT),
-				sub('A', BRONZE_BRICKS.getStack())));
+				sub('A', BRONZE_BRICKS)));
 
 		ModHandler.addShapedRecipe(
 			"ga_large_steel_boiler",
@@ -489,7 +486,7 @@ public class MachineCraftingRecipes {
 				MV,
 				sub('P', CABLE),
 				sub('S', BETTER_CIRCUIT),
-				sub('A', STEEL_SOLID.getStack())));
+				sub('A', STEEL_SOLID)));
 
 		ModHandler.addShapedRecipe(
 			"ga_large_titanium_boiler",
@@ -499,9 +496,9 @@ public class MachineCraftingRecipes {
 				"SAS",
 				"PSP"
 			},
-			sub('P', CABLE.getIngredient(HV)),
-			sub('S', CIRCUIT.getIngredient(IV)),
-			sub('A', TITANIUM_STABLE.getStack()));
+			sub('P', HV, CABLE),
+			sub('S', IV, CIRCUIT),
+			sub('A', TITANIUM_STABLE));
 
 		ModHandler.addShapedRecipe(
 			"ga_large_tungstensteel_boiler",
@@ -511,9 +508,9 @@ public class MachineCraftingRecipes {
 				"SAS",
 				"PSP"
 			},
-			sub('P', CABLE.getIngredient(EV)),
-			sub('S', CIRCUIT.getIngredient(LuV)),
-			sub('A', TUNGSTENSTEEL_ROBUST.getStack()));
+			sub('P', EV, CABLE),
+			sub('S', LuV, CIRCUIT),
+			sub('A', TUNGSTENSTEEL_ROBUST));
 
 		ModHandler.addShapedRecipe(
 			"ga_assline",
@@ -527,7 +524,7 @@ public class MachineCraftingRecipes {
 				IV,
 				sub('A', HULL),
 				sub('R', ROBOT_ARM),
-				sub('C', ASSEMBLER_CASING.getStack()),
+				sub('C', ASSEMBLER_CASING),
 				sub('S', CIRCUIT)));
 
 		ModHandler.addShapedRecipe(
@@ -559,27 +556,30 @@ public class MachineCraftingRecipes {
 
 		RecipeMaps.ASSEMBLER_RECIPES
 			.recipeBuilder()
-			.outputs(MetaTileEntities.LARGE_STEEL_BOILER.getStackForm())
+			.output(MetaTileEntities.LARGE_STEEL_BOILER)
 			.inputs(MetaTileEntities.LARGE_BRONZE_BOILER.getStackForm())
-			.inputs(CountableIngredient.from(OrePrefix.plate, Materials.Steel, 2))
-			.inputs(CountableIngredient.from(OrePrefix.circuit, Tier.Advanced, 2))
-			.EUt(120).duration(600).buildAndRegister();
+			.input(plate, Steel, 2)
+			.input(HV, CIRCUIT, 2)
+			.EUt(120).duration(600)
+			.buildAndRegister();
 
 		RecipeMaps.ASSEMBLER_RECIPES
 			.recipeBuilder()
-			.outputs(MetaTileEntities.LARGE_TITANIUM_BOILER.getStackForm())
+			.output(MetaTileEntities.LARGE_TITANIUM_BOILER)
 			.inputs(MetaTileEntities.LARGE_STEEL_BOILER.getStackForm())
-			.inputs(CountableIngredient.from(OrePrefix.plate, Materials.Titanium, 2))
-			.inputs(CountableIngredient.from(OrePrefix.circuit, Tier.Advanced, 2))
-			.EUt(500).duration(600).buildAndRegister();
+			.input(plate, Titanium, 2)
+			.input(HV, CIRCUIT, 2)
+			.EUt(500).duration(600)
+			.buildAndRegister();
 
 		RecipeMaps.ASSEMBLER_RECIPES
 			.recipeBuilder()
-			.outputs(MetaTileEntities.LARGE_TUNGSTENSTEEL_BOILER.getStackForm())
+			.output(MetaTileEntities.LARGE_TUNGSTENSTEEL_BOILER)
 			.inputs(MetaTileEntities.LARGE_TITANIUM_BOILER.getStackForm())
-			.inputs(CountableIngredient.from(OrePrefix.plate, Materials.TungstenSteel, 2))
-			.inputs(CountableIngredient.from(OrePrefix.circuit, Tier.Advanced, 2))
-			.EUt(2000).duration(600).buildAndRegister();
+			.input(plate, TungstenSteel, 2)
+			.input(HV, CIRCUIT, 2)
+			.EUt(2000).duration(600)
+			.buildAndRegister();
 
 		//Storage
 
@@ -594,19 +594,19 @@ public class MachineCraftingRecipes {
 					"PRP"
 				},
 				sub('S', "slimeball"),
-				sub('P', new UnificationEntry(OrePrefix.plank, Materials.Wood)),
-				sub('R', new UnificationEntry(OrePrefix.stickLong, Materials.Iron)));
+				sub('P', plank, Wood),
+				sub('R', stickLong, Iron));
 
 			// Metal Drums
 			Function<Material, UnificationEntry> plateFn;
 			// use curved plates if all bending-related configs are enabled
 			if (GAConfig.GT6.BendingCurvedPlates && GAConfig.GT6.BendingCylinders && GAConfig.GT6.addCurvedPlates) {
-				plateFn = x -> new UnificationEntry(OrePrefix.plateCurved, x);
+				plateFn = x -> new UnificationEntry(plateCurved, x);
 			}else // use normal ones
-				plateFn = x -> new UnificationEntry(OrePrefix.plate, x);
+				plateFn = x -> new UnificationEntry(plate, x);
 
 			for(var drum : GATileEntities.DRUMS)
-				if(drum.getMaterial() != Materials.Wood)
+				if(drum.getMaterial() != Wood)
 					ModHandler.addShapedRecipe(
 						String.format("%s_drum", drum.getMaterial()),
 						drum.getStackForm(),
@@ -616,7 +616,7 @@ public class MachineCraftingRecipes {
 							"PRP"
 						},
 						sub('P', plateFn.apply(drum.getMaterial())),
-						sub('R', new UnificationEntry(OrePrefix.stickLong, drum.getMaterial()))
+						sub('R', stickLong, drum.getMaterial())
 					);
 		}
 
@@ -629,12 +629,12 @@ public class MachineCraftingRecipes {
 					"PsP",
 					"RPR"
 				},
-				sub('P', new UnificationEntry(OrePrefix.plank, Materials.Wood)),
-				sub('R', new UnificationEntry(OrePrefix.screw, Materials.Iron)));
+				sub('P', plank, Wood),
+				sub('R', screw, Iron));
 
 			// Metal Crates
 			for(var crate : GATileEntities.CRATES)
-				if(crate.getMaterial() != Materials.Wood)
+				if(crate.getMaterial() != Wood)
 					ModHandler.addShapedRecipe(
 						String.format("%s_crate", crate.getMaterial()),
 						crate.getStackForm(),
@@ -643,8 +643,8 @@ public class MachineCraftingRecipes {
 							"PhP",
 							"RPR"
 						},
-						sub('P', new UnificationEntry(OrePrefix.plate, crate.getMaterial())),
-						sub('R', new UnificationEntry(OrePrefix.stickLong, crate.getMaterial())));
+						sub('P', plate, crate.getMaterial()),
+						sub('R', stickLong, crate.getMaterial()));
 		}
 
 		//Generators
@@ -887,7 +887,7 @@ public class MachineCraftingRecipes {
 			sub('R', EMITTER),
 			sub('C', CIRCUIT),
 			sub('W', CABLE),
-			sub('L', new UnificationEntry(OrePrefix.plate, Materials.Lead)));
+			sub('L', plate, Lead));
 
 		registerMachineRecipe(
 			MetaTileEntities.WIREMILL,
@@ -1219,7 +1219,7 @@ public class MachineCraftingRecipes {
 			sub('P', PLATE),
 			sub('C', CIRCUIT),
 			sub('W', CABLE_QUAD),
-			sub('G', new UnificationEntry(OrePrefix.ingot, Materials.Graphite)));
+			sub('G', ingot, Graphite));
 
 		registerMachineRecipe(
 			MetaTileEntities.PLASMA_ARC_FURNACE,
@@ -1233,7 +1233,7 @@ public class MachineCraftingRecipes {
 			sub('C', BETTER_CIRCUIT),
 			sub('W', CABLE_QUAD),
 			sub('T', PUMP),
-			sub('G', new UnificationEntry(OrePrefix.ingot, Materials.Graphite)));
+			sub('G', ingot, Graphite));
 
 		registerMachineRecipe(
 			MetaTileEntities.PUMP,
@@ -1442,7 +1442,7 @@ public class MachineCraftingRecipes {
 				sub('R', EMITTER),
 				sub('C', CIRCUIT),
 				sub('W', CABLE),
-				sub('L', new UnificationEntry(OrePrefix.plate, Materials.Lead)));
+				sub('L', plate, Lead));
 
 		if (GAConfig.GT5U.highTierWiremills)
 			registerMachineRecipe(
@@ -1799,7 +1799,7 @@ public class MachineCraftingRecipes {
 				sub('P', PLATE),
 				sub('C', CIRCUIT),
 				sub('W', CABLE_QUAD),
-				sub('G', new UnificationEntry(OrePrefix.ingot, Materials.Graphite)));
+				sub('G', ingot, Graphite));
 
 		if (GAConfig.GT5U.highTierPlasmaArcFurnaces)
 			registerMachineRecipe(
@@ -1814,7 +1814,7 @@ public class MachineCraftingRecipes {
 				sub('C', BETTER_CIRCUIT),
 				sub('W', CABLE_QUAD),
 				sub('T', PUMP),
-				sub('G', new UnificationEntry(OrePrefix.ingot, Materials.Graphite)));
+				sub('G', ingot, Graphite));
 
 		registerMachineRecipe(
 			GATileEntities.MASS_FAB,
@@ -1862,7 +1862,7 @@ public class MachineCraftingRecipes {
 				"C",
 				"H"
 			},
-			sub('C', CIRCUIT.getIngredient(IV)),
+			sub('C', IV, CIRCUIT),
 			sub('H', MetaTileEntities.ITEM_IMPORT_BUS[ULV].getStackForm()));
 
 		registerMachineRecipe(
