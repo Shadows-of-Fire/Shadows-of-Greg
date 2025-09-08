@@ -15,7 +15,6 @@ import gregtech.api.unification.material.type.Material;
 import gregtech.api.unification.material.type.SolidMaterial;
 import gregtech.api.unification.ore.OrePrefix;
 import gregtech.api.unification.stack.MaterialStack;
-import gregtech.api.unification.stack.UnificationEntry;
 import gregtech.api.util.GTLog;
 import gregtech.api.util.GTUtility;
 import gregtech.common.blocks.BlockMultiblockCasing.MultiblockCasingType;
@@ -213,8 +212,8 @@ public class GARecipeAddition {
 				"BFB",
 				"BBB"
 			},
-			sub('B', new ItemStack(Items.CLAY_BALL)),
-			sub('F', MetaItems.WOODEN_FORM_BRICK.getStackForm()));
+			sub('B', Items.CLAY_BALL),
+			sub('F', MetaItems.WOODEN_FORM_BRICK));
 
 		ModHandler.addShapedRecipe(
 			"coke_brick",
@@ -224,9 +223,9 @@ public class GARecipeAddition {
 				"SFS",
 				"SSS"
 			},
-			sub('B', new ItemStack(Items.CLAY_BALL)),
-			sub('S', new ItemStack(Blocks.SAND)),
-			sub('F', MetaItems.WOODEN_FORM_BRICK.getStackForm()));
+			sub('B', Items.CLAY_BALL),
+			sub('S', Blocks.SAND),
+			sub('F', MetaItems.WOODEN_FORM_BRICK));
 
 		ModHandler.addSmeltingRecipe(GAMetaItems.COMPRESSED_COKE_CLAY.getStackForm(), MetaItems.COKE_OVEN_BRICK.getStackForm());
 
@@ -243,8 +242,8 @@ public class GARecipeAddition {
 					"ChC",
 					" P "
 				},
-				sub('C', new UnificationEntry(plateCurved, Iron)),
-				sub('P', new UnificationEntry(plate, Iron)));
+				sub('C', plateCurved, Iron),
+				sub('P', plate, Iron));
 
 			ASSEMBLER_RECIPES
 				.recipeBuilder()
@@ -270,8 +269,8 @@ public class GARecipeAddition {
 					"PPP",
 					"ChC"
 				},
-				sub('P', new UnificationEntry(plate, Iron)),
-				sub('C', new UnificationEntry(plateCurved, Iron)));
+				sub('P', plate, Iron),
+				sub('C', plateCurved, Iron));
 
 			ModHandler.removeRecipeByName(new ResourceLocation("minecraft:iron_chestplate"));
 			ModHandler.addShapedRecipe(
@@ -282,8 +281,8 @@ public class GARecipeAddition {
 					"CPC",
 					"CPC"
 				},
-				sub('P', new UnificationEntry(plate, Iron)),
-				sub('C', new UnificationEntry(plateCurved, Iron)));
+				sub('P', plate, Iron),
+				sub('C', plateCurved, Iron));
 
 			ModHandler.removeRecipeByName(new ResourceLocation("minecraft:iron_leggings"));
 			ModHandler.addShapedRecipe(
@@ -294,8 +293,8 @@ public class GARecipeAddition {
 					"ChC",
 					"C C"
 				},
-				sub('P', new UnificationEntry(plate, Iron)),
-				sub('C', new UnificationEntry(plateCurved, Iron)));
+				sub('P', plate, Iron),
+				sub('C', plateCurved, Iron));
 
 			ModHandler.removeRecipeByName(new ResourceLocation("minecraft:iron_boots"));
 			ModHandler.addShapedRecipe(
@@ -305,8 +304,8 @@ public class GARecipeAddition {
 					"P P",
 					"ChC"
 				},
-				sub('P', new UnificationEntry(plate, Iron)),
-				sub('C', new UnificationEntry(plateCurved, Iron)));
+				sub('P', plate, Iron),
+				sub('C', plateCurved, Iron));
 
 			ModHandler.removeRecipeByName(new ResourceLocation("minecraft:golden_helmet"));
 			ModHandler.addShapedRecipe(
@@ -316,8 +315,8 @@ public class GARecipeAddition {
 					"PPP",
 					"ChC"
 				},
-				sub('P', new UnificationEntry(plate, Gold)),
-				sub('C', new UnificationEntry(plateCurved, Gold)));
+				sub('P', plate, Gold),
+				sub('C', plateCurved, Gold));
 
 			ModHandler.removeRecipeByName(new ResourceLocation("minecraft:golden_chestplate"));
 			ModHandler.addShapedRecipe(
@@ -328,8 +327,8 @@ public class GARecipeAddition {
 					"CPC",
 					"CPC"
 				},
-				sub('P', new UnificationEntry(plate, Gold)),
-				sub('C', new UnificationEntry(plateCurved, Gold)));
+				sub('P', plate, Gold),
+				sub('C', plateCurved, Gold));
 
 			ModHandler.removeRecipeByName(new ResourceLocation("minecraft:golden_leggings"));
 			ModHandler.addShapedRecipe(
@@ -340,8 +339,8 @@ public class GARecipeAddition {
 					"ChC",
 					"C C"
 				},
-				sub('P', new UnificationEntry(plate, Gold)),
-				sub('C', new UnificationEntry(plateCurved, Gold)));
+				sub('P', plate, Gold),
+				sub('C', plateCurved, Gold));
 
 			ModHandler.removeRecipeByName(new ResourceLocation("minecraft:golden_boots"));
 			ModHandler.addShapedRecipe(
@@ -351,8 +350,8 @@ public class GARecipeAddition {
 					"P P",
 					"ChC"
 				},
-				sub('P', new UnificationEntry(plate, Gold)),
-				sub('C', new UnificationEntry(plateCurved, Gold)));
+				sub('P', plate, Gold),
+				sub('C', plateCurved, Gold));
 
 			ModHandler.addShapedRecipe(
 				"chain_helmet",
@@ -361,7 +360,7 @@ public class GARecipeAddition {
 					"RRR",
 					"RhR"
 				},
-				sub('R', new UnificationEntry(ring, Iron)));
+				sub('R', ring, Iron));
 
 			ModHandler.addShapedRecipe(
 				"chain_chestplate",
@@ -371,7 +370,7 @@ public class GARecipeAddition {
 					"RRR",
 					"RRR"
 				},
-				sub('R', new UnificationEntry(ring, Iron)));
+				sub('R', ring, Iron));
 
 			ModHandler.addShapedRecipe(
 				"chain_leggings",
@@ -381,7 +380,7 @@ public class GARecipeAddition {
 					"RhR",
 					"R R"
 				},
-				sub('R', new UnificationEntry(ring, Iron)));
+				sub('R', ring, Iron));
 
 			ModHandler.addShapedRecipe(
 				"chain_boots",
@@ -390,7 +389,7 @@ public class GARecipeAddition {
 					"R R",
 					"RhR"
 				},
-				sub('R', new UnificationEntry(ring, Iron)));
+				sub('R', ring, Iron));
 		}
 
 		for (Material m : Material.MATERIAL_REGISTRY) {
@@ -407,7 +406,7 @@ public class GARecipeAddition {
 						"hS",
 						" C"
 					},
-					sub('S', get(stick, m)),
+					sub('S', stick, m),
 					sub('C', craftingToolBendingCylinderSmall));
 			}
 
@@ -422,7 +421,7 @@ public class GARecipeAddition {
 						"P",
 						"C"
 					},
-					sub('P', new UnificationEntry(plate, m)),
+					sub('P', plate, m),
 					sub('C', craftingToolBendingCylinder));
 
 				ModHandler.addShapedRecipe(
@@ -432,7 +431,7 @@ public class GARecipeAddition {
 						"h",
 						"C"
 					},
-					sub('C', new UnificationEntry(plateCurved, m)));
+					sub('C', plateCurved, m));
 
 				BENDER_RECIPES
 					.recipeBuilder()
@@ -456,9 +455,9 @@ public class GARecipeAddition {
 						"SRf",
 						"CdC"
 					},
-					sub('C', get(plateCurved, m)),
-					sub('S', get(screw, m)),
-					sub('R', get(ring, m)));
+					sub('C', plateCurved, m),
+					sub('S', screw, m),
+					sub('R', ring, m));
 
 				ASSEMBLER_RECIPES
 					.recipeBuilder()
@@ -478,7 +477,7 @@ public class GARecipeAddition {
 						new String[] {
 							"hPC"
 						},
-						sub('P', new UnificationEntry(plate, m)),
+						sub('P', plate, m),
 						sub('C', craftingToolBendingCylinder));
 				}
 				if (GAConfig.GT6.BendingFoilsAutomatic && GAConfig.GT6.BendingCylinders) {
@@ -508,7 +507,7 @@ public class GARecipeAddition {
 						"fN",
 						"N "
 					},
-					sub('N', get(nugget, m)));
+					sub('N', nugget, m));
 				LATHE_RECIPES
 					.recipeBuilder()
 					.output(round, m)
@@ -632,7 +631,7 @@ public class GARecipeAddition {
 						"I",
 						"I"
 					},
-					sub('I', new UnificationEntry(ingot, m)));
+					sub('I', ingot, m));
 
 				ModHandler.addShapedRecipe(
 					"double_ingot_to_plate_" + m,
@@ -641,7 +640,7 @@ public class GARecipeAddition {
 						"h",
 						"I"
 					},
-					sub('I', get(ingotDouble, m)));
+					sub('I', ingotDouble, m));
 			}
 
 			if (m instanceof IngotMaterial im &&
@@ -671,7 +670,7 @@ public class GARecipeAddition {
 					"sCh",
 					"PPP"
 				},
-				sub('P', new UnificationEntry(plank, Wood)),
+				sub('P', plank, Wood),
 				sub('C', craftingToolBendingCylinder));
 
 			ModHandler.addShapedRecipe(
@@ -682,7 +681,7 @@ public class GARecipeAddition {
 					"PCP",
 					"PsP"
 				},
-				sub('P', new UnificationEntry(plank, Wood)),
+				sub('P', plank, Wood),
 				sub('C', craftingToolBendingCylinder));
 
 			ModHandler.addShapedRecipe(
@@ -693,7 +692,7 @@ public class GARecipeAddition {
 					"PCP",
 					"PhP"
 				},
-				sub('P', new UnificationEntry(plank, Wood)),
+				sub('P', plank, Wood),
 				sub('C', craftingToolBendingCylinder));
 		}
 
@@ -715,7 +714,7 @@ public class GARecipeAddition {
 								"wCh",
 								"PPP"
 							},
-							sub('P', get(plateCurved, m)),
+							sub('P', plateCurved, m),
 							sub('C', craftingToolBendingCylinder));
 
 						ModHandler.addShapedRecipe(
@@ -726,7 +725,7 @@ public class GARecipeAddition {
 								"PCP",
 								"PwP"
 							},
-							sub('P', get(plateCurved, m)),
+							sub('P', plateCurved, m),
 							sub('C', craftingToolBendingCylinder));
 
 						ModHandler.addShapedRecipe(
@@ -737,7 +736,7 @@ public class GARecipeAddition {
 								"PCP",
 								"PhP"
 							},
-							sub('P', get(plateCurved, m)),
+							sub('P', plateCurved, m),
 							sub('C', craftingToolBendingCylinder));
 					}
 				}
@@ -762,9 +761,9 @@ public class GARecipeAddition {
 						"M",
 						"L"
 					},
-					sub('F', new UnificationEntry(plate, material1)),
-					sub('M', new UnificationEntry(plate, Bronze)),
-					sub('L', get(plate, material2)));
+					sub('F', plate, material1),
+					sub('M', plate, Bronze),
+					sub('L', plate, material2));
 
 				ModHandler.addShapedRecipe(
 					String.format("mixed_metal_2_%s_%s", material1, material2),
@@ -774,9 +773,9 @@ public class GARecipeAddition {
 						"M",
 						"L"
 					},
-					sub('F', new UnificationEntry(plate, material1)),
-					sub('M', new UnificationEntry(plate, Brass)),
-					sub('L', get(plate, material2)));
+					sub('F', plate, material1),
+					sub('M', plate, Brass),
+					sub('L', plate, material2));
 
 				ASSEMBLER_RECIPES
 					.recipeBuilder()
@@ -833,7 +832,7 @@ public class GARecipeAddition {
 				LV,
 				sub('S', SCREW),
 				sub('R', ROTOR),
-				sub('H', get(ring, Paper)),
+				sub('H', ring, Paper),
 				sub('P', PIPE),
 				sub('M', MOTOR),
 				sub('C', CABLE)));
@@ -855,7 +854,7 @@ public class GARecipeAddition {
 						tier,
 						sub('S', SCREW),
 						sub('R', ROTOR),
-						sub('H', get(ring, stackFluid.material)),
+						sub('H', ring, stackFluid.material),
 						sub('P', PIPE),
 						sub('M', MOTOR),
 						sub('C', CABLE)));
@@ -1097,9 +1096,9 @@ public class GARecipeAddition {
 				"AFA",
 				"PwP"
 			},
-			sub('P', new UnificationEntry(plate, Steel)),
-			sub('A', MetaItems.ROBOT_ARM_IV.getStackForm()),
-			sub('F', get(frameGt, TungstenSteel)));
+			sub('P', plate, Steel),
+			sub('A', IV, ROBOT_ARM),
+			sub('F', frameGt, TungstenSteel));
 
 		ModHandler.addShapedRecipe(
 			"ga_assmbler_casing",
@@ -1787,7 +1786,7 @@ public class GARecipeAddition {
 				"PHP",
 				"PwP"
 			},
-			sub('P', new UnificationEntry(plate, TungstenSteel)),
+			sub('P', plate, TungstenSteel),
 			sub('H', TIER_CASING.getIngredient(LuV)));
 
 		ModHandler.addShapedRecipe(
@@ -1798,7 +1797,7 @@ public class GARecipeAddition {
 				"PHP",
 				"PwP"
 			},
-			sub('P', new UnificationEntry(plate, Americium)),
+			sub('P', plate, Americium),
 			sub('H', MultiblockCasingType.FUSION_CASING.getStack()));
 
 		ASSEMBLER_RECIPES
@@ -1818,7 +1817,7 @@ public class GARecipeAddition {
 				"CRC"
 			},
 			sub('C', CIRCUIT.getIngredient(LuV)),
-			sub('R', MetaItems.NEUTRON_REFLECTOR.getStackForm()),
+			sub('R', MetaItems.NEUTRON_REFLECTOR),
 			sub('F', FIELD_GENERATOR.getIngredient(MV)),
 			sub('S', SUPERCONDUCTOR.getStack()));
 
@@ -1942,7 +1941,7 @@ public class GARecipeAddition {
 						"GG",
 						"Gf"
 					},
-					sub('G', new UnificationEntry(gem, material)));
+					sub('G', gem, material));
 
 				ModHandler.removeRecipes(get(toolHeadFile, material));
 				ModHandler.addShapedRecipe(
@@ -1953,7 +1952,7 @@ public class GARecipeAddition {
 						"G",
 						"f"
 					},
-					sub('G', new UnificationEntry(gem, material)));
+					sub('G', gem, material));
 
 				ModHandler.removeRecipes(get(toolHeadHammer, material));
 				ModHandler.addShapedRecipe(
@@ -1964,7 +1963,7 @@ public class GARecipeAddition {
 						"GGf",
 						"GG "
 					},
-					sub('G', new UnificationEntry(gem, material)));
+					sub('G', gem, material));
 
 				ModHandler.removeRecipes(get(toolHeadHoe, material));
 				ModHandler.addShapedRecipe(
@@ -1973,7 +1972,7 @@ public class GARecipeAddition {
 					new String[] {
 						"GGf"
 					},
-					sub('G', new UnificationEntry(gem, material)));
+					sub('G', gem, material));
 
 				ModHandler.removeRecipes(get(toolHeadPickaxe, material));
 				ModHandler.addShapedRecipe(
@@ -1983,7 +1982,7 @@ public class GARecipeAddition {
 						"GGG",
 						"f  "
 					},
-					sub('G', new UnificationEntry(gem, material)));
+					sub('G', gem, material));
 
 				ModHandler.removeRecipes(get(toolHeadSaw, material));
 				ModHandler.addShapedRecipe(
@@ -1993,7 +1992,7 @@ public class GARecipeAddition {
 						"GG",
 						"f "
 					},
-					sub('G', new UnificationEntry(gem, material)));
+					sub('G', gem, material));
 
 				ModHandler.removeRecipes(get(toolHeadSense, material));
 				ModHandler.addShapedRecipe(
@@ -2003,7 +2002,7 @@ public class GARecipeAddition {
 						"GGG",
 						" f "
 					},
-					sub('G', new UnificationEntry(gem, material)));
+					sub('G', gem, material));
 
 				ModHandler.removeRecipes(get(toolHeadShovel, material));
 				ModHandler.addShapedRecipe(
@@ -2012,7 +2011,7 @@ public class GARecipeAddition {
 					new String[] {
 						"fG"
 					},
-					sub('G', new UnificationEntry(gem, material)));
+					sub('G', gem, material));
 
 				ModHandler.removeRecipes(get(toolHeadSword, material));
 				ModHandler.addShapedRecipe(
@@ -2022,7 +2021,7 @@ public class GARecipeAddition {
 						" G",
 						"fG"
 					},
-					sub('G', new UnificationEntry(gem, material)));
+					sub('G', gem, material));
 
 				ModHandler.removeRecipes(get(toolHeadUniversalSpade, material));
 				ModHandler.addShapedRecipe(
@@ -2033,7 +2032,7 @@ public class GARecipeAddition {
 						"GfG",
 						" G "
 					},
-					sub('G', new UnificationEntry(gem, material)));
+					sub('G', gem, material));
 			}
 		}
 
@@ -2054,7 +2053,7 @@ public class GARecipeAddition {
 				" S ",
 				"   "
 			},
-			sub('S', GAMetaItems.SCHEMATIC.getStackForm()));
+			sub('S', GAMetaItems.SCHEMATIC));
 
 		ModHandler.addShapedRecipe(
 			"2x2_schematic",
@@ -2064,7 +2063,7 @@ public class GARecipeAddition {
 				" S ",
 				"   "
 			},
-			sub('S', GAMetaItems.SCHEMATIC.getStackForm()));
+			sub('S', GAMetaItems.SCHEMATIC));
 
 		ModHandler.addShapedRecipe(
 			"dust_schematic",
@@ -2074,7 +2073,7 @@ public class GARecipeAddition {
 				" S ",
 				"  d"
 			},
-			sub('S', GAMetaItems.SCHEMATIC.getStackForm()));
+			sub('S', GAMetaItems.SCHEMATIC));
 
 		// Recipes for LuV-UV Fluid Regulators
 		for(int tier = LuV; tier <= UV; tier++) {
