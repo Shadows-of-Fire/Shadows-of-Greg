@@ -1171,6 +1171,7 @@ public class GARecipeAddition {
 				.buildAndRegister();
 
 		// Conveyor Modules, LuV - UV
+		int[] rubberMult = {1, 2, 2};
 		for(int i = LuV; i <= UV; i++)
 			ASSEMBLY_LINE_RECIPES
 				.recipeBuilder()
@@ -1182,7 +1183,7 @@ public class GARecipeAddition {
 				.input(i, AL_INGOT, 2)
 				.input(i, AL_CABLE, 2)
 				.fluidInputs(
-					StyreneButadieneRubber.getFluid(2880),
+					StyreneButadieneRubber.getFluid(1440 * rubberMult[i - LuV]),
 					Lubricant.getFluid(lubeAmt[i - LuV]))
 				.duration(600).EUt(15 * (int) Math.pow(4, i - 1))
 				.buildAndRegister();

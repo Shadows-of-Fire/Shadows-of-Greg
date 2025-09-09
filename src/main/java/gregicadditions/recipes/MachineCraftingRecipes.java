@@ -5,6 +5,7 @@ import gregicadditions.machines.GATileEntities;
 import gregtech.api.items.OreDictNames;
 import gregtech.api.metatileentity.ITiered;
 import gregtech.api.metatileentity.MetaTileEntity;
+import gregtech.api.metatileentity.SimpleMachineMetaTileEntity;
 import gregtech.api.recipes.ModHandler;
 import gregtech.api.recipes.Recipe;
 import gregtech.api.recipes.RecipeMaps;
@@ -20,6 +21,7 @@ import net.minecraft.util.ResourceLocation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 import static gregicadditions.recipes.GACraftingComponents.*;
@@ -1817,7 +1819,9 @@ public class MachineCraftingRecipes {
 				sub('G', ingot, Graphite));
 
 		registerMachineRecipe(
-			GATileEntities.MASS_FAB,
+			Arrays.stream(GATileEntities.MASS_FAB)
+			      .filter(Objects::nonNull)
+			      .toArray(SimpleMachineMetaTileEntity[]::new),
 			new String[] {
 				"CFC",
 				"QMQ",
@@ -1829,7 +1833,9 @@ public class MachineCraftingRecipes {
 			sub('F', FIELD_GENERATOR));
 
 		registerMachineRecipe(
-			GATileEntities.REPLICATOR,
+			Arrays.stream(GATileEntities.REPLICATOR)
+			      .filter(Objects::nonNull)
+			      .toArray(SimpleMachineMetaTileEntity[]::new),
 			new String[] {
 				"EFE",
 				"CMC",

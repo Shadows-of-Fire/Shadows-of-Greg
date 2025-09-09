@@ -202,7 +202,7 @@ public class GACraftingComponents extends CraftingComponent {
 	};
 
 	public static final Component<UnificationEntry> AL_GEM =
-		bind(OrePrefix.gem, AL_GEM_MATERIAL);
+		bind(OrePrefix.gemExquisite, AL_GEM_MATERIAL);
 
 	public static final Component<MetaItem<?>.MetaValueItem> AL_STAR =
 		tier -> switch(tier) {
