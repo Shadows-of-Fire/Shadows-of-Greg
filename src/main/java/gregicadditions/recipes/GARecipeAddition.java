@@ -1886,7 +1886,7 @@ public class GARecipeAddition {
 				"PwP",
 				"PPP"
 			},
-			resolveComponents(MAX, sub('P', PLATE)));
+			sub('P', MAX, PLATE));
 
 		ModHandler.addShapedRecipe(
 			"ga_hull_max",
