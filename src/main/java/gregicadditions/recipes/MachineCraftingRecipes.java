@@ -1,55 +1,16 @@
 package gregicadditions.recipes;
 
-import static gregicadditions.recipes.GACraftingComponents.BETTER_CIRCUIT;
-import static gregicadditions.recipes.GACraftingComponents.CABLE;
-import static gregicadditions.recipes.GACraftingComponents.CABLE_QUAD;
-import static gregicadditions.recipes.GACraftingComponents.CIRCUIT;
-import static gregicadditions.recipes.GACraftingComponents.COIL_ELECTRIC;
-import static gregicadditions.recipes.GACraftingComponents.COIL_HEATING;
-import static gregicadditions.recipes.GACraftingComponents.COIL_HEATING_DOUBLE;
-import static gregicadditions.recipes.GACraftingComponents.CONVEYOR;
-import static gregicadditions.recipes.GACraftingComponents.DIAMOND;
-import static gregicadditions.recipes.GACraftingComponents.EMITTER;
-import static gregicadditions.recipes.GACraftingComponents.FIELD_GENERATOR;
-import static gregicadditions.recipes.GACraftingComponents.GLASS;
-import static gregicadditions.recipes.GACraftingComponents.GRINDER;
-import static gregicadditions.recipes.GACraftingComponents.HULL;
-import static gregicadditions.recipes.GACraftingComponents.MOTOR;
-import static gregicadditions.recipes.GACraftingComponents.PIPE;
-import static gregicadditions.recipes.GACraftingComponents.PISTON;
-import static gregicadditions.recipes.GACraftingComponents.PLATE;
-import static gregicadditions.recipes.GACraftingComponents.PUMP;
-import static gregicadditions.recipes.GACraftingComponents.ROBOT_ARM;
-import static gregicadditions.recipes.GACraftingComponents.ROTOR;
-import static gregicadditions.recipes.GACraftingComponents.STICK_DISTILLATION;
-import static gregicadditions.recipes.GACraftingComponents.STICK_ELECTROMAGNETIC;
-import static gregicadditions.recipes.GACraftingComponents.STICK_RADIOACTIVE;
-import static gregicadditions.recipes.GACraftingComponents.WIRE;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import gregicadditions.GAConfig;
-import gregicadditions.item.GAMetaItems;
 import gregicadditions.machines.GATileEntities;
-import gregtech.api.GTValues;
 import gregtech.api.items.OreDictNames;
+import gregtech.api.metatileentity.ITiered;
 import gregtech.api.metatileentity.MetaTileEntity;
-import gregtech.api.recipes.CountableIngredient;
+import gregtech.api.metatileentity.SimpleMachineMetaTileEntity;
 import gregtech.api.recipes.ModHandler;
 import gregtech.api.recipes.Recipe;
 import gregtech.api.recipes.RecipeMaps;
-import gregtech.api.unification.OreDictUnifier;
-import gregtech.api.unification.material.MarkerMaterials;
-import gregtech.api.unification.material.MarkerMaterials.Tier;
-import gregtech.api.unification.material.Materials;
-import gregtech.api.unification.ore.OrePrefix;
+import gregtech.api.unification.material.type.Material;
 import gregtech.api.unification.stack.UnificationEntry;
-import gregtech.common.blocks.BlockMachineCasing;
-import gregtech.common.blocks.BlockMetalCasing;
-import gregtech.common.blocks.BlockMultiblockCasing;
-import gregtech.common.blocks.MetaBlocks;
 import gregtech.common.items.MetaItems;
 import gregtech.common.metatileentities.MetaTileEntities;
 import net.minecraft.init.Blocks;
@@ -57,166 +18,533 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 
-public class MachineCraftingRecipes {
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
 
-	private static String[] tiers = { "lv", "mv", "hv", "ev" };
-	private static String[] tiersExtended = { "lv", "mv", "hv", "ev", "iv" };
+import static gregicadditions.recipes.GACraftingComponents.*;
+import static gregtech.api.GTValues.*;
+import static gregtech.api.recipes.ModHandler.Substitution;
+import static gregtech.api.recipes.ModHandler.Substitution.*;
+import static gregtech.api.unification.material.Materials.*;
+import static gregtech.api.unification.ore.OrePrefix.*;
+import static gregtech.common.blocks.BlockMachineCasing.MachineCasingType.BRONZE_HULL;
+import static gregtech.common.blocks.BlockMachineCasing.MachineCasingType.STEEL_HULL;
+import static gregtech.common.blocks.BlockMachineCasing.MachineCasingType.BRONZE_BRICKS_HULL;
+import static gregtech.common.blocks.BlockMachineCasing.MachineCasingType.STEEL_BRICKS_HULL;
+import static gregtech.common.blocks.BlockMetalCasing.MetalCasingType.*;
+import static gregtech.common.blocks.BlockMultiblockCasing.MultiblockCasingType.*;
+import static gregtech.loaders.recipe.MetaTileEntityLoader.*;
+
+public class MachineCraftingRecipes {
 
 	public static void init() {
 		//Removal
-		for (String tier : tiers) {
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.alloy_smelter." + tier));
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.bender." + tier));
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.canner." + tier));
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.compressor." + tier));
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.cutter." + tier));
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.electric_furnace." + tier));
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.extractor." + tier));
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.extruder." + tier));
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.lathe." + tier));
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.macerator." + tier));
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.microwave." + tier));
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.wiremill." + tier));
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.centrifuge." + tier));
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.electrolyzer." + tier));
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.thermal_centrifuge." + tier));
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.ore_washer." + tier));
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.packer." + tier));
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.unpacker." + tier));
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.chemical_reactor." + tier));
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.fluid_canner." + tier));
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.brewery." + tier));
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.fermenter." + tier));
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.fluid_extractor." + tier));
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.fluid_solidifier." + tier));
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.distillery." + tier));
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.chemical_bath." + tier));
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.polarizer." + tier));
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.electromagnetic_separator." + tier));
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.mixer." + tier));
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.forming_press." + tier));
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.forge_hammer." + tier));
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.fluid_heater." + tier));
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.sifter." + tier));
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.arc_furnace." + tier));
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.plasma_arc_furnace." + tier));
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.pump." + tier));
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.air_collector." + tier));
-		}
 
-		for (String tier : tiersExtended) {
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.assembler." + tier));
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.autoclave." + tier));
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gregtech.machine.laser_engraver." + tier));
-		}
+		// Machines that go up to EV
+		for(String machineName :
+			arr("alloy_smelter", "bender", "canner", "compressor", "cutter", "electric_furnace", "extractor",
+			    "extruder", "lathe", "macerator", "microwave", "wiremill", "centrifuge", "electrolyzer",
+			    "ore_washer", "packer", "unpacker", "chemical_reactor", "fluid_canner", "brewery", "fermenter",
+			    "fluid_extractor", "fluid_solidifier", "distillery", "chemical_bath", "polarizer",
+			    "electromagnetic_separator", "mixer", "forming_press", "forge_hammer", "fluid_heater", "sifter",
+			    "arc_furnace", "plasma_arc_furnace", "pump", "air_collector"))
+			for (String tier : arr("lv", "mv", "hv", "ev"))
+				ModHandler.removeRecipeByName(
+					new ResourceLocation(String.format("gregtech:gregtech.machine.%s.%s", machineName, tier)));
 
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:steam_boiler_solar_bronze"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:steam_furnace_bronze"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:steam_furnace_steel"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:steam_macerator_bronze"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:steam_macerator_steel"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:steam_extractor_bronze"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:steam_extractor_steel"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:steam_hammer_bronze"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:steam_hammer_steel"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:steam_compressor_bronze"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:steam_compressor_steel"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:steam_alloy_smelter_bronze"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:steam_alloy_smelter_steel"));
+		// Machines that go up to IV
+		for(String machineName : arr("assembler", "autoclave", "laser_engraver"))
+			for (String tier : arr("lv", "mv", "hv", "ev", "iv"))
+				ModHandler.removeRecipeByName(
+					new ResourceLocation(String.format("gregtech:gregtech.machine.%s.%s", machineName, tier)));
+
+		// Misc Machines
 		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:bronze_primitive_blast_furnace"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:electric_blast_furnace"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:vacuum_freezer"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:implosion_compressor"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:pyrolyse_oven"));
 		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:diesel_engine"));
+		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:electric_blast_furnace"));
 		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:engine_intake_casing"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:multi_furnace"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:large_steam_turbine"));
+		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:implosion_compressor"));
+		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:large_bronze_boiler"));
 		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:large_gas_turbine"));
 		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:large_plasma_turbine"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:large_bronze_boiler"));
+		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:large_steam_turbine"));
 		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:large_steel_boiler"));
 		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:large_titanium_boiler"));
 		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:large_tungstensteel_boiler"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:diesel_generator_lv"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gas_turbine_lv"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:steam_turbine_lv"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:diesel_generator_mv"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gas_turbine_mv"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:steam_turbine_mv"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:diesel_generator_hv"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:gas_turbine_hv"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:steam_turbine_hv"));
 		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:magic_energy_absorber"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:charger_ulv"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:charger_lv"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:charger_mv"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:charger_hv"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:charger_ev"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:charger_iv"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:charger_luv"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:charger_zpm"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:charger_uv"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:charger_max"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:transformer_ev"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:transformer_iv"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:transformer_luv"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:transformer_zpm"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:transformer_uv"));
-		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:transformer_max"));
+		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:multi_furnace"));
+		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:pyrolyse_oven"));
+		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:steam_alloy_smelter_bronze"));
+		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:steam_alloy_smelter_steel"));
+		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:steam_boiler_solar_bronze"));
+		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:steam_compressor_bronze"));
+		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:steam_compressor_steel"));
+		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:steam_extractor_bronze"));
+		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:steam_extractor_steel"));
+		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:steam_furnace_bronze"));
+		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:steam_furnace_steel"));
+		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:steam_hammer_bronze"));
+		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:steam_hammer_steel"));
+		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:steam_macerator_bronze"));
+		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:steam_macerator_steel"));
+		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:vacuum_freezer"));
+
+		// Tiered Single-block Generators
+		for(int i = LV; i <= HV; i++) {
+			String tierName = VN[i].toLowerCase();
+			for(String fmt : arr("gregtech:diesel_generator_%s",
+			                     "gregtech:gas_turbine_%s",
+			                     "gregtech:steam_turbine_%s"))
+				ModHandler.removeRecipeByName(new ResourceLocation(String.format(fmt, tierName)));
+		}
+
+		// Chargers
+		for(String vn : VN)
+			ModHandler.removeRecipeByName(new ResourceLocation(String.format("gregtech:charger_%s", vn.toLowerCase())));
+
+		// Transformers
+		for(int i = EV - 1; i < MetaTileEntities.TRANSFORMER.length; i++)
+			ModHandler.removeRecipeByName(
+				new ResourceLocation(
+					String.format("gregtech:transformer_%s",
+					              VN[MetaTileEntities.TRANSFORMER[i].getTier()].toLowerCase())));
+
+		// --- Replacement Recipes ---
 
 		//Power Manipulation Machines
-		ItemStack last_bat = (GAConfig.GT5U.replaceUVwithMAXBat ? GAMetaItems.MAX_BATTERY : MetaItems.ZPM2).getStackForm();
-		ModHandler.addShapedRecipe("ga_charger_ulv", MetaTileEntities.CHARGER[GTValues.ULV].getStackForm(), "WTW", "WMW", "BCB", 'M', MetaTileEntities.HULL[GTValues.ULV].getStackForm(), 'W', new UnificationEntry(OrePrefix.wireGtHex, Materials.Lead), 'T', OreDictNames.chestWood, 'B', MetaItems.BATTERY_RE_ULV_TANTALUM, 'C', new UnificationEntry(OrePrefix.valueOf("circuit"), Tier.Primitive));
-		ModHandler.addShapedRecipe("ga_charger_lv", MetaTileEntities.CHARGER[GTValues.LV].getStackForm(), "WTW", "WMW", "BCB", 'M', MetaTileEntities.HULL[GTValues.LV].getStackForm(), 'W', new UnificationEntry(OrePrefix.wireGtHex, Materials.Tin), 'T', OreDictNames.chestWood, 'B', MetaItems.BATTERY_RE_LV_LITHIUM, 'C', new UnificationEntry(OrePrefix.valueOf("circuit"), Tier.Basic));
-		ModHandler.addShapedRecipe("ga_charger_mv", MetaTileEntities.CHARGER[GTValues.MV].getStackForm(), "WTW", "WMW", "BCB", 'M', MetaTileEntities.HULL[GTValues.MV].getStackForm(), 'W', new UnificationEntry(OrePrefix.wireGtHex, Materials.Copper), 'T', OreDictNames.chestWood, 'B', MetaItems.BATTERY_RE_MV_LITHIUM, 'C', new UnificationEntry(OrePrefix.valueOf("circuit"), Tier.Good));
-		ModHandler.addShapedRecipe("ga_charger_hv", MetaTileEntities.CHARGER[GTValues.HV].getStackForm(), "WTW", "WMW", "BCB", 'M', MetaTileEntities.HULL[GTValues.HV].getStackForm(), 'W', new UnificationEntry(OrePrefix.wireGtHex, Materials.Gold), 'T', OreDictNames.chestWood, 'B', MetaItems.BATTERY_RE_HV_LITHIUM, 'C', new UnificationEntry(OrePrefix.valueOf("circuit"), Tier.Advanced));
-		ModHandler.addShapedRecipe("ga_charger_ev", MetaTileEntities.CHARGER[GTValues.EV].getStackForm(), "WTW", "WMW", "BCB", 'M', MetaTileEntities.HULL[GTValues.EV].getStackForm(), 'W', new UnificationEntry(OrePrefix.wireGtHex, Materials.Aluminium), 'T', OreDictNames.chestWood, 'B', MetaItems.LAPOTRON_CRYSTAL, 'C', new UnificationEntry(OrePrefix.valueOf("circuit"), MarkerMaterials.Tier.Extreme));
-		ModHandler.addShapedRecipe("ga_charger_iv", MetaTileEntities.CHARGER[GTValues.IV].getStackForm(), "WTW", "WMW", "BCB", 'M', MetaTileEntities.HULL[GTValues.IV].getStackForm(), 'W', new UnificationEntry(OrePrefix.wireGtHex, Materials.Tungsten), 'T', OreDictNames.chestWood, 'B', MetaItems.ENERGY_LAPOTRONIC_ORB, 'C', new UnificationEntry(OrePrefix.valueOf("circuit"), Tier.Elite));
-		ModHandler.addShapedRecipe("ga_charger_luv", MetaTileEntities.CHARGER[GTValues.LuV].getStackForm(), "WTW", "WMW", "BCB", 'M', MetaTileEntities.HULL[GTValues.LuV].getStackForm(), 'W', new UnificationEntry(OrePrefix.wireGtHex, Materials.VanadiumGallium), 'T', OreDictNames.chestWood, 'B', MetaItems.ENERGY_LAPOTRONIC_ORB2, 'C', new UnificationEntry(OrePrefix.valueOf("circuit"), Tier.Master));
-		ModHandler.addShapedRecipe("ga_charger_zpm", MetaTileEntities.CHARGER[GTValues.ZPM].getStackForm(), "WTW", "WMW", "BCB", 'M', MetaTileEntities.HULL[GTValues.ZPM].getStackForm(), 'W', new UnificationEntry(OrePrefix.wireGtHex, Materials.Naquadah), 'T', OreDictNames.chestWood, 'B', GAConfig.GT5U.enableZPMandUVBats ? GAMetaItems.ENERGY_MODULE : MetaItems.ENERGY_LAPOTRONIC_ORB2, 'C', new UnificationEntry(OrePrefix.valueOf("circuit"), Tier.Ultimate));
-		ModHandler.addShapedRecipe("ga_charger_uv", MetaTileEntities.CHARGER[GTValues.UV].getStackForm(), "WTW", "WMW", "BCB", 'M', MetaTileEntities.HULL[GTValues.UV].getStackForm(), 'W', new UnificationEntry(OrePrefix.wireGtHex, Materials.NaquadahAlloy), 'T', OreDictNames.chestWood, 'B', GAConfig.GT5U.enableZPMandUVBats ? GAMetaItems.ENERGY_CLUSTER : last_bat, 'C', new UnificationEntry(OrePrefix.valueOf("circuit"), Tier.Superconductor));
-		ModHandler.addShapedRecipe("ga_charger_max", MetaTileEntities.CHARGER[GTValues.MAX].getStackForm(), "WTW", "WMW", "BCB", 'M', MetaTileEntities.HULL[GTValues.MAX].getStackForm(), 'W', new UnificationEntry(OrePrefix.wireGtHex, Tier.Superconductor), 'T', OreDictNames.chestWood, 'B', last_bat, 'C', new UnificationEntry(OrePrefix.valueOf("circuit"), MarkerMaterials.Tier.Infinite));
+		registerTieredShapedRecipes(
+			"ga_charger_",
+			MetaTileEntities.CHARGER,
+			new String[] {
+				"WTW",
+				"WMW",
+				"BCB"
+			},
+			sub('M', HULL),
+			sub('W', bind(wireGtHex, XF_CABLE_MATERIAL)),
+			sub('T', OreDictNames.chestWood),
+			sub('B', GA_BATTERY),
+			sub('C', CIRCUIT));
 
-		ModHandler.addShapedRecipe("ga_transformer_ev", MetaTileEntities.TRANSFORMER[GTValues.EV - 1].getStackForm(), "KBB", "CM ", "KBB", 'M', MetaTileEntities.HULL[GTValues.HV].getStackForm(), 'C', new UnificationEntry(OrePrefix.cableGtSingle, Materials.Aluminium), 'B', new UnificationEntry(OrePrefix.cableGtSingle, Materials.Gold), 'K', MetaItems.SMALL_COIL);
-		ModHandler.addShapedRecipe("ga_transformer_iv", MetaTileEntities.TRANSFORMER[GTValues.IV - 1].getStackForm(), "KBB", "CM ", "KBB", 'M', MetaTileEntities.HULL[GTValues.EV].getStackForm(), 'C', new UnificationEntry(OrePrefix.cableGtSingle, Materials.Tungsten), 'B', new UnificationEntry(OrePrefix.cableGtSingle, Materials.Aluminium), 'K', MetaItems.SMALL_COIL);
-		ModHandler.addShapedRecipe("ga_transformer_luv", MetaTileEntities.TRANSFORMER[GTValues.LuV - 1].getStackForm(), "KBB", "CM ", "KBB", 'M', MetaTileEntities.HULL[GTValues.IV].getStackForm(), 'C', new UnificationEntry(OrePrefix.cableGtSingle, Materials.VanadiumGallium), 'B', new UnificationEntry(OrePrefix.cableGtSingle, Materials.Tungsten), 'K', MetaItems.POWER_INTEGRATED_CIRCUIT);
-		ModHandler.addShapedRecipe("ga_transformer_zpm", MetaTileEntities.TRANSFORMER[GTValues.ZPM - 1].getStackForm(), "KBB", "CM ", "KBB", 'M', MetaTileEntities.HULL[GTValues.LuV].getStackForm(), 'C', new UnificationEntry(OrePrefix.cableGtSingle, Materials.Naquadah), 'B', new UnificationEntry(OrePrefix.cableGtSingle, Materials.VanadiumGallium), 'K', MetaItems.POWER_INTEGRATED_CIRCUIT);
-		ModHandler.addShapedRecipe("ga_transformer_uv", MetaTileEntities.TRANSFORMER[GTValues.UV - 1].getStackForm(), "KBB", "CM ", "KBB", 'M', MetaTileEntities.HULL[GTValues.ZPM].getStackForm(), 'C', new UnificationEntry(OrePrefix.wireGtQuadruple, Materials.NaquadahAlloy), 'B', new UnificationEntry(OrePrefix.cableGtSingle, Materials.Naquadah), 'K', MetaItems.HIGH_POWER_INTEGRATED_CIRCUIT);
+		// Replace circuits in EV+ transformers with coil/pic/hpic
+		registerTieredShapedRecipes(
+			"ga_transformer_",
+			Arrays.copyOfRange(MetaTileEntities.TRANSFORMER, EV - 1, MetaTileEntities.TRANSFORMER.length),
+			new String[] {
+				"KBB",
+				"CM ",
+				"KBB"
+			},
+			sub('M', WORSE_HULL),
+			sub('C', XF_CABLE),
+			sub('B', XF_CABLE_WORSE),
+			sub('K', XF_ITEM));
 
 		//Steam Machines
-		ModHandler.addShapedRecipe("ga_steam_boiler_solar_bronze", MetaTileEntities.STEAM_BOILER_SOLAR_BRONZE.getStackForm(), "GGG", "SSS", "PMP", 'M', MetaBlocks.MACHINE_CASING.getItemVariant(BlockMachineCasing.MachineCasingType.BRONZE_BRICKS_HULL), 'P', new UnificationEntry(OrePrefix.pipeSmall, Materials.Bronze), 'S', new UnificationEntry(OrePrefix.plate, Materials.Silver), 'G', new ItemStack(Blocks.GLASS));
-		ModHandler.addShapedRecipe("ga_steam_furnace_bronze", MetaTileEntities.STEAM_FURNACE_BRONZE.getStackForm(), "XXX", "XMX", "XFX", 'M', MetaBlocks.MACHINE_CASING.getItemVariant(BlockMachineCasing.MachineCasingType.BRONZE_BRICKS_HULL), 'X', new UnificationEntry(OrePrefix.pipeSmall, Materials.Bronze), 'F', OreDictNames.craftingFurnace);
-		ModHandler.addShapedRecipe("ga_steam_furnace_steel", MetaTileEntities.STEAM_FURNACE_STEEL.getStackForm(), "XXX", "XMX", "XFX", 'M', MetaBlocks.MACHINE_CASING.getItemVariant(BlockMachineCasing.MachineCasingType.STEEL_BRICKS_HULL), 'X', new UnificationEntry(OrePrefix.pipeSmall, Materials.Steel), 'F', OreDictNames.craftingFurnace);
-		ModHandler.addShapedRecipe("ga_steam_macerator_bronze", MetaTileEntities.STEAM_MACERATOR_BRONZE.getStackForm(), "DXD", "XMX", "PXP", 'M', MetaBlocks.MACHINE_CASING.getItemVariant(BlockMachineCasing.MachineCasingType.BRONZE_HULL), 'X', new UnificationEntry(OrePrefix.pipeSmall, Materials.Bronze), 'P', OreDictNames.craftingPiston, 'D', new ItemStack(Items.FLINT));
-		ModHandler.addShapedRecipe("ga_steam_macerator_steel", MetaTileEntities.STEAM_MACERATOR_STEEL.getStackForm(), "DXD", "XMX", "PXP", 'M', MetaBlocks.MACHINE_CASING.getItemVariant(BlockMachineCasing.MachineCasingType.STEEL_HULL), 'X', new UnificationEntry(OrePrefix.pipeSmall, Materials.Steel), 'P', OreDictNames.craftingPiston, 'D', new ItemStack(Items.FLINT));
-		ModHandler.addShapedRecipe("ga_steam_extractor_bronze", MetaTileEntities.STEAM_EXTRACTOR_BRONZE.getStackForm(), "XXX", "PMG", "XXX", 'M', MetaBlocks.MACHINE_CASING.getItemVariant(BlockMachineCasing.MachineCasingType.BRONZE_HULL), 'X', new UnificationEntry(OrePrefix.pipeSmall, Materials.Bronze), 'P', OreDictNames.craftingPiston, 'G', new ItemStack(Blocks.GLASS));
-		ModHandler.addShapedRecipe("ga_steam_extractor_steel", MetaTileEntities.STEAM_EXTRACTOR_STEEL.getStackForm(), "XXX", "PMG", "XXX", 'M', MetaBlocks.MACHINE_CASING.getItemVariant(BlockMachineCasing.MachineCasingType.STEEL_HULL), 'X', new UnificationEntry(OrePrefix.pipeSmall, Materials.Steel), 'P', OreDictNames.craftingPiston, 'G', new ItemStack(Blocks.GLASS));
-		ModHandler.addShapedRecipe("ga_steam_hammer_bronze", MetaTileEntities.STEAM_HAMMER_BRONZE.getStackForm(), "XPX", "XMX", "XAX", 'M', MetaBlocks.MACHINE_CASING.getItemVariant(BlockMachineCasing.MachineCasingType.BRONZE_HULL), 'X', new UnificationEntry(OrePrefix.pipeSmall, Materials.Bronze), 'P', OreDictNames.craftingPiston, 'A', OreDictNames.craftingAnvil);
-		ModHandler.addShapedRecipe("ga_steam_hammer_steel", MetaTileEntities.STEAM_HAMMER_STEEL.getStackForm(), "XPX", "XMX", "XAX", 'M', MetaBlocks.MACHINE_CASING.getItemVariant(BlockMachineCasing.MachineCasingType.STEEL_HULL), 'X', new UnificationEntry(OrePrefix.pipeSmall, Materials.Steel), 'P', OreDictNames.craftingPiston, 'A', OreDictNames.craftingAnvil);
-		ModHandler.addShapedRecipe("ga_steam_compressor_bronze", MetaTileEntities.STEAM_COMPRESSOR_BRONZE.getStackForm(), "XXX", "PMP", "XXX", 'M', MetaBlocks.MACHINE_CASING.getItemVariant(BlockMachineCasing.MachineCasingType.BRONZE_HULL), 'X', new UnificationEntry(OrePrefix.pipeSmall, Materials.Bronze), 'P', OreDictNames.craftingPiston);
-		ModHandler.addShapedRecipe("ga_steam_compressor_steel", MetaTileEntities.STEAM_COMPRESSOR_STEEL.getStackForm(), "XXX", "PMP", "XXX", 'M', MetaBlocks.MACHINE_CASING.getItemVariant(BlockMachineCasing.MachineCasingType.STEEL_HULL), 'X', new UnificationEntry(OrePrefix.pipeSmall, Materials.Steel), 'P', OreDictNames.craftingPiston);
-		ModHandler.addShapedRecipe("ga_steam_alloy_smelter_bronze", MetaTileEntities.STEAM_ALLOY_SMELTER_BRONZE.getStackForm(), "XXX", "FMF", "XXX", 'M', MetaBlocks.MACHINE_CASING.getItemVariant(BlockMachineCasing.MachineCasingType.BRONZE_BRICKS_HULL), 'X', new UnificationEntry(OrePrefix.pipeSmall, Materials.Bronze), 'F', OreDictNames.craftingFurnace);
-		ModHandler.addShapedRecipe("ga_steam_alloy_smelter_steel", MetaTileEntities.STEAM_ALLOY_SMELTER_STEEL.getStackForm(), "XXX", "FMF", "XXX", 'M', MetaBlocks.MACHINE_CASING.getItemVariant(BlockMachineCasing.MachineCasingType.STEEL_BRICKS_HULL), 'X', new UnificationEntry(OrePrefix.pipeSmall, Materials.Steel), 'F', OreDictNames.craftingFurnace);
+		ModHandler.addShapedRecipe(
+			"ga_steam_boiler_solar_bronze",
+			MetaTileEntities.STEAM_BOILER_SOLAR_BRONZE.getStackForm(),
+			new String[] {
+				"GGG",
+				"SSS",
+				"PMP"
+			},
+			sub('M', BRONZE_BRICKS_HULL),
+			sub('P', pipeSmall, Bronze),
+			sub('S', plate, Silver),
+			sub('G', new ItemStack(Blocks.GLASS)));
+
+		ModHandler.addShapedRecipe(
+			"ga_steam_furnace_bronze",
+			MetaTileEntities.STEAM_FURNACE_BRONZE.getStackForm(),
+			new String[] {
+				"XXX",
+				"XMX",
+				"XFX"
+			},
+			sub('M', BRONZE_BRICKS_HULL),
+			sub('X', pipeSmall, Bronze),
+			sub('F', OreDictNames.craftingFurnace));
+
+		ModHandler.addShapedRecipe(
+			"ga_steam_furnace_steel",
+			MetaTileEntities.STEAM_FURNACE_STEEL.getStackForm(),
+			new String[] {
+				"XXX",
+				"XMX",
+				"XFX"
+			},
+			sub('M', STEEL_BRICKS_HULL),
+			sub('X', pipeSmall, Steel),
+			sub('F', OreDictNames.craftingFurnace));
+
+		ModHandler.addShapedRecipe(
+			"ga_steam_macerator_bronze",
+			MetaTileEntities.STEAM_MACERATOR_BRONZE.getStackForm(),
+			new String[] {
+				"DXD",
+				"XMX",
+				"PXP"
+			},
+			sub('M', BRONZE_HULL),
+			sub('X', pipeSmall, Bronze),
+			sub('P', OreDictNames.craftingPiston),
+			sub('D', new ItemStack(Items.FLINT)));
+
+		ModHandler.addShapedRecipe(
+			"ga_steam_macerator_steel",
+			MetaTileEntities.STEAM_MACERATOR_STEEL.getStackForm(),
+			new String[] {
+				"DXD",
+				"XMX",
+				"PXP"
+			},
+			sub('M', STEEL_HULL),
+			sub('X', pipeSmall, Steel),
+			sub('P', OreDictNames.craftingPiston),
+			sub('D', new ItemStack(Items.FLINT)));
+
+		ModHandler.addShapedRecipe(
+			"ga_steam_extractor_bronze",
+			MetaTileEntities.STEAM_EXTRACTOR_BRONZE.getStackForm(),
+			new String[] {
+				"XXX",
+				"PMG",
+				"XXX"
+			},
+			sub('M', BRONZE_HULL),
+			sub('X', pipeSmall, Bronze),
+			sub('P', OreDictNames.craftingPiston),
+			sub('G', new ItemStack(Blocks.GLASS)));
+
+		ModHandler.addShapedRecipe(
+			"ga_steam_extractor_steel",
+			MetaTileEntities.STEAM_EXTRACTOR_STEEL.getStackForm(),
+			new String[] {
+				"XXX",
+				"PMG",
+				"XXX"
+			},
+			sub('M', STEEL_HULL),
+			sub('X', pipeSmall, Steel),
+			sub('P', OreDictNames.craftingPiston),
+			sub('G', new ItemStack(Blocks.GLASS)));
+
+		ModHandler.addShapedRecipe(
+			"ga_steam_hammer_bronze",
+			MetaTileEntities.STEAM_HAMMER_BRONZE.getStackForm(),
+			new String[] {
+				"XPX",
+				"XMX",
+				"XAX"
+			},
+			sub('M', BRONZE_HULL),
+			sub('X', pipeSmall, Bronze),
+			sub('P', OreDictNames.craftingPiston),
+			sub('A', OreDictNames.craftingAnvil));
+
+		ModHandler.addShapedRecipe(
+			"ga_steam_hammer_steel",
+			MetaTileEntities.STEAM_HAMMER_STEEL.getStackForm(),
+			new String[] {
+				"XPX",
+				"XMX",
+				"XAX"
+			},
+			sub('M', STEEL_HULL),
+			sub('X', pipeSmall, Steel),
+			sub('P', OreDictNames.craftingPiston),
+			sub('A', OreDictNames.craftingAnvil));
+
+		ModHandler.addShapedRecipe(
+			"ga_steam_compressor_bronze",
+			MetaTileEntities.STEAM_COMPRESSOR_BRONZE.getStackForm(),
+			new String[] {
+				"XXX",
+				"PMP",
+				"XXX"
+			},
+			sub('M', BRONZE_HULL),
+			sub('X', pipeSmall, Bronze),
+			sub('P', OreDictNames.craftingPiston));
+
+		ModHandler.addShapedRecipe(
+			"ga_steam_compressor_steel",
+			MetaTileEntities.STEAM_COMPRESSOR_STEEL.getStackForm(),
+			new String[] {
+				"XXX",
+				"PMP",
+				"XXX"
+			},
+			sub('M', STEEL_HULL),
+			sub('X', pipeSmall, Steel),
+			sub('P', OreDictNames.craftingPiston));
+
+		ModHandler.addShapedRecipe(
+			"ga_steam_alloy_smelter_bronze",
+			MetaTileEntities.STEAM_ALLOY_SMELTER_BRONZE.getStackForm(),
+			new String[] {
+				"XXX",
+				"FMF",
+				"XXX"
+			},
+			sub('M', BRONZE_BRICKS_HULL),
+			sub('X', pipeSmall, Bronze),
+			sub('F', OreDictNames.craftingFurnace));
+
+		ModHandler.addShapedRecipe(
+			"ga_steam_alloy_smelter_steel",
+			MetaTileEntities.STEAM_ALLOY_SMELTER_STEEL.getStackForm(),
+			new String[] {
+				"XXX",
+				"FMF",
+				"XXX"
+			},
+			sub('M', STEEL_BRICKS_HULL),
+			sub('X', pipeSmall, Steel),
+			sub('F', OreDictNames.craftingFurnace));
 
 		//MultiBlocks
-		ModHandler.addShapedRecipe("ga_primitive_blast_furnace", MetaTileEntities.PRIMITIVE_BLAST_FURNACE.getStackForm(), "hRS", "PBR", "dRS", 'R', OreDictUnifier.get(OrePrefix.stick, Materials.Iron), 'S', OreDictUnifier.get(OrePrefix.screw, Materials.Iron), 'P', "plateIron", 'B', MetaBlocks.METAL_CASING.getItemVariant(BlockMetalCasing.MetalCasingType.PRIMITIVE_BRICKS));
-		ModHandler.addShapedRecipe("ga_electric_blast_furnace", MetaTileEntities.ELECTRIC_BLAST_FURNACE.getStackForm(), "FFF", "CMC", "WCW", 'M', MetaBlocks.METAL_CASING.getItemVariant(BlockMetalCasing.MetalCasingType.INVAR_HEATPROOF), 'F', OreDictNames.craftingFurnace, 'C', new UnificationEntry(OrePrefix.valueOf("circuit"), Tier.Basic), 'W', new UnificationEntry(OrePrefix.cableGtSingle, Materials.Tin));
-		ModHandler.addShapedRecipe("ga_vacuum_freezer", MetaTileEntities.VACUUM_FREEZER.getStackForm(), "PPP", "CMC", "WCW", 'M', MetaBlocks.METAL_CASING.getItemVariant(BlockMetalCasing.MetalCasingType.ALUMINIUM_FROSTPROOF), 'P', MetaItems.ELECTRIC_PUMP_HV, 'C', new UnificationEntry(OrePrefix.valueOf("circuit"), MarkerMaterials.Tier.Extreme), 'W', new UnificationEntry(OrePrefix.cableGtSingle, Materials.Gold));
-		ModHandler.addShapedRecipe("ga_implosion_compressor", MetaTileEntities.IMPLOSION_COMPRESSOR.getStackForm(), "OOO", "CMC", "WCW", 'M', MetaBlocks.METAL_CASING.getItemVariant(BlockMetalCasing.MetalCasingType.STEEL_SOLID), 'O', new UnificationEntry(OrePrefix.stone, Materials.Obsidian), 'C', new UnificationEntry(OrePrefix.valueOf("circuit"), Tier.Advanced), 'W', new UnificationEntry(OrePrefix.cableGtSingle, Materials.Aluminium));
-		ModHandler.addShapedRecipe("ga_pyrolyse_oven", MetaTileEntities.PYROLYSE_OVEN.getStackForm(), "WEP", "EME", "WCP", 'M', MetaTileEntities.HULL[GTValues.MV].getStackForm(), 'W', MetaItems.ELECTRIC_PISTON_MV, 'P', new UnificationEntry(OrePrefix.wireGtQuadruple, Materials.Cupronickel), 'E', new UnificationEntry(OrePrefix.valueOf("circuit"), Tier.Good), 'C', MetaItems.ELECTRIC_PUMP_MV);
-		ModHandler.addShapedRecipe("ga_diesel_engine", MetaTileEntities.DIESEL_ENGINE.getStackForm(), "PCP", "EME", "GWG", 'M', MetaTileEntities.HULL[GTValues.EV].getStackForm(), 'P', MetaItems.ELECTRIC_PISTON_EV, 'E', MetaItems.ELECTRIC_MOTOR_EV, 'C', new UnificationEntry(OrePrefix.valueOf("circuit"), Tier.Elite), 'W', new UnificationEntry(OrePrefix.wireGtSingle, Materials.TungstenSteel), 'G', new UnificationEntry(OrePrefix.gear, Materials.Titanium));
-		ModHandler.addShapedRecipe("ga_engine_intake_casing", MetaBlocks.MUTLIBLOCK_CASING.getItemVariant(BlockMultiblockCasing.MultiblockCasingType.ENGINE_INTAKE_CASING), "PhP", "RFR", "PwP", 'R', new UnificationEntry(OrePrefix.pipeMedium, Materials.Titanium), 'F', MetaBlocks.METAL_CASING.getItemVariant(BlockMetalCasing.MetalCasingType.TITANIUM_STABLE), 'P', new UnificationEntry(OrePrefix.rotor, Materials.Titanium));
-		ModHandler.addShapedRecipe("ga_multi_furnace", MetaTileEntities.MULTI_FURNACE.getStackForm(), "PPP", "ASA", "CAC", 'P', Blocks.FURNACE, 'A', new UnificationEntry(OrePrefix.valueOf("circuit"), Tier.Advanced), 'S', MetaBlocks.METAL_CASING.getItemVariant(BlockMetalCasing.MetalCasingType.INVAR_HEATPROOF), 'C', new UnificationEntry(OrePrefix.cableGtSingle, Materials.AnnealedCopper));
-		ModHandler.addShapedRecipe("ga_large_steam_turbine", MetaTileEntities.LARGE_STEAM_TURBINE.getStackForm(), "PSP", "SAS", "CSC", 'S', new UnificationEntry(OrePrefix.gear, Materials.Steel), 'P', new UnificationEntry(OrePrefix.valueOf("circuit"), Tier.Advanced), 'A', MetaTileEntities.HULL[GTValues.HV].getStackForm(), 'C', OreDictUnifier.get(OrePrefix.pipeLarge, Materials.Steel));
-		ModHandler.addShapedRecipe("ga_large_gas_turbine", MetaTileEntities.LARGE_GAS_TURBINE.getStackForm(), "PSP", "SAS", "CSC", 'S', new UnificationEntry(OrePrefix.gear, Materials.StainlessSteel), 'P', new UnificationEntry(OrePrefix.valueOf("circuit"), MarkerMaterials.Tier.Extreme), 'A', MetaTileEntities.HULL[GTValues.EV].getStackForm(), 'C', OreDictUnifier.get(OrePrefix.pipeLarge, Materials.StainlessSteel));
-		ModHandler.addShapedRecipe("ga_large_plasma_turbine", MetaTileEntities.LARGE_PLASMA_TURBINE.getStackForm(), "PSP", "SAS", "CSC", 'S', new UnificationEntry(OrePrefix.gear, Materials.TungstenSteel), 'P', new UnificationEntry(OrePrefix.valueOf("circuit"), Tier.Master), 'A', MetaTileEntities.HULL[GTValues.UV].getStackForm(), 'C', OreDictUnifier.get(OrePrefix.pipeLarge, Materials.TungstenSteel));
-		ModHandler.addShapedRecipe("ga_large_bronze_boiler", MetaTileEntities.LARGE_BRONZE_BOILER.getStackForm(), "PSP", "SAS", "PSP", 'P', new UnificationEntry(OrePrefix.cableGtSingle, Materials.Tin), 'S', new UnificationEntry(OrePrefix.valueOf("circuit"), Tier.Basic), 'A', MetaBlocks.METAL_CASING.getItemVariant(BlockMetalCasing.MetalCasingType.BRONZE_BRICKS));
-		ModHandler.addShapedRecipe("ga_large_steel_boiler", MetaTileEntities.LARGE_STEEL_BOILER.getStackForm(), "PSP", "SAS", "PSP", 'P', new UnificationEntry(OrePrefix.cableGtSingle, Materials.Copper), 'S', new UnificationEntry(OrePrefix.valueOf("circuit"), Tier.Advanced), 'A', MetaBlocks.METAL_CASING.getItemVariant(BlockMetalCasing.MetalCasingType.STEEL_SOLID));
-		ModHandler.addShapedRecipe("ga_large_titanium_boiler", MetaTileEntities.LARGE_TITANIUM_BOILER.getStackForm(), "PSP", "SAS", "PSP", 'P', new UnificationEntry(OrePrefix.cableGtSingle, Materials.Gold), 'S', new UnificationEntry(OrePrefix.valueOf("circuit"), Tier.Elite), 'A', MetaBlocks.METAL_CASING.getItemVariant(BlockMetalCasing.MetalCasingType.TITANIUM_STABLE));
-		ModHandler.addShapedRecipe("ga_large_tungstensteel_boiler", MetaTileEntities.LARGE_TUNGSTENSTEEL_BOILER.getStackForm(), "PSP", "SAS", "PSP", 'P', new UnificationEntry(OrePrefix.cableGtSingle, Materials.Aluminium), 'S', new UnificationEntry(OrePrefix.valueOf("circuit"), Tier.Master), 'A', MetaBlocks.METAL_CASING.getItemVariant(BlockMetalCasing.MetalCasingType.TUNGSTENSTEEL_ROBUST));
-		ModHandler.addShapedRecipe("ga_assline", GATileEntities.ASSEMBLY_LINE.getStackForm(), "CRC", "SAS", "CRC", 'A', MetaTileEntities.HULL[GTValues.IV].getStackForm(), 'R', MetaItems.ROBOT_ARM_IV, 'C', MetaBlocks.MUTLIBLOCK_CASING.getItemVariant(BlockMultiblockCasing.MultiblockCasingType.ASSEMBLER_CASING), 'S', new UnificationEntry(OrePrefix.valueOf("circuit"), Tier.Elite));
-		ModHandler.addShapedRecipe("ga_processing_array", GATileEntities.PROCESSING_ARRAY.getStackForm(), "CBC", "RHR", "CDC", 'H', MetaTileEntities.HULL[GTValues.IV].getStackForm(), 'R', MetaItems.ROBOT_ARM_IV, 'C', new UnificationEntry(OrePrefix.valueOf("circuit"), Tier.Elite), 'B', MetaItems.ENERGY_LAPOTRONIC_ORB, 'D', MetaItems.TOOL_DATA_ORB);
+		ModHandler.addShapedRecipe(
+			"ga_primitive_blast_furnace",
+			MetaTileEntities.PRIMITIVE_BLAST_FURNACE.getStackForm(),
+			new String[] {
+				"hRS",
+				"PBR",
+				"dRS"
+			},
+			sub('R', stick, Iron),
+			sub('S', screw, Iron),
+			sub('P', plate, Iron),
+			sub('B', PRIMITIVE_BRICKS));
+
+		ModHandler.addShapedRecipe(
+			"ga_electric_blast_furnace",
+			MetaTileEntities.ELECTRIC_BLAST_FURNACE.getStackForm(),
+			new String[] {
+				"FFF",
+				"CMC",
+				"WCW"
+			},
+			resolveComponents(
+				LV,
+				sub('M', INVAR_HEATPROOF),
+				sub('F', OreDictNames.craftingFurnace),
+				sub('C', CIRCUIT),
+				sub('W', CABLE)));
+
+		ModHandler.addShapedRecipe(
+			"ga_vacuum_freezer",
+			MetaTileEntities.VACUUM_FREEZER.getStackForm(),
+			new String[] {
+				"PPP",
+				"CMC",
+				"WCW"
+			},
+			resolveComponents(
+				HV,
+				sub('M', ALUMINIUM_FROSTPROOF),
+				sub('P', PUMP),
+				sub('C', BETTER_CIRCUIT),
+				sub('W', CABLE)));
+
+		ModHandler.addShapedRecipe(
+			"ga_implosion_compressor",
+			MetaTileEntities.IMPLOSION_COMPRESSOR.getStackForm(),
+			new String[] {
+				"OOO",
+				"CMC",
+				"WCW"
+			},
+			sub('M', STEEL_SOLID),
+			sub('O', stone, Obsidian),
+			sub('C', HV, CIRCUIT),
+			sub('W', EV, CABLE));
+
+		ModHandler.addShapedRecipe(
+			"ga_pyrolyse_oven",
+			MetaTileEntities.PYROLYSE_OVEN.getStackForm(),
+			new String[] {
+				"WEP",
+				"EME",
+				"WCP"
+			},
+			resolveComponents(
+				MV,
+				sub('M', HULL),
+				sub('W', PISTON),
+				sub('P', COIL_HEATING_DOUBLE),
+				sub('E', CIRCUIT),
+				sub('C', PUMP)));
+
+		ModHandler.addShapedRecipe(
+			"ga_diesel_engine",
+			MetaTileEntities.DIESEL_ENGINE.getStackForm(),
+			new String[] {
+				"PCP",
+				"EME",
+				"GWG"
+			},
+			resolveComponents(
+				EV,
+				sub('M', HULL),
+				sub('P', PISTON),
+				sub('E', MOTOR),
+				sub('C', BETTER_CIRCUIT),
+				sub('W', wireGtSingle, TungstenSteel),
+				sub('G', GEAR)));
+
+		ModHandler.addShapedRecipe(
+			"ga_engine_intake_casing",
+			ENGINE_INTAKE_CASING.getStack(),
+			new String[] {
+				"PhP",
+				"RFR",
+				"PwP"
+			},
+			sub('R', EV, PIPE),
+			sub('F', TITANIUM_STABLE),
+			sub('P', rotor, Titanium));
+
+		ModHandler.addShapedRecipe(
+			"ga_multi_furnace",
+			MetaTileEntities.MULTI_FURNACE.getStackForm(),
+			new String[] {
+				"PPP",
+				"ASA",
+				"CAC"
+			},
+			sub('P', Blocks.FURNACE),
+			sub('A', HV, CIRCUIT),
+			sub('S', INVAR_HEATPROOF),
+			sub('C', cableGtSingle, AnnealedCopper));
+
+
+		ModHandler.addShapedRecipe(
+			"ga_large_steam_turbine",
+			MetaTileEntities.LARGE_STEAM_TURBINE.getStackForm(),
+			new String[] {
+				"PSP",
+				"SAS",
+				"CSC"
+			},
+			sub('S', LV, GEAR),
+			sub('P', HV, CIRCUIT),
+			sub('A', HV, HULL),
+			sub('C', LV, PIPE_LARGE));
+
+		ModHandler.addShapedRecipe(
+			"ga_large_gas_turbine",
+			MetaTileEntities.LARGE_GAS_TURBINE.getStackForm(),
+			new String[] {
+				"PSP",
+				"SAS",
+				"CSC"
+			},
+			sub('S', HV, GEAR),
+			sub('P', EV, CIRCUIT),
+			sub('A', EV, HULL),
+			sub('C', HV, PIPE_LARGE));
+
+		ModHandler.addShapedRecipe(
+			"ga_large_plasma_turbine",
+			MetaTileEntities.LARGE_PLASMA_TURBINE.getStackForm(),
+			new String[] {
+				"PSP",
+				"SAS",
+				"CSC"
+			},
+			sub('S', gear, TungstenSteel),
+			sub('P', LuV, CIRCUIT),
+			sub('A', UV, HULL),
+			sub('C', pipeLarge, TungstenSteel));
+
+		ModHandler.addShapedRecipe(
+			"ga_large_bronze_boiler",
+			MetaTileEntities.LARGE_BRONZE_BOILER.getStackForm(),
+			new String[] {
+				"PSP",
+				"SAS",
+				"PSP"
+			},
+			resolveComponents(
+				LV,
+				sub('P', CABLE),
+				sub('S', CIRCUIT),
+				sub('A', BRONZE_BRICKS)));
+
+		ModHandler.addShapedRecipe(
+			"ga_large_steel_boiler",
+			MetaTileEntities.LARGE_STEEL_BOILER.getStackForm(),
+			new String[] {
+				"PSP",
+				"SAS",
+				"PSP"
+			},
+			resolveComponents(
+				MV,
+				sub('P', CABLE),
+				sub('S', BETTER_CIRCUIT),
+				sub('A', STEEL_SOLID)));
+
+		ModHandler.addShapedRecipe(
+			"ga_large_titanium_boiler",
+			MetaTileEntities.LARGE_TITANIUM_BOILER.getStackForm(),
+			new String[] {
+				"PSP",
+				"SAS",
+				"PSP"
+			},
+			sub('P', HV, CABLE),
+			sub('S', IV, CIRCUIT),
+			sub('A', TITANIUM_STABLE));
+
+		ModHandler.addShapedRecipe(
+			"ga_large_tungstensteel_boiler",
+			MetaTileEntities.LARGE_TUNGSTENSTEEL_BOILER.getStackForm(),
+			new String[] {
+				"PSP",
+				"SAS",
+				"PSP"
+			},
+			sub('P', EV, CABLE),
+			sub('S', LuV, CIRCUIT),
+			sub('A', TUNGSTENSTEEL_ROBUST));
+
+		ModHandler.addShapedRecipe(
+			"ga_assline",
+			GATileEntities.ASSEMBLY_LINE.getStackForm(),
+			new String[] {
+				"CRC",
+				"SAS",
+				"CRC"
+			},
+			resolveComponents(
+				IV,
+				sub('A', HULL),
+				sub('R', ROBOT_ARM),
+				sub('C', ASSEMBLER_CASING),
+				sub('S', CIRCUIT)));
+
+		ModHandler.addShapedRecipe(
+			"ga_processing_array",
+			GATileEntities.PROCESSING_ARRAY.getStackForm(),
+			new String[] {
+				"CBC",
+				"RHR",
+				"CDC"
+			},
+			resolveComponents(
+				IV,
+				sub('H', HULL),
+				sub('R', ROBOT_ARM),
+				sub('C', CIRCUIT),
+				sub('B', BATTERY),
+				sub('D', MetaItems.TOOL_DATA_ORB)));
+
 		List<Recipe> removals = new ArrayList<>();
 
 		for (Recipe r : RecipeMaps.ASSEMBLER_RECIPES.getRecipeList()) {
@@ -228,165 +556,1346 @@ public class MachineCraftingRecipes {
 			}
 		}
 
-		RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder().inputs(MetaTileEntities.LARGE_BRONZE_BOILER.getStackForm()).inputs(CountableIngredient.from(OrePrefix.plate, Materials.Steel, 2), CountableIngredient.from(OrePrefix.circuit, Tier.Advanced, 2)).outputs(MetaTileEntities.LARGE_STEEL_BOILER.getStackForm()).EUt(120).duration(600).buildAndRegister();
-		RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder().inputs(MetaTileEntities.LARGE_STEEL_BOILER.getStackForm()).inputs(CountableIngredient.from(OrePrefix.plate, Materials.Titanium, 2), CountableIngredient.from(OrePrefix.circuit, Tier.Advanced, 2)).outputs(MetaTileEntities.LARGE_TITANIUM_BOILER.getStackForm()).EUt(500).duration(600).buildAndRegister();
-		RecipeMaps.ASSEMBLER_RECIPES.recipeBuilder().inputs(MetaTileEntities.LARGE_TITANIUM_BOILER.getStackForm()).inputs(CountableIngredient.from(OrePrefix.plate, Materials.TungstenSteel, 2), CountableIngredient.from(OrePrefix.circuit, Tier.Advanced, 2)).outputs(MetaTileEntities.LARGE_TUNGSTENSTEEL_BOILER.getStackForm()).EUt(2000).duration(600).buildAndRegister();
+		RecipeMaps.ASSEMBLER_RECIPES
+			.recipeBuilder()
+			.output(MetaTileEntities.LARGE_STEEL_BOILER)
+			.inputs(MetaTileEntities.LARGE_BRONZE_BOILER.getStackForm())
+			.input(plate, Steel, 2)
+			.input(HV, CIRCUIT, 2)
+			.EUt(120).duration(600)
+			.buildAndRegister();
+
+		RecipeMaps.ASSEMBLER_RECIPES
+			.recipeBuilder()
+			.output(MetaTileEntities.LARGE_TITANIUM_BOILER)
+			.inputs(MetaTileEntities.LARGE_STEEL_BOILER.getStackForm())
+			.input(plate, Titanium, 2)
+			.input(HV, CIRCUIT, 2)
+			.EUt(500).duration(600)
+			.buildAndRegister();
+
+		RecipeMaps.ASSEMBLER_RECIPES
+			.recipeBuilder()
+			.output(MetaTileEntities.LARGE_TUNGSTENSTEEL_BOILER)
+			.inputs(MetaTileEntities.LARGE_TITANIUM_BOILER.getStackForm())
+			.input(plate, TungstenSteel, 2)
+			.input(HV, CIRCUIT, 2)
+			.EUt(2000).duration(600)
+			.buildAndRegister();
 
 		//Storage
-		
+
 		if (GAConfig.GT6.registerDrums) {
-			ModHandler.addShapedRecipe("wooden_barrel", GATileEntities.WOODEN_DRUM.getStackForm(), "rSs", "PRP", "PRP", 'S', "slimeball", 'P', "plankWood", 'R', "stickLongIron");
+			// Wood Drum
+			ModHandler.addShapedRecipe(
+				"wooden_barrel",
+				GATileEntities.WOODEN_DRUM.getStackForm(),
+				new String[] {
+					"rSs",
+					"PRP",
+					"PRP"
+				},
+				sub('S', "slimeball"),
+				sub('P', plank, Wood),
+				sub('R', stickLong, Iron));
+
+			// Metal Drums
+			Function<Material, UnificationEntry> plateFn;
+			// use curved plates if all bending-related configs are enabled
 			if (GAConfig.GT6.BendingCurvedPlates && GAConfig.GT6.BendingCylinders && GAConfig.GT6.addCurvedPlates) {
-				ModHandler.addShapedRecipe("bronze_drum", GATileEntities.BRONZE_DRUM.getStackForm(), " h ", "PRP", "PRP", 'P', "plateCurvedBronze", 'R', "stickLongBronze");
-				ModHandler.addShapedRecipe("steel_drum", GATileEntities.STEEL_DRUM.getStackForm(), " h ", "PRP", "PRP", 'P', "plateCurvedSteel", 'R', "stickLongSteel");
-				ModHandler.addShapedRecipe("stainless_steel_drum", GATileEntities.STAINLESS_STEEL_DRUM.getStackForm(), " h ", "PRP", "PRP", 'P', "plateCurvedStainlessSteel", 'R', "stickLongStainlessSteel");
-				ModHandler.addShapedRecipe("titanium_drum", GATileEntities.TITANIUM_DRUM.getStackForm(), " h ", "PRP", "PRP", 'P', "plateCurvedTitanium", 'R', "stickLongTitanium");
-				ModHandler.addShapedRecipe("tungstensteel_drum", GATileEntities.TUNGSTENSTEEL_DRUM.getStackForm(), " h ", "PRP", "PRP", 'P', "plateCurvedTungstenSteel", 'R', "stickLongTungstenSteel");
-			} else if (!(GAConfig.GT6.BendingCurvedPlates || GAConfig.GT6.BendingCylinders)) {
-				ModHandler.addShapedRecipe("bronze_drum", GATileEntities.BRONZE_DRUM.getStackForm(), " h ", "PRP", "PRP", 'P', "plateBronze", 'R', "stickLongBronze");
-				ModHandler.addShapedRecipe("steel_drum", GATileEntities.STEEL_DRUM.getStackForm(), " h ", "PRP", "PRP", 'P', "plateSteel", 'R', "stickLongSteel");
-				ModHandler.addShapedRecipe("stainless_steel_drum", GATileEntities.STAINLESS_STEEL_DRUM.getStackForm(), " h ", "PRP", "PRP", 'P', "plateStainlessSteel", 'R', "stickLongStainlessSteel");
-				ModHandler.addShapedRecipe("titanium_drum", GATileEntities.TITANIUM_DRUM.getStackForm(), " h ", "PRP", "PRP", 'P', "plateTitanium", 'R', "stickLongTitanium");
-				ModHandler.addShapedRecipe("tungstensteel_drum", GATileEntities.TUNGSTENSTEEL_DRUM.getStackForm(), " h ", "PRP", "PRP", 'P', "plateTungstenSteel", 'R', "stickLongTungstenSteel");
-			}
+				plateFn = x -> new UnificationEntry(plateCurved, x);
+			}else // use normal ones
+				plateFn = x -> new UnificationEntry(plate, x);
+
+			for(var drum : GATileEntities.DRUMS)
+				if(drum.getMaterial() != Wood)
+					ModHandler.addShapedRecipe(
+						String.format("%s_drum", drum.getMaterial()),
+						drum.getStackForm(),
+						new String[] {
+							" h ",
+							"PRP",
+							"PRP"
+						},
+						sub('P', plateFn.apply(drum.getMaterial())),
+						sub('R', stickLong, drum.getMaterial())
+					);
 		}
+
 		if (GAConfig.Misc.registerCrates) {
-			ModHandler.addShapedRecipe("wooden_crate", GATileEntities.WOODEN_CRATE.getStackForm(), "RPR", "PsP", "RPR", 'P', "plankWood", 'R', "screwIron");
-			ModHandler.addShapedRecipe("bronze_crate", GATileEntities.BRONZE_CRATE.getStackForm(), "RPR", "PhP", "RPR", 'P', "plateBronze", 'R', "stickLongBronze");
-			ModHandler.addShapedRecipe("steel_crate", GATileEntities.STEEL_CRATE.getStackForm(), "RPR", "PhP", "RPR", 'P', "plateSteel", 'R', "stickLongSteel");
-			ModHandler.addShapedRecipe("stainless_steel_crate", GATileEntities.STAINLESS_STEEL_CRATE.getStackForm(), "RPR", "PhP", "RPR", 'P', "plateStainlessSteel", 'R', "stickLongStainlessSteel");
-			ModHandler.addShapedRecipe("titanium_crate", GATileEntities.TITANIUM_CRATE.getStackForm(), "RPR", "PhP", "RPR", 'P', "plateTitanium", 'R', "stickLongTitanium");
-			ModHandler.addShapedRecipe("tungstensteel_crate", GATileEntities.TUNGSTENSTEEL_CRATE.getStackForm(), "RPR", "PhP", "RPR", 'P', "plateTungstenSteel", 'R', "stickLongTungstenSteel");
+			ModHandler.addShapedRecipe(
+				"wooden_crate",
+				GATileEntities.WOODEN_CRATE.getStackForm(),
+				new String[] {
+					"RPR",
+					"PsP",
+					"RPR"
+				},
+				sub('P', plank, Wood),
+				sub('R', screw, Iron));
+
+			// Metal Crates
+			for(var crate : GATileEntities.CRATES)
+				if(crate.getMaterial() != Wood)
+					ModHandler.addShapedRecipe(
+						String.format("%s_crate", crate.getMaterial()),
+						crate.getStackForm(),
+						new String[] {
+							"RPR",
+							"PhP",
+							"RPR"
+						},
+						sub('P', plate, crate.getMaterial()),
+						sub('R', stickLong, crate.getMaterial()));
 		}
 
 		//Generators
-		registerMachineRecipe(GATileEntities.NAQUADAH_REACTOR, "RCR", "FMF", "QCQ", 'M', HULL, 'Q', CABLE_QUAD, 'C', BETTER_CIRCUIT, 'F', FIELD_GENERATOR, 'R', STICK_RADIOACTIVE);
-		ModHandler.addShapedRecipe("ga_diesel_generator_lv", MetaTileEntities.DIESEL_GENERATOR[0].getStackForm(), "PCP", "EME", "GWG", 'M', MetaTileEntities.HULL[GTValues.LV].getStackForm(), 'P', MetaItems.ELECTRIC_PISTON_LV, 'E', MetaItems.ELECTRIC_MOTOR_LV, 'C', new UnificationEntry(OrePrefix.valueOf("circuit"), Tier.Basic), 'W', new UnificationEntry(OrePrefix.cableGtSingle, Materials.Tin), 'G', new UnificationEntry(OrePrefix.gear, Materials.Steel));
-		ModHandler.addShapedRecipe("ga_diesel_generator_mv", MetaTileEntities.DIESEL_GENERATOR[1].getStackForm(), "PCP", "EME", "GWG", 'M', MetaTileEntities.HULL[GTValues.MV].getStackForm(), 'P', MetaItems.ELECTRIC_PISTON_MV, 'E', MetaItems.ELECTRIC_MOTOR_MV, 'C', new UnificationEntry(OrePrefix.valueOf("circuit"), Tier.Good), 'W', new UnificationEntry(OrePrefix.cableGtSingle, Materials.Copper), 'G', new UnificationEntry(OrePrefix.gear, Materials.Aluminium));
-		ModHandler.addShapedRecipe("ga_diesel_generator_hv", MetaTileEntities.DIESEL_GENERATOR[2].getStackForm(), "PCP", "EME", "GWG", 'M', MetaTileEntities.HULL[GTValues.HV].getStackForm(), 'P', MetaItems.ELECTRIC_PISTON_HV, 'E', MetaItems.ELECTRIC_MOTOR_HV, 'C', new UnificationEntry(OrePrefix.valueOf("circuit"), Tier.Advanced), 'W', new UnificationEntry(OrePrefix.cableGtSingle, Materials.Gold), 'G', new UnificationEntry(OrePrefix.gear, Materials.StainlessSteel));
-		ModHandler.addShapedRecipe("ga_gas_turbine_lv", MetaTileEntities.GAS_TURBINE[0].getStackForm(), "CRC", "RMR", "EWE", 'M', MetaTileEntities.HULL[GTValues.LV].getStackForm(), 'E', MetaItems.ELECTRIC_MOTOR_LV, 'R', new UnificationEntry(OrePrefix.rotor, Materials.Tin), 'C', new UnificationEntry(OrePrefix.valueOf("circuit"), Tier.Basic), 'W', new UnificationEntry(OrePrefix.cableGtSingle, Materials.Tin));
-		ModHandler.addShapedRecipe("ga_gas_turbine_mv", MetaTileEntities.GAS_TURBINE[1].getStackForm(), "CRC", "RMR", "EWE", 'M', MetaTileEntities.HULL[GTValues.MV].getStackForm(), 'E', MetaItems.ELECTRIC_MOTOR_MV, 'R', new UnificationEntry(OrePrefix.rotor, Materials.Bronze), 'C', new UnificationEntry(OrePrefix.valueOf("circuit"), Tier.Good), 'W', new UnificationEntry(OrePrefix.cableGtSingle, Materials.Copper));
-		ModHandler.addShapedRecipe("ga_gas_turbine_hv", MetaTileEntities.GAS_TURBINE[2].getStackForm(), "CRC", "RMR", "EWE", 'M', MetaTileEntities.HULL[GTValues.HV].getStackForm(), 'E', MetaItems.ELECTRIC_MOTOR_HV, 'R', new UnificationEntry(OrePrefix.rotor, Materials.Steel), 'C', new UnificationEntry(OrePrefix.valueOf("circuit"), Tier.Advanced), 'W', new UnificationEntry(OrePrefix.cableGtSingle, Materials.Gold));
-		ModHandler.addShapedRecipe("ga_steam_turbine_lv", MetaTileEntities.STEAM_TURBINE[0].getStackForm(), "PCP", "RMR", "EWE", 'M', MetaTileEntities.HULL[GTValues.LV].getStackForm(), 'E', MetaItems.ELECTRIC_MOTOR_LV, 'R', new UnificationEntry(OrePrefix.rotor, Materials.Tin), 'C', new UnificationEntry(OrePrefix.valueOf("circuit"), Tier.Basic), 'W', new UnificationEntry(OrePrefix.cableGtSingle, Materials.Tin), 'P', new UnificationEntry(OrePrefix.pipeMedium, Materials.Bronze));
-		ModHandler.addShapedRecipe("ga_steam_turbine_mv", MetaTileEntities.STEAM_TURBINE[1].getStackForm(), "PCP", "RMR", "EWE", 'M', MetaTileEntities.HULL[GTValues.MV].getStackForm(), 'E', MetaItems.ELECTRIC_MOTOR_MV, 'R', new UnificationEntry(OrePrefix.rotor, Materials.Bronze), 'C', new UnificationEntry(OrePrefix.valueOf("circuit"), Tier.Good), 'W', new UnificationEntry(OrePrefix.cableGtSingle, Materials.Copper), 'P', new UnificationEntry(OrePrefix.pipeMedium, Materials.Steel));
-		ModHandler.addShapedRecipe("ga_steam_turbine_hv", MetaTileEntities.STEAM_TURBINE[2].getStackForm(), "PCP", "RMR", "EWE", 'M', MetaTileEntities.HULL[GTValues.HV].getStackForm(), 'E', MetaItems.ELECTRIC_MOTOR_HV, 'R', new UnificationEntry(OrePrefix.rotor, Materials.Steel), 'C', new UnificationEntry(OrePrefix.valueOf("circuit"), Tier.Advanced), 'W', new UnificationEntry(OrePrefix.cableGtSingle, Materials.Gold), 'P', new UnificationEntry(OrePrefix.pipeMedium, Materials.StainlessSteel));
-		ModHandler.addShapedRecipe("ga_magic_energy_absorber", MetaTileEntities.MAGIC_ENERGY_ABSORBER.getStackForm(), "PCP", "PMP", "PCP", 'M', MetaTileEntities.HULL[GTValues.EV].getStackForm(), 'P', MetaItems.SENSOR_EV, 'C', new UnificationEntry(OrePrefix.valueOf("circuit"), Tier.Elite));
-		if (MetaTileEntities.MAGIC_ENERGY_ABSORBER != null) {
-			ModHandler.removeRecipeByName(new ResourceLocation("gregtech:magic_energy_absorber"));
-			ModHandler.addShapedRecipe("ga_magic_energy_absorber", MetaTileEntities.MAGIC_ENERGY_ABSORBER.getStackForm(), "PCP", "SMS", "PCP", 'M', MetaTileEntities.HULL[GTValues.MV].getStackForm(), 'P', MetaItems.ELECTRIC_PUMP_MV, 'S', MetaItems.SENSOR_MV, 'C', new UnificationEntry(OrePrefix.valueOf("circuit"), Tier.Good));
-		}
+		registerMachineRecipe(
+			GATileEntities.NAQUADAH_REACTOR,
+			new String[] {
+				"RCR",
+				"FMF",
+				"QCQ"
+			},
+			sub('M', HULL),
+			sub('Q', CABLE_QUAD),
+			sub('C', BETTER_CIRCUIT),
+			sub('F', FIELD_GENERATOR),
+			sub('R', STICK_RADIOACTIVE));
+
+		registerTieredShapedRecipes(
+			"ga_diesel_generator_",
+			MetaTileEntities.DIESEL_GENERATOR,
+			new String[] {
+				"PCP",
+				"EME",
+				"GWG"
+			},
+			sub('M', HULL),
+			sub('P', PISTON),
+			sub('E', MOTOR),
+			sub('C', CIRCUIT),
+			sub('W', CABLE),
+			sub('G', GEAR));
+
+		registerTieredShapedRecipes(
+			"ga_gas_turbine_",
+			MetaTileEntities.GAS_TURBINE,
+			new String[] {
+				"CRC",
+				"RMR",
+				"EWE"
+			},
+			sub('M', HULL),
+			sub('E', MOTOR),
+			sub('R', ROTOR),
+			sub('C', CIRCUIT),
+			sub('W', CABLE));
+
+		registerTieredShapedRecipes(
+			"ga_steam_turbine_",
+			MetaTileEntities.STEAM_TURBINE,
+			new String[]{
+				"PCP",
+				"RMR",
+				"EWE"
+			},
+			sub('M', HULL),
+			sub('E', MOTOR),
+			sub('R', ROTOR),
+			sub('C', CIRCUIT),
+			sub('W', CABLE),
+			sub('P', PIPE));
+
+		ModHandler.addShapedRecipe(
+			"ga_magic_energy_absorber",
+			MetaTileEntities.MAGIC_ENERGY_ABSORBER.getStackForm(),
+			new String[] {
+				"PCP",
+				"PMP",
+				"PCP"
+			},
+			resolveComponents(EV,
+			                  sub('M', HULL),
+			                  sub('P', SENSOR),
+			                  sub('C', BETTER_CIRCUIT)));
 
 		//Machines
-		registerMachineRecipe(GATileEntities.CLUSTERMILL, "MMM", "CHC", "MMM", 'M', MOTOR, 'C', CIRCUIT, 'H', HULL);
-		registerMachineRecipe(MetaTileEntities.ALLOY_SMELTER, "ECE", "CMC", "WCW", 'M', HULL, 'E', CIRCUIT, 'W', CABLE, 'C', COIL_HEATING_DOUBLE);
-		registerMachineRecipe(MetaTileEntities.ASSEMBLER, "ACA", "VMV", "WCW", 'M', HULL, 'V', CONVEYOR, 'A', ROBOT_ARM, 'C', CIRCUIT, 'W', CABLE);
-		registerMachineRecipe(MetaTileEntities.BENDER, "PwP", "CMC", "EWE", 'M', HULL, 'E', MOTOR, 'P', PISTON, 'C', CIRCUIT, 'W', CABLE);
-		registerMachineRecipe(MetaTileEntities.CANNER, "WPW", "CMC", "GGG", 'M', HULL, 'P', PUMP, 'C', CIRCUIT, 'W', CABLE, 'G', GLASS);
-		registerMachineRecipe(MetaTileEntities.COMPRESSOR, " C ", "PMP", "WCW", 'M', HULL, 'P', PISTON, 'C', CIRCUIT, 'W', CABLE);
-		registerMachineRecipe(MetaTileEntities.CUTTER, "WCG", "VMB", "CWE", 'M', HULL, 'E', MOTOR, 'V', CONVEYOR, 'C', CIRCUIT, 'W', CABLE, 'G', GLASS, 'B', OreDictNames.craftingDiamondBlade);
-		registerMachineRecipe(MetaTileEntities.ELECTRIC_FURNACE, "ECE", "CMC", "WCW", 'M', HULL, 'E', CIRCUIT, 'W', CABLE, 'C', COIL_HEATING);
-		registerMachineRecipe(MetaTileEntities.EXTRACTOR, "GCG", "EMP", "WCW", 'M', HULL, 'E', PISTON, 'P', PUMP, 'C', CIRCUIT, 'W', CABLE, 'G', GLASS);
-		registerMachineRecipe(MetaTileEntities.EXTRUDER, "CCE", "XMP", "CCE", 'M', HULL, 'X', PISTON, 'E', CIRCUIT, 'P', PIPE, 'C', COIL_HEATING_DOUBLE);
-		registerMachineRecipe(MetaTileEntities.LATHE, "WCW", "EMD", "CWP", 'M', HULL, 'E', MOTOR, 'P', PISTON, 'C', CIRCUIT, 'W', CABLE, 'D', DIAMOND);
-		registerMachineRecipe(MetaTileEntities.MACERATOR, "PEG", "WWM", "CCW", 'M', HULL, 'E', MOTOR, 'P', PISTON, 'C', CIRCUIT, 'W', CABLE, 'G', GRINDER);
-		registerMachineRecipe(MetaTileEntities.MICROWAVE, "LWC", "LMR", "LEC", 'M', HULL, 'E', MOTOR, 'R', EMITTER, 'C', CIRCUIT, 'W', CABLE, 'L', new UnificationEntry(OrePrefix.plate, Materials.Lead));
-		registerMachineRecipe(MetaTileEntities.WIREMILL, "EWE", "CMC", "EWE", 'M', HULL, 'E', MOTOR, 'C', CIRCUIT, 'W', CABLE);
-		registerMachineRecipe(MetaTileEntities.CENTRIFUGE, "CEC", "WMW", "CEC", 'M', HULL, 'E', MOTOR, 'C', CIRCUIT, 'W', CABLE);
-		registerMachineRecipe(MetaTileEntities.ELECTROLYZER, "IGI", "IMI", "CWC", 'M', HULL, 'C', CIRCUIT, 'W', CABLE, 'I', WIRE, 'G', GLASS);
-		registerMachineRecipe(MetaTileEntities.THERMAL_CENTRIFUGE, "CEC", "OMO", "WEW", 'M', HULL, 'E', MOTOR, 'C', CIRCUIT, 'W', CABLE, 'O', COIL_HEATING_DOUBLE);
-		registerMachineRecipe(MetaTileEntities.ORE_WASHER, "RGR", "CEC", "WMW", 'M', HULL, 'R', ROTOR, 'E', MOTOR, 'C', CIRCUIT, 'W', CABLE, 'G', GLASS);
-		registerMachineRecipe(MetaTileEntities.PACKER, "BCB", "RMV", "WCW", 'M', HULL, 'R', ROBOT_ARM, 'V', CONVEYOR, 'C', CIRCUIT, 'W', CABLE, 'B', OreDictNames.chestWood);
-		registerMachineRecipe(MetaTileEntities.UNPACKER, "BCB", "VMR", "WCW", 'M', HULL, 'R', ROBOT_ARM, 'V', CONVEYOR, 'C', CIRCUIT, 'W', CABLE, 'B', OreDictNames.chestWood);
-		registerMachineRecipe(MetaTileEntities.CHEMICAL_REACTOR, "GRG", "WEW", "CMC", 'M', HULL, 'R', ROTOR, 'E', MOTOR, 'C', CIRCUIT, 'W', CABLE, 'G', GLASS);
-		registerMachineRecipe(MetaTileEntities.FLUID_CANNER, "GCG", "GMG", "WPW", 'M', HULL, 'P', PUMP, 'C', CIRCUIT, 'W', CABLE, 'G', GLASS);
-		registerMachineRecipe(MetaTileEntities.BREWERY, "GPG", "WMW", "CBC", 'M', HULL, 'P', PUMP, 'B', STICK_DISTILLATION, 'C', CIRCUIT, 'W', CABLE, 'G', GLASS);
-		registerMachineRecipe(MetaTileEntities.FERMENTER, "WPW", "GMG", "WCW", 'M', HULL, 'P', PUMP, 'C', CIRCUIT, 'W', CABLE, 'G', GLASS);
-		registerMachineRecipe(MetaTileEntities.FLUID_EXTRACTOR, "GCG", "PME", "WCW", 'M', HULL, 'E', PISTON, 'P', PUMP, 'C', CIRCUIT, 'W', CABLE, 'G', GLASS);
-		registerMachineRecipe(MetaTileEntities.FLUID_SOLIDIFIER, "PGP", "WMW", "CBC", 'M', HULL, 'P', PUMP, 'C', CIRCUIT, 'W', CABLE, 'G', GLASS, 'B', OreDictNames.chestWood);
-		registerMachineRecipe(MetaTileEntities.DISTILLERY, "GBG", "CMC", "WPW", 'M', HULL, 'P', PUMP, 'B', STICK_DISTILLATION, 'C', CIRCUIT, 'W', CABLE, 'G', GLASS);
-		registerMachineRecipe(MetaTileEntities.CHEMICAL_BATH, "VGW", "PGV", "CMC", 'M', HULL, 'P', PUMP, 'V', CONVEYOR, 'C', CIRCUIT, 'W', CABLE, 'G', GLASS);
-		registerMachineRecipe(MetaTileEntities.POLARIZER, "ZSZ", "WMW", "ZSZ", 'M', HULL, 'S', STICK_ELECTROMAGNETIC, 'Z', COIL_ELECTRIC, 'W', CABLE);
-		registerMachineRecipe(MetaTileEntities.ELECTROMAGNETIC_SEPARATOR, "VWZ", "WMS", "CWZ", 'M', HULL, 'S', STICK_ELECTROMAGNETIC, 'Z', COIL_ELECTRIC, 'V', CONVEYOR, 'C', CIRCUIT, 'W', CABLE);
-		registerMachineRecipe(MetaTileEntities.AUTOCLAVE, "IGI", "IMI", "CPC", 'M', HULL, 'P', PUMP, 'C', CIRCUIT, 'I', PLATE, 'G', GLASS);
-		registerMachineRecipe(MetaTileEntities.MIXER, "GRG", "GEG", "CMC", 'M', HULL, 'E', MOTOR, 'R', ROTOR, 'C', CIRCUIT, 'G', GLASS);
-		registerMachineRecipe(MetaTileEntities.LASER_ENGRAVER, "PEP", "CMC", "WCW", 'M', HULL, 'E', EMITTER, 'P', PISTON, 'C', CIRCUIT, 'W', CABLE);
-		registerMachineRecipe(MetaTileEntities.FORMING_PRESS, "WPW", "CMC", "WPW", 'M', HULL, 'P', PISTON, 'C', CIRCUIT, 'W', CABLE);
-		registerMachineRecipe(MetaTileEntities.FORGE_HAMMER, "WPW", "CMC", "WAW", 'M', HULL, 'P', PISTON, 'C', CIRCUIT, 'W', CABLE, 'A', OreDictNames.craftingAnvil);
-		registerMachineRecipe(MetaTileEntities.FLUID_HEATER, "OGO", "PMP", "WCW", 'M', HULL, 'P', PUMP, 'O', COIL_HEATING_DOUBLE, 'C', CIRCUIT, 'W', CABLE, 'G', GLASS);
-		registerMachineRecipe(MetaTileEntities.SIFTER, "WFW", "PMP", "CFC", 'M', HULL, 'P', PISTON, 'F', MetaItems.ITEM_FILTER, 'C', CIRCUIT, 'W', CABLE);
-		registerMachineRecipe(MetaTileEntities.ARC_FURNACE, "WGW", "CMC", "PPP", 'M', HULL, 'P', PLATE, 'C', CIRCUIT, 'W', CABLE_QUAD, 'G', new UnificationEntry(OrePrefix.ingot, Materials.Graphite));
-		registerMachineRecipe(MetaTileEntities.PLASMA_ARC_FURNACE, "WGW", "CMC", "TPT", 'M', HULL, 'P', PLATE, 'C', BETTER_CIRCUIT, 'W', CABLE_QUAD, 'T', PUMP, 'G', new UnificationEntry(OrePrefix.ingot, Materials.Graphite));
-		registerMachineRecipe(MetaTileEntities.PUMP, "WGW", "GMG", "TGT", 'M', HULL, 'W', CIRCUIT, 'G', PUMP, 'T', PIPE);
-		registerMachineRecipe(MetaTileEntities.AIR_COLLECTOR, "WFW", "PHP", "WCW", 'W', Blocks.IRON_BARS, 'F', MetaItems.ITEM_FILTER, 'P', PUMP, 'H', HULL, 'C', CIRCUIT);
-		if (GAConfig.GT5U.highTierPumps) registerMachineRecipe(GATileEntities.PUMP, "WGW", "GMG", "TGT", 'M', HULL, 'W', CIRCUIT, 'G', PUMP, 'T', PIPE);
-		if (GAConfig.GT5U.highTierAlloySmelter) registerMachineRecipe(GATileEntities.ALLOY_SMELTER, "ECE", "CMC", "WCW", 'M', HULL, 'E', CIRCUIT, 'W', CABLE, 'C', COIL_HEATING_DOUBLE);
-		if (GAConfig.GT5U.highTierAssemblers) registerMachineRecipe(GATileEntities.ASSEMBLER, "ACA", "VMV", "WCW", 'M', HULL, 'V', CONVEYOR, 'A', ROBOT_ARM, 'C', CIRCUIT, 'W', CABLE);
-		if (GAConfig.GT5U.highTierBenders) registerMachineRecipe(GATileEntities.BENDER, "PWP", "CMC", "EWE", 'M', HULL, 'E', MOTOR, 'P', PISTON, 'C', CIRCUIT, 'W', CABLE);
-		if (GAConfig.GT5U.highTierCanners) registerMachineRecipe(GATileEntities.CANNER, "WPW", "CMC", "GGG", 'M', HULL, 'P', PUMP, 'C', CIRCUIT, 'W', CABLE, 'G', GLASS);
-		if (GAConfig.GT5U.highTierCompressors) registerMachineRecipe(GATileEntities.COMPRESSOR, " C ", "PMP", "WCW", 'M', HULL, 'P', PISTON, 'C', CIRCUIT, 'W', CABLE);
-		if (GAConfig.GT5U.highTierCutters) registerMachineRecipe(GATileEntities.CUTTER, "WCG", "VMB", "CWE", 'M', HULL, 'E', MOTOR, 'V', CONVEYOR, 'C', CIRCUIT, 'W', CABLE, 'G', GLASS, 'B', OreDictNames.craftingDiamondBlade);
-		if (GAConfig.GT5U.highTierElectricFurnace) registerMachineRecipe(GATileEntities.ELECTRIC_FURNACE, "ECE", "CMC", "WCW", 'M', HULL, 'E', CIRCUIT, 'W', CABLE, 'C', COIL_HEATING);
-		if (GAConfig.GT5U.highTierExtractors) registerMachineRecipe(GATileEntities.EXTRACTOR, "GCG", "EMP", "WCW", 'M', HULL, 'E', PISTON, 'P', PUMP, 'C', CIRCUIT, 'W', CABLE, 'G', GLASS);
-		if (GAConfig.GT5U.highTierExtruders) registerMachineRecipe(GATileEntities.EXTRUDER, "CCE", "XMP", "CCE", 'M', HULL, 'X', PISTON, 'E', CIRCUIT, 'P', PIPE, 'C', COIL_HEATING_DOUBLE);
-		if (GAConfig.GT5U.highTierLathes) registerMachineRecipe(GATileEntities.LATHE, "WCW", "EMD", "CWP", 'M', HULL, 'E', MOTOR, 'P', PISTON, 'C', CIRCUIT, 'W', CABLE, 'D', DIAMOND);
-		if (GAConfig.GT5U.highTierMacerators) registerMachineRecipe(GATileEntities.MACERATOR, "PEG", "WWM", "CCW", 'M', HULL, 'E', MOTOR, 'P', PISTON, 'C', CIRCUIT, 'W', CABLE, 'G', GRINDER);
-		if (GAConfig.GT5U.highTierMicrowaves) registerMachineRecipe(GATileEntities.MICROWAVE, "LWC", "LMR", "LEC", 'M', HULL, 'E', MOTOR, 'R', EMITTER, 'C', CIRCUIT, 'W', CABLE, 'L', new UnificationEntry(OrePrefix.plate, Materials.Lead));
-		if (GAConfig.GT5U.highTierWiremills) registerMachineRecipe(GATileEntities.WIREMILL, "EWE", "CMC", "EWE", 'M', HULL, 'E', MOTOR, 'C', CIRCUIT, 'W', CABLE);
-		if (GAConfig.GT5U.highTierCentrifuges) registerMachineRecipe(GATileEntities.CENTRIFUGE, "CEC", "WMW", "CEC", 'M', HULL, 'E', MOTOR, 'C', CIRCUIT, 'W', CABLE);
-		if (GAConfig.GT5U.highTierElectrolyzers) registerMachineRecipe(GATileEntities.ELECTROLYZER, "IGI", "IMI", "CWC", 'M', HULL, 'C', CIRCUIT, 'W', CABLE, 'I', WIRE, 'G', GLASS);
-		if (GAConfig.GT5U.highTierThermalCentrifuges) registerMachineRecipe(GATileEntities.THERMAL_CENTRIFUGE, "CEC", "OMO", "WEW", 'M', HULL, 'E', MOTOR, 'C', CIRCUIT, 'W', CABLE, 'O', COIL_HEATING_DOUBLE);
-		if (GAConfig.GT5U.highTierOreWashers) registerMachineRecipe(GATileEntities.ORE_WASHER, "RGR", "CEC", "WMW", 'M', HULL, 'R', ROTOR, 'E', MOTOR, 'C', CIRCUIT, 'W', CABLE, 'G', GLASS);
-		if (GAConfig.GT5U.highTierPackers) registerMachineRecipe(GATileEntities.PACKER, "BCB", "RMV", "WCW", 'M', HULL, 'R', ROBOT_ARM, 'V', CONVEYOR, 'C', CIRCUIT, 'W', CABLE, 'B', OreDictNames.chestWood);
-		if (GAConfig.GT5U.highTierUnpackers) registerMachineRecipe(GATileEntities.UNPACKER, "BCB", "VMR", "WCW", 'M', HULL, 'R', ROBOT_ARM, 'V', CONVEYOR, 'C', CIRCUIT, 'W', CABLE, 'B', OreDictNames.chestWood);
-		if (GAConfig.GT5U.highTierChemicalReactors) registerMachineRecipe(GATileEntities.CHEMICAL_REACTOR, "GRG", "WEW", "CMC", 'M', HULL, 'R', ROTOR, 'E', MOTOR, 'C', CIRCUIT, 'W', CABLE, 'G', GLASS);
-		if (GAConfig.GT5U.highTierFluidCanners) registerMachineRecipe(GATileEntities.FLUID_CANNER, "GCG", "GMG", "WPW", 'M', HULL, 'P', PUMP, 'C', CIRCUIT, 'W', CABLE, 'G', GLASS);
-		if (GAConfig.GT5U.highTierBreweries) registerMachineRecipe(GATileEntities.BREWERY, "GPG", "WMW", "CBC", 'M', HULL, 'P', PUMP, 'B', STICK_DISTILLATION, 'C', CIRCUIT, 'W', CABLE, 'G', GLASS);
-		if (GAConfig.GT5U.highTierFermenters) registerMachineRecipe(GATileEntities.FERMENTER, "WPW", "GMG", "WCW", 'M', HULL, 'P', PUMP, 'C', CIRCUIT, 'W', CABLE, 'G', GLASS);
-		if (GAConfig.GT5U.highTierFluidExtractors) registerMachineRecipe(GATileEntities.FLUID_EXTRACTOR, "GCG", "PME", "WCW", 'M', HULL, 'E', PISTON, 'P', PUMP, 'C', CIRCUIT, 'W', CABLE, 'G', GLASS);
-		if (GAConfig.GT5U.highTierFluidSolidifiers) registerMachineRecipe(GATileEntities.FLUID_SOLIDIFIER, "PGP", "WMW", "CBC", 'M', HULL, 'P', PUMP, 'C', CIRCUIT, 'W', CABLE, 'G', GLASS, 'B', OreDictNames.chestWood);
-		if (GAConfig.GT5U.highTierDistilleries) registerMachineRecipe(GATileEntities.DISTILLERY, "GBG", "CMC", "WPW", 'M', HULL, 'P', PUMP, 'B', STICK_DISTILLATION, 'C', CIRCUIT, 'W', CABLE, 'G', GLASS);
-		if (GAConfig.GT5U.highTierChemicalBaths) registerMachineRecipe(GATileEntities.CHEMICAL_BATH, "VGW", "PGV", "CMC", 'M', HULL, 'P', PUMP, 'V', CONVEYOR, 'C', CIRCUIT, 'W', CABLE, 'G', GLASS);
-		if (GAConfig.GT5U.highTierPolarizers) registerMachineRecipe(GATileEntities.POLARIZER, "ZSZ", "WMW", "ZSZ", 'M', HULL, 'S', STICK_ELECTROMAGNETIC, 'Z', COIL_ELECTRIC, 'W', CABLE);
-		if (GAConfig.GT5U.highTierElectromagneticSeparators) registerMachineRecipe(GATileEntities.ELECTROMAGNETIC_SEPARATOR, "VWZ", "WMS", "CWZ", 'M', HULL, 'S', STICK_ELECTROMAGNETIC, 'Z', COIL_ELECTRIC, 'V', CONVEYOR, 'C', CIRCUIT, 'W', CABLE);
-		if (GAConfig.GT5U.highTierAutoclaves) registerMachineRecipe(GATileEntities.AUTOCLAVE, "IGI", "IMI", "CPC", 'M', HULL, 'P', PUMP, 'C', CIRCUIT, 'I', PLATE, 'G', GLASS);
-		if (GAConfig.GT5U.highTierMixers) registerMachineRecipe(GATileEntities.MIXER, "GRG", "GEG", "CMC", 'M', HULL, 'E', MOTOR, 'R', ROTOR, 'C', CIRCUIT, 'G', GLASS);
-		if (GAConfig.GT5U.highTierLaserEngravers) registerMachineRecipe(GATileEntities.LASER_ENGRAVER, "PEP", "CMC", "WCW", 'M', HULL, 'E', EMITTER, 'P', PISTON, 'C', CIRCUIT, 'W', CABLE);
-		if (GAConfig.GT5U.highTierFormingPresses) registerMachineRecipe(GATileEntities.FORMING_PRESS, "WPW", "CMC", "WPW", 'M', HULL, 'P', PISTON, 'C', CIRCUIT, 'W', CABLE);
-		if (GAConfig.GT5U.highTierForgeHammers) registerMachineRecipe(GATileEntities.FORGE_HAMMER, "WPW", "CMC", "WAW", 'M', HULL, 'P', PISTON, 'C', CIRCUIT, 'W', CABLE, 'A', OreDictNames.craftingAnvil);
-		if (GAConfig.GT5U.highTierFluidHeaters) registerMachineRecipe(GATileEntities.FLUID_HEATER, "OGO", "PMP", "WCW", 'M', HULL, 'P', PUMP, 'O', COIL_HEATING_DOUBLE, 'C', CIRCUIT, 'W', CABLE, 'G', GLASS);
-		if (GAConfig.GT5U.highTierSifters) registerMachineRecipe(GATileEntities.SIFTER, "WFW", "PMP", "CFC", 'M', HULL, 'P', PISTON, 'F', MetaItems.ITEM_FILTER, 'C', CIRCUIT, 'W', CABLE);
-		if (GAConfig.GT5U.highTierArcFurnaces) registerMachineRecipe(GATileEntities.ARC_FURNACE, "WGW", "CMC", "PPP", 'M', HULL, 'P', PLATE, 'C', CIRCUIT, 'W', CABLE_QUAD, 'G', new UnificationEntry(OrePrefix.ingot, Materials.Graphite));
-		if (GAConfig.GT5U.highTierPlasmaArcFurnaces) registerMachineRecipe(GATileEntities.PLASMA_ARC_FURNACE, "WGW", "CMC", "TPT", 'M', HULL, 'P', PLATE, 'C', BETTER_CIRCUIT, 'W', CABLE_QUAD, 'T', PUMP, 'G', new UnificationEntry(OrePrefix.ingot, Materials.Graphite));
-		registerMachineRecipe(GATileEntities.MASS_FAB, "CFC", "QMQ", "CFC", 'M', HULL, 'Q', CABLE_QUAD, 'C', BETTER_CIRCUIT, 'F', FIELD_GENERATOR);
-		registerMachineRecipe(GATileEntities.REPLICATOR, "EFE", "CMC", "EQE", 'M', HULL, 'Q', CABLE_QUAD, 'C', BETTER_CIRCUIT, 'F', FIELD_GENERATOR, 'E', EMITTER);
-		if (GAConfig.Misc.highTierCollector) registerMachineRecipe(GATileEntities.AIR_COLLECTOR, "WFW", "PHP", "WCW", 'W', Blocks.IRON_BARS, 'F', MetaItems.ITEM_FILTER, 'P', PUMP, 'H', HULL, 'C', CIRCUIT);
+		registerMachineRecipe(
+			GATileEntities.CLUSTERMILL,
+			new String[] {
+				"MMM",
+				"CHC",
+				"MMM"
+			},
+			sub('M', MOTOR),
+			sub('C', CIRCUIT),
+			sub('H', HULL));
 
-		ModHandler.addShapedRecipe("machine_access_interface", GATileEntities.MACHINE_ACCESS_INTERFACE.getStackForm(), "C", "H", 'C', new UnificationEntry(OrePrefix.valueOf("circuit"), Tier.Elite), 'H', MetaTileEntities.ITEM_IMPORT_BUS[GTValues.ULV].getStackForm());
+		registerMachineRecipe(
+			MetaTileEntities.ALLOY_SMELTER,
+			new String[] {
+				"ECE",
+				"CMC",
+				"WCW"
+			},
+			sub('M', HULL),
+			sub('E', CIRCUIT),
+			sub('W', CABLE),
+			sub('C', COIL_HEATING_DOUBLE));
 
-		registerMachineRecipe(GATileEntities.BUNDLER,
-							  "BCB",
-							  "RMV",
-							  "WCW",
-							  'M', HULL,
-							  'R', ROBOT_ARM,
-							  'V', CONVEYOR,
-							  'C', CIRCUIT,
-							  'W', CABLE,
-							  'B', OreDictNames.craftingPiston);
+		registerMachineRecipe(
+			MetaTileEntities.ASSEMBLER,
+			new String[] {
+				"ACA",
+				"VMV",
+				"WCW"
+			},
+			sub('M', HULL),
+			sub('V', CONVEYOR),
+			sub('A', ROBOT_ARM),
+			sub('C', CIRCUIT),
+			sub('W', CABLE));
+
+		registerMachineRecipe(
+			MetaTileEntities.BENDER,
+			new String[] {
+				"PwP",
+				"CMC",
+				"EWE"
+			},
+			sub('M', HULL),
+			sub('E', MOTOR),
+			sub('P', PISTON),
+			sub('C', CIRCUIT),
+			sub('W', CABLE));
+
+		registerMachineRecipe(
+			MetaTileEntities.CANNER,
+			new String[] {
+				"WPW",
+				"CMC",
+				"GGG"
+			},
+			sub('M', HULL),
+			sub('P', PUMP),
+			sub('C', CIRCUIT),
+			sub('W', CABLE),
+			sub('G', GLASS));
+
+		registerMachineRecipe(
+			MetaTileEntities.COMPRESSOR,
+			new String[] {
+				" C ",
+				"PMP",
+				"WCW"
+			},
+			sub('M', HULL),
+			sub('P', PISTON),
+			sub('C', CIRCUIT),
+			sub('W', CABLE));
+
+		registerMachineRecipe(
+			MetaTileEntities.CUTTER,
+			new String[] {
+				"WCG",
+				"VMB",
+				"CWE"
+			},
+			sub('M', HULL),
+			sub('E', MOTOR),
+			sub('V', CONVEYOR),
+			sub('C', CIRCUIT),
+			sub('W', CABLE),
+			sub('G', GLASS),
+			sub('B', OreDictNames.craftingDiamondBlade));
+
+		registerMachineRecipe(
+			MetaTileEntities.ELECTRIC_FURNACE,
+			new String[] {
+				"ECE",
+				"CMC",
+				"WCW"
+			},
+			sub('M', HULL),
+			sub('E', CIRCUIT),
+			sub('W', CABLE),
+			sub('C', COIL_HEATING));
+
+		registerMachineRecipe(
+			MetaTileEntities.EXTRACTOR,
+			new String[] {
+				"GCG",
+				"EMP",
+				"WCW"
+			},
+			sub('M', HULL),
+			sub('E', PISTON),
+			sub('P', PUMP),
+			sub('C', CIRCUIT),
+			sub('W', CABLE),
+			sub('G', GLASS));
+
+		registerMachineRecipe(
+			MetaTileEntities.EXTRUDER,
+			new String[] {
+				"CCE",
+				"XMP",
+				"CCE"
+			},
+			sub('M', HULL),
+			sub('X', PISTON),
+			sub('E', CIRCUIT),
+			sub('P', PIPE),
+			sub('C', COIL_HEATING_DOUBLE));
+
+		registerMachineRecipe(
+			MetaTileEntities.LATHE,
+			new String[] {
+				"WCW",
+				"EMD",
+				"CWP"
+			},
+			sub('M', HULL),
+			sub('E', MOTOR),
+			sub('P', PISTON),
+			sub('C', CIRCUIT),
+			sub('W', CABLE),
+			sub('D', DIAMOND));
+
+		registerMachineRecipe(
+			MetaTileEntities.MACERATOR,
+			new String[] {
+				"PEG",
+				"WWM",
+				"CCW"
+			},
+			sub('M', HULL),
+			sub('E', MOTOR),
+			sub('P', PISTON),
+			sub('C', CIRCUIT),
+			sub('W', CABLE),
+			sub('G', GRINDER));
+
+		registerMachineRecipe(
+			MetaTileEntities.MICROWAVE,
+			new String[] {
+				"LWC",
+				"LMR",
+				"LEC"
+			},
+			sub('M', HULL),
+			sub('E', MOTOR),
+			sub('R', EMITTER),
+			sub('C', CIRCUIT),
+			sub('W', CABLE),
+			sub('L', plate, Lead));
+
+		registerMachineRecipe(
+			MetaTileEntities.WIREMILL,
+			new String[] {
+				"EWE",
+				"CMC",
+				"EWE"
+			},
+			sub('M', HULL),
+			sub('E', MOTOR),
+			sub('C', CIRCUIT),
+			sub('W', CABLE));
+
+		registerMachineRecipe(
+			MetaTileEntities.CENTRIFUGE,
+			new String[] {
+				"CEC",
+				"WMW",
+				"CEC"
+			},
+			sub('M', HULL),
+			sub('E', MOTOR),
+			sub('C', CIRCUIT),
+			sub('W', CABLE));
+
+		registerMachineRecipe(
+			MetaTileEntities.ELECTROLYZER,
+			new String[] {
+				"IGI",
+				"IMI",
+				"CWC"
+			},
+			sub('M', HULL),
+			sub('C', CIRCUIT),
+			sub('W', CABLE),
+			sub('I', WIRE),
+			sub('G', GLASS));
+
+		registerMachineRecipe(
+			MetaTileEntities.THERMAL_CENTRIFUGE,
+			new String[] {
+				"CEC",
+				"OMO",
+				"WEW"
+			},
+			sub('M', HULL),
+			sub('E', MOTOR),
+			sub('C', CIRCUIT),
+			sub('W', CABLE),
+			sub('O', COIL_HEATING_DOUBLE));
+
+		registerMachineRecipe(
+			MetaTileEntities.ORE_WASHER,
+			new String[] {
+				"RGR",
+				"CEC",
+				"WMW"
+			},
+			sub('M', HULL),
+			sub('R', ROTOR),
+			sub('E', MOTOR),
+			sub('C', CIRCUIT),
+			sub('W', CABLE),
+			sub('G', GLASS));
+
+		registerMachineRecipe(
+			MetaTileEntities.PACKER,
+			new String[] {
+				"BCB",
+				"RMV",
+				"WCW"
+			},
+			sub('M', HULL),
+			sub('R', ROBOT_ARM),
+			sub('V', CONVEYOR),
+			sub('C', CIRCUIT),
+			sub('W', CABLE),
+			sub('B', OreDictNames.chestWood));
+
+		registerMachineRecipe(
+			MetaTileEntities.UNPACKER,
+			new String[] {
+				"BCB",
+				"VMR",
+				"WCW"
+			},
+			sub('M', HULL),
+			sub('R', ROBOT_ARM),
+			sub('V', CONVEYOR),
+			sub('C', CIRCUIT),
+			sub('W', CABLE),
+			sub('B', OreDictNames.chestWood));
+
+		registerMachineRecipe(
+			MetaTileEntities.CHEMICAL_REACTOR,
+			new String[] {
+				"GRG",
+				"WEW",
+				"CMC"
+			},
+			sub('M', HULL),
+			sub('R', ROTOR),
+			sub('E', MOTOR),
+			sub('C', CIRCUIT),
+			sub('W', CABLE),
+			sub('G', GLASS));
+
+		registerMachineRecipe(
+			MetaTileEntities.FLUID_CANNER,
+			new String[] {
+				"GCG",
+				"GMG",
+				"WPW"
+			},
+			sub('M', HULL),
+			sub('P', PUMP),
+			sub('C', CIRCUIT),
+			sub('W', CABLE),
+			sub('G', GLASS));
+
+		registerMachineRecipe(
+			MetaTileEntities.BREWERY,
+			new String[] {
+				"GPG",
+				"WMW",
+				"CBC"
+			},
+			sub('M', HULL),
+			sub('P', PUMP),
+			sub('B', STICK_DISTILLATION),
+			sub('C', CIRCUIT),
+			sub('W', CABLE),
+			sub('G', GLASS));
+
+		registerMachineRecipe(
+			MetaTileEntities.FERMENTER,
+			new String[] {
+				"WPW",
+				"GMG",
+				"WCW"
+			},
+			sub('M', HULL),
+			sub('P', PUMP),
+			sub('C', CIRCUIT),
+			sub('W', CABLE),
+			sub('G', GLASS));
+
+		registerMachineRecipe(
+			MetaTileEntities.FLUID_EXTRACTOR,
+			new String[] {
+				"GCG",
+				"PME",
+				"WCW"
+			},
+			sub('M', HULL),
+			sub('E', PISTON),
+			sub('P', PUMP),
+			sub('C', CIRCUIT),
+			sub('W', CABLE),
+			sub('G', GLASS));
+
+		registerMachineRecipe(
+			MetaTileEntities.FLUID_SOLIDIFIER,
+			new String[] {
+				"PGP",
+				"WMW",
+				"CBC"
+			},
+			sub('M', HULL),
+			sub('P', PUMP),
+			sub('C', CIRCUIT),
+			sub('W', CABLE),
+			sub('G', GLASS),
+			sub('B', OreDictNames.chestWood));
+
+		registerMachineRecipe(
+			MetaTileEntities.DISTILLERY,
+			new String[] {
+				"GBG",
+				"CMC",
+				"WPW"
+			},
+			sub('M', HULL),
+			sub('P', PUMP),
+			sub('B', STICK_DISTILLATION),
+			sub('C', CIRCUIT),
+			sub('W', CABLE),
+			sub('G', GLASS));
+
+		registerMachineRecipe(
+			MetaTileEntities.CHEMICAL_BATH,
+			new String[] {
+				"VGW",
+				"PGV",
+				"CMC"
+			},
+			sub('M', HULL),
+			sub('P', PUMP),
+			sub('V', CONVEYOR),
+			sub('C', CIRCUIT),
+			sub('W', CABLE),
+			sub('G', GLASS));
+
+		registerMachineRecipe(
+			MetaTileEntities.POLARIZER,
+			new String[] {
+				"ZSZ",
+				"WMW",
+				"ZSZ"
+			},
+			sub('M', HULL),
+			sub('S', STICK_ELECTROMAGNETIC),
+			sub('Z', COIL_ELECTRIC),
+			sub('W', CABLE));
+
+		registerMachineRecipe(
+			MetaTileEntities.ELECTROMAGNETIC_SEPARATOR,
+			new String[] {
+				"VWZ",
+				"WMS",
+				"CWZ"
+			},
+			sub('M', HULL),
+			sub('S', STICK_ELECTROMAGNETIC),
+			sub('Z', COIL_ELECTRIC),
+			sub('V', CONVEYOR),
+			sub('C', CIRCUIT),
+			sub('W', CABLE));
+
+		registerMachineRecipe(
+			MetaTileEntities.AUTOCLAVE,
+			new String[] {
+				"IGI",
+				"IMI",
+				"CPC"
+			},
+			sub('M', HULL),
+			sub('P', PUMP),
+			sub('C', CIRCUIT),
+			sub('I', PLATE),
+			sub('G', GLASS));
+
+		registerMachineRecipe(
+			MetaTileEntities.MIXER,
+			new String[] {
+				"GRG",
+				"GEG",
+				"CMC"
+			},
+			sub('M', HULL),
+			sub('E', MOTOR),
+			sub('R', ROTOR),
+			sub('C', CIRCUIT),
+			sub('G', GLASS));
+
+		registerMachineRecipe(
+			MetaTileEntities.LASER_ENGRAVER,
+			new String[] {
+				"PEP",
+				"CMC",
+				"WCW"
+			},
+			sub('M', HULL),
+			sub('E', EMITTER),
+			sub('P', PISTON),
+			sub('C', CIRCUIT),
+			sub('W', CABLE));
+
+		registerMachineRecipe(
+			MetaTileEntities.FORMING_PRESS,
+			new String[] {
+				"WPW",
+				"CMC",
+				"WPW"
+			},
+			sub('M', HULL),
+			sub('P', PISTON),
+			sub('C', CIRCUIT),
+			sub('W', CABLE));
+
+		registerMachineRecipe(
+			MetaTileEntities.FORGE_HAMMER,
+			new String[] {
+				"WPW",
+				"CMC",
+				"WAW"
+			},
+			sub('M', HULL),
+			sub('P', PISTON),
+			sub('C', CIRCUIT),
+			sub('W', CABLE),
+			sub('A', OreDictNames.craftingAnvil));
+
+		registerMachineRecipe(
+			MetaTileEntities.FLUID_HEATER,
+			new String[] {
+				"OGO",
+				"PMP",
+				"WCW"
+			},
+			sub('M', HULL),
+			sub('P', PUMP),
+			sub('O', COIL_HEATING_DOUBLE),
+			sub('C', CIRCUIT),
+			sub('W', CABLE),
+			sub('G', GLASS));
+
+		registerMachineRecipe(
+			MetaTileEntities.SIFTER,
+			new String[] {
+				"WFW",
+				"PMP",
+				"CFC"
+			},
+			sub('M', HULL),
+			sub('P', PISTON),
+			sub('F', MetaItems.ITEM_FILTER),
+			sub('C', CIRCUIT),
+			sub('W', CABLE));
+
+		registerMachineRecipe(
+			MetaTileEntities.ARC_FURNACE,
+			new String[] {
+				"WGW",
+				"CMC",
+				"PPP"
+			},
+			sub('M', HULL),
+			sub('P', PLATE),
+			sub('C', CIRCUIT),
+			sub('W', CABLE_QUAD),
+			sub('G', ingot, Graphite));
+
+		registerMachineRecipe(
+			MetaTileEntities.PLASMA_ARC_FURNACE,
+			new String[] {
+				"WGW",
+				"CMC",
+				"TPT"
+			},
+			sub('M', HULL),
+			sub('P', PLATE),
+			sub('C', BETTER_CIRCUIT),
+			sub('W', CABLE_QUAD),
+			sub('T', PUMP),
+			sub('G', ingot, Graphite));
+
+		registerMachineRecipe(
+			MetaTileEntities.PUMP,
+			new String[] {
+				"WGW",
+				"GMG",
+				"TGT"
+			},
+			sub('M', HULL),
+			sub('W', CIRCUIT),
+			sub('G', PUMP),
+			sub('T', PIPE));
+
+		registerMachineRecipe(
+			MetaTileEntities.AIR_COLLECTOR,
+			new String[] {
+				"WFW",
+				"PHP",
+				"WCW"
+			},
+			sub('W', Blocks.IRON_BARS),
+			sub('F', MetaItems.ITEM_FILTER),
+			sub('P', PUMP),
+			sub('H', HULL),
+			sub('C', CIRCUIT));
+
+		if (GAConfig.GT5U.highTierPumps)
+			registerMachineRecipe(
+				GATileEntities.PUMP,
+				new String[] {
+					"WGW",
+					"GMG",
+					"TGT"
+				},
+				sub('M', HULL),
+				sub('W', CIRCUIT),
+				sub('G', PUMP),
+				sub('T', PIPE));
+
+		if (GAConfig.GT5U.highTierAlloySmelter)
+			registerMachineRecipe(
+				GATileEntities.ALLOY_SMELTER,
+				new String[] {
+					"ECE",
+					"CMC",
+					"WCW"
+				},
+				sub('M', HULL),
+				sub('E', CIRCUIT),
+				sub('W', CABLE),
+				sub('C', COIL_HEATING_DOUBLE));
+
+		if (GAConfig.GT5U.highTierAssemblers)
+			registerMachineRecipe(
+				GATileEntities.ASSEMBLER,
+				new String[] {
+					"ACA",
+					"VMV",
+					"WCW"
+				},
+				sub('M', HULL),
+				sub('V', CONVEYOR),
+				sub('A', ROBOT_ARM),
+				sub('C', CIRCUIT),
+				sub('W', CABLE));
+
+		if (GAConfig.GT5U.highTierBenders)
+			registerMachineRecipe(
+				GATileEntities.BENDER,
+				new String[] {
+					"PWP",
+					"CMC",
+					"EWE"
+				},
+				sub('M', HULL),
+				sub('E', MOTOR),
+				sub('P', PISTON),
+				sub('C', CIRCUIT),
+				sub('W', CABLE));
+
+		if (GAConfig.GT5U.highTierCanners)
+			registerMachineRecipe(
+				GATileEntities.CANNER,
+				new String[] {
+					"WPW",
+					"CMC",
+					"GGG"
+				},
+				sub('M', HULL),
+				sub('P', PUMP),
+				sub('C', CIRCUIT),
+				sub('W', CABLE),
+				sub('G', GLASS));
+
+		if (GAConfig.GT5U.highTierCompressors)
+			registerMachineRecipe(
+				GATileEntities.COMPRESSOR,
+				new String[] {
+					" C ",
+					"PMP",
+					"WCW"
+				},
+				sub('M', HULL),
+				sub('P', PISTON),
+				sub('C', CIRCUIT),
+				sub('W', CABLE));
+
+		if (GAConfig.GT5U.highTierCutters)
+			registerMachineRecipe(
+				GATileEntities.CUTTER,
+				new String[] {
+					"WCG",
+					"VMB",
+					"CWE"
+				},
+				sub('M', HULL),
+				sub('E', MOTOR),
+				sub('V', CONVEYOR),
+				sub('C', CIRCUIT),
+				sub('W', CABLE),
+				sub('G', GLASS),
+				sub('B', OreDictNames.craftingDiamondBlade));
+
+		if (GAConfig.GT5U.highTierElectricFurnace)
+			registerMachineRecipe(
+				GATileEntities.ELECTRIC_FURNACE,
+				new String[] {
+					"ECE",
+					"CMC",
+					"WCW"
+				},
+				sub('M', HULL),
+				sub('E', CIRCUIT),
+				sub('W', CABLE),
+				sub('C', COIL_HEATING));
+
+		if (GAConfig.GT5U.highTierExtractors)
+			registerMachineRecipe(
+				GATileEntities.EXTRACTOR,
+				new String[] {
+					"GCG",
+					"EMP",
+					"WCW"
+				},
+				sub('M', HULL),
+				sub('E', PISTON),
+				sub('P', PUMP),
+				sub('C', CIRCUIT),
+				sub('W', CABLE),
+				sub('G', GLASS));
+
+		if (GAConfig.GT5U.highTierExtruders)
+			registerMachineRecipe(
+				GATileEntities.EXTRUDER,
+				new String[] {
+					"CCE",
+					"XMP",
+					"CCE"
+				},
+				sub('M', HULL),
+				sub('X', PISTON),
+				sub('E', CIRCUIT),
+				sub('P', PIPE),
+				sub('C', COIL_HEATING_DOUBLE));
+
+		if (GAConfig.GT5U.highTierLathes)
+			registerMachineRecipe(
+				GATileEntities.LATHE,
+				new String[] {
+					"WCW",
+					"EMD",
+					"CWP"
+				},
+				sub('M', HULL),
+				sub('E', MOTOR),
+				sub('P', PISTON),
+				sub('C', CIRCUIT),
+				sub('W', CABLE),
+				sub('D', DIAMOND));
+
+		if (GAConfig.GT5U.highTierMacerators)
+			registerMachineRecipe(
+				GATileEntities.MACERATOR,
+				new String[] {
+					"PEG",
+					"WWM",
+					"CCW"
+				},
+				sub('M', HULL),
+				sub('E', MOTOR),
+				sub('P', PISTON),
+				sub('C', CIRCUIT),
+				sub('W', CABLE),
+				sub('G', GRINDER));
+
+		if (GAConfig.GT5U.highTierMicrowaves)
+			registerMachineRecipe(
+				GATileEntities.MICROWAVE,
+				new String[] {
+					"LWC",
+					"LMR",
+					"LEC"
+				},
+				sub('M', HULL),
+				sub('E', MOTOR),
+				sub('R', EMITTER),
+				sub('C', CIRCUIT),
+				sub('W', CABLE),
+				sub('L', plate, Lead));
+
+		if (GAConfig.GT5U.highTierWiremills)
+			registerMachineRecipe(
+				GATileEntities.WIREMILL,
+				new String[] {
+					"EWE",
+					"CMC",
+					"EWE"
+				},
+				sub('M', HULL),
+				sub('E', MOTOR),
+				sub('C', CIRCUIT),
+				sub('W', CABLE));
+
+		if (GAConfig.GT5U.highTierCentrifuges)
+			registerMachineRecipe(
+				GATileEntities.CENTRIFUGE,
+				new String[] {
+					"CEC",
+					"WMW",
+					"CEC"
+				},
+				sub('M', HULL),
+				sub('E', MOTOR),
+				sub('C', CIRCUIT),
+				sub('W', CABLE));
+
+		if (GAConfig.GT5U.highTierElectrolyzers)
+			registerMachineRecipe(
+				GATileEntities.ELECTROLYZER,
+				new String[] {
+					"IGI",
+					"IMI",
+					"CWC"
+				},
+				sub('M', HULL),
+				sub('C', CIRCUIT),
+				sub('W', CABLE),
+				sub('I', WIRE),
+				sub('G', GLASS));
+
+		if (GAConfig.GT5U.highTierThermalCentrifuges)
+			registerMachineRecipe(
+				GATileEntities.THERMAL_CENTRIFUGE,
+				new String[] {
+					"CEC",
+					"OMO",
+					"WEW"
+				},
+				sub('M', HULL),
+				sub('E', MOTOR),
+				sub('C', CIRCUIT),
+				sub('W', CABLE),
+				sub('O', COIL_HEATING_DOUBLE));
+
+		if (GAConfig.GT5U.highTierOreWashers)
+			registerMachineRecipe(
+				GATileEntities.ORE_WASHER,
+				new String[] {
+					"RGR",
+					"CEC",
+					"WMW"
+				},
+				sub('M', HULL),
+				sub('R', ROTOR),
+				sub('E', MOTOR),
+				sub('C', CIRCUIT),
+				sub('W', CABLE),
+				sub('G', GLASS));
+
+		if (GAConfig.GT5U.highTierPackers)
+			registerMachineRecipe(
+				GATileEntities.PACKER,
+				new String[] {
+					"BCB",
+					"RMV",
+					"WCW"
+				},
+				sub('M', HULL),
+				sub('R', ROBOT_ARM),
+				sub('V', CONVEYOR),
+				sub('C', CIRCUIT),
+				sub('W', CABLE),
+				sub('B', OreDictNames.chestWood));
+
+		if (GAConfig.GT5U.highTierUnpackers)
+			registerMachineRecipe(
+				GATileEntities.UNPACKER,
+				new String[] {
+					"BCB",
+					"VMR",
+					"WCW"
+				},
+				sub('M', HULL),
+				sub('R', ROBOT_ARM),
+				sub('V', CONVEYOR),
+				sub('C', CIRCUIT),
+				sub('W', CABLE),
+				sub('B', OreDictNames.chestWood));
+
+		if (GAConfig.GT5U.highTierChemicalReactors)
+			registerMachineRecipe(
+				GATileEntities.CHEMICAL_REACTOR,
+				new String[] {
+					"GRG",
+					"WEW",
+					"CMC"
+				},
+				sub('M', HULL),
+				sub('R', ROTOR),
+				sub('E', MOTOR),
+				sub('C', CIRCUIT),
+				sub('W', CABLE),
+				sub('G', GLASS));
+
+		if (GAConfig.GT5U.highTierFluidCanners)
+			registerMachineRecipe(
+				GATileEntities.FLUID_CANNER,
+				new String[] {
+					"GCG",
+					"GMG",
+					"WPW"
+				},
+				sub('M', HULL),
+				sub('P', PUMP),
+				sub('C', CIRCUIT),
+				sub('W', CABLE),
+				sub('G', GLASS));
+
+		if (GAConfig.GT5U.highTierBreweries)
+			registerMachineRecipe(
+				GATileEntities.BREWERY,
+				new String[] {
+					"GPG",
+					"WMW",
+					"CBC"
+				},
+				sub('M', HULL),
+				sub('P', PUMP),
+				sub('B', STICK_DISTILLATION),
+				sub('C', CIRCUIT),
+				sub('W', CABLE),
+				sub('G', GLASS));
+
+		if (GAConfig.GT5U.highTierFermenters)
+			registerMachineRecipe(
+				GATileEntities.FERMENTER,
+				new String[] {
+					"WPW",
+					"GMG",
+					"WCW"
+				},
+				sub('M', HULL),
+				sub('P', PUMP),
+				sub('C', CIRCUIT),
+				sub('W', CABLE),
+				sub('G', GLASS));
+
+		if (GAConfig.GT5U.highTierFluidExtractors)
+			registerMachineRecipe(
+				GATileEntities.FLUID_EXTRACTOR,
+				new String[] {
+					"GCG",
+					"PME",
+					"WCW"
+				},
+				sub('M', HULL),
+				sub('E', PISTON),
+				sub('P', PUMP),
+				sub('C', CIRCUIT),
+				sub('W', CABLE),
+				sub('G', GLASS));
+
+		if (GAConfig.GT5U.highTierFluidSolidifiers)
+			registerMachineRecipe(
+				GATileEntities.FLUID_SOLIDIFIER,
+				new String[] {
+					"PGP",
+					"WMW",
+					"CBC"
+				},
+				sub('M', HULL),
+				sub('P', PUMP),
+				sub('C', CIRCUIT),
+				sub('W', CABLE),
+				sub('G', GLASS),
+				sub('B', OreDictNames.chestWood));
+
+		if (GAConfig.GT5U.highTierDistilleries)
+			registerMachineRecipe(
+				GATileEntities.DISTILLERY,
+				new String[] {
+					"GBG",
+					"CMC",
+					"WPW"
+				},
+				sub('M', HULL),
+				sub('P', PUMP),
+				sub('B', STICK_DISTILLATION),
+				sub('C', CIRCUIT),
+				sub('W', CABLE),
+				sub('G', GLASS));
+
+		if (GAConfig.GT5U.highTierChemicalBaths)
+			registerMachineRecipe(
+				GATileEntities.CHEMICAL_BATH,
+				new String[] {
+					"VGW",
+					"PGV",
+					"CMC"
+				},
+				sub('M', HULL),
+				sub('P', PUMP),
+				sub('V', CONVEYOR),
+				sub('C', CIRCUIT),
+				sub('W', CABLE),
+				sub('G', GLASS));
+
+		if (GAConfig.GT5U.highTierPolarizers)
+			registerMachineRecipe(
+				GATileEntities.POLARIZER,
+				new String[] {
+					"ZSZ",
+					"WMW",
+					"ZSZ"
+				},
+				sub('M', HULL),
+				sub('S', STICK_ELECTROMAGNETIC),
+				sub('Z', COIL_ELECTRIC),
+				sub('W', CABLE));
+
+		if (GAConfig.GT5U.highTierElectromagneticSeparators)
+			registerMachineRecipe(
+				GATileEntities.ELECTROMAGNETIC_SEPARATOR,
+				new String[] {
+					"VWZ",
+					"WMS",
+					"CWZ"
+				},
+				sub('M', HULL),
+				sub('S', STICK_ELECTROMAGNETIC),
+				sub('Z', COIL_ELECTRIC),
+				sub('V', CONVEYOR),
+				sub('C', CIRCUIT),
+				sub('W', CABLE));
+
+		if (GAConfig.GT5U.highTierAutoclaves)
+			registerMachineRecipe(
+				GATileEntities.AUTOCLAVE,
+				new String[] {
+					"IGI",
+					"IMI",
+					"CPC"
+				},
+				sub('M', HULL),
+				sub('P', PUMP),
+				sub('C', CIRCUIT),
+				sub('I', PLATE),
+				sub('G', GLASS));
+
+		if (GAConfig.GT5U.highTierMixers)
+			registerMachineRecipe(
+				GATileEntities.MIXER,
+				new String[] {
+					"GRG",
+					"GEG",
+					"CMC"
+				},
+				sub('M', HULL),
+				sub('E', MOTOR),
+				sub('R', ROTOR),
+				sub('C', CIRCUIT),
+				sub('G', GLASS));
+
+		if (GAConfig.GT5U.highTierLaserEngravers)
+			registerMachineRecipe(
+				GATileEntities.LASER_ENGRAVER,
+				new String[] {
+					"PEP",
+					"CMC",
+					"WCW"
+				},
+				sub('M', HULL),
+				sub('E', EMITTER),
+				sub('P', PISTON),
+				sub('C', CIRCUIT),
+				sub('W', CABLE));
+
+		if (GAConfig.GT5U.highTierFormingPresses)
+			registerMachineRecipe(
+				GATileEntities.FORMING_PRESS,
+				new String[] {
+					"WPW",
+					"CMC",
+					"WPW"
+				},
+				sub('M', HULL),
+				sub('P', PISTON),
+				sub('C', CIRCUIT),
+				sub('W', CABLE));
+
+		if (GAConfig.GT5U.highTierForgeHammers)
+			registerMachineRecipe(
+				GATileEntities.FORGE_HAMMER,
+				new String[] {
+					"WPW",
+					"CMC",
+					"WAW"
+				},
+				sub('M', HULL),
+				sub('P', PISTON),
+				sub('C', CIRCUIT),
+				sub('W', CABLE),
+				sub('A', OreDictNames.craftingAnvil));
+
+		if (GAConfig.GT5U.highTierFluidHeaters)
+			registerMachineRecipe(
+				GATileEntities.FLUID_HEATER,
+				new String[] {
+					"OGO",
+					"PMP",
+					"WCW"
+				},
+				sub('M', HULL),
+				sub('P', PUMP),
+				sub('O', COIL_HEATING_DOUBLE),
+				sub('C', CIRCUIT),
+				sub('W', CABLE),
+				sub('G', GLASS));
+
+		if (GAConfig.GT5U.highTierSifters)
+			registerMachineRecipe(
+				GATileEntities.SIFTER,
+				new String[] {
+					"WFW",
+					"PMP",
+					"CFC"
+				},
+				sub('M', HULL),
+				sub('P', PISTON),
+				sub('F', MetaItems.ITEM_FILTER),
+				sub('C', CIRCUIT),
+				sub('W', CABLE));
+
+		if (GAConfig.GT5U.highTierArcFurnaces)
+			registerMachineRecipe(
+				GATileEntities.ARC_FURNACE,
+				new String[] {
+					"WGW",
+					"CMC",
+					"PPP"
+				},
+				sub('M', HULL),
+				sub('P', PLATE),
+				sub('C', CIRCUIT),
+				sub('W', CABLE_QUAD),
+				sub('G', ingot, Graphite));
+
+		if (GAConfig.GT5U.highTierPlasmaArcFurnaces)
+			registerMachineRecipe(
+				GATileEntities.PLASMA_ARC_FURNACE,
+				new String[] {
+					"WGW",
+					"CMC",
+					"TPT"
+				},
+				sub('M', HULL),
+				sub('P', PLATE),
+				sub('C', BETTER_CIRCUIT),
+				sub('W', CABLE_QUAD),
+				sub('T', PUMP),
+				sub('G', ingot, Graphite));
+
+		registerMachineRecipe(
+			Arrays.stream(GATileEntities.MASS_FAB)
+			      .filter(Objects::nonNull)
+			      .toArray(SimpleMachineMetaTileEntity[]::new),
+			new String[] {
+				"CFC",
+				"QMQ",
+				"CFC"
+			},
+			sub('M', HULL),
+			sub('Q', CABLE_QUAD),
+			sub('C', BETTER_CIRCUIT),
+			sub('F', FIELD_GENERATOR));
+
+		registerMachineRecipe(
+			Arrays.stream(GATileEntities.REPLICATOR)
+			      .filter(Objects::nonNull)
+			      .toArray(SimpleMachineMetaTileEntity[]::new),
+			new String[] {
+				"EFE",
+				"CMC",
+				"EQE"
+			},
+			sub('M', HULL),
+			sub('Q', CABLE_QUAD),
+			sub('C', BETTER_CIRCUIT),
+			sub('F', FIELD_GENERATOR),
+			sub('E', EMITTER));
+
+		if (GAConfig.Misc.highTierCollector)
+			registerMachineRecipe(
+				GATileEntities.AIR_COLLECTOR,
+				new String[] {
+					"WFW",
+					"PHP",
+					"WCW"
+				},
+				sub('W', Blocks.IRON_BARS),
+				sub('F', MetaItems.ITEM_FILTER),
+				sub('P', PUMP),
+				sub('H', HULL),
+				sub('C', CIRCUIT));
+
+		ModHandler.addShapedRecipe(
+			"machine_access_interface",
+			GATileEntities.MACHINE_ACCESS_INTERFACE.getStackForm(),
+			new String[] {
+				"C",
+				"H"
+			},
+			sub('C', IV, CIRCUIT),
+			sub('H', MetaTileEntities.ITEM_IMPORT_BUS[ULV].getStackForm()));
+
+		registerMachineRecipe(
+			GATileEntities.BUNDLER,
+			new String[] {
+				"BCB",
+				"RMV",
+				"WCW"
+			},
+			sub('M', HULL),
+			sub('R', ROBOT_ARM),
+			sub('V', CONVEYOR),
+			sub('C', CIRCUIT),
+			sub('W', CABLE),
+			sub('B', OreDictNames.craftingPiston));
 	}
 
-	public static <T extends MetaTileEntity> void registerMachineRecipe(T[] metaTileEntities, Object... recipe) {
-		for (int i = 0; i < metaTileEntities.length; i++) {
-			if (metaTileEntities[i] != null) ModHandler.addShapedRecipe(String.format("ga_%s", metaTileEntities[i].getMetaName()), metaTileEntities[i].getStackForm(), prepareRecipe(i + 1, Arrays.copyOf(recipe, recipe.length)));
-		}
-	}
-
-	private static Object[] prepareRecipe(int tier, Object... recipe) {
-		for (int i = 3; i < recipe.length; i++) {
-			if (recipe[i] instanceof GACraftingComponents) {
-				recipe[i] = ((GACraftingComponents) recipe[i]).getIngredient(tier);
-			}
-		}
-		return recipe;
+	public static <T extends MetaTileEntity & ITiered>
+	void registerMachineRecipe(T[] metaTileEntities,
+	                           String[] definition,
+	                           Substitution<?>... subs)
+	{
+		registerTieredShapedRecipes(metaTileEntities,
+		                            x -> String.format("ga_%s", x.getMetaName()),
+		                            ITiered::getTier,
+		                            MetaTileEntity::getStackForm,
+		                            definition,
+		                            subs);
 	}
 }

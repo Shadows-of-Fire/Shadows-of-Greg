@@ -37,7 +37,7 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 
-@Mod(modid = Tags.MODID, name = Tags.MODNAME, version = Tags.VERSION, dependencies = "required-after:gregtech@[1.18.6,);after:forestry;after:tconstruct;")
+@Mod(modid = Tags.MODID, name = Tags.MODNAME, version = Tags.VERSION, dependencies = "required-after:gregtech@[1.18.7,);after:forestry;after:tconstruct;")
 public class GregicAdditions {
 
 	@SidedProxy(modId = Tags.MODID, clientSide = "gregicadditions.bees.ClientProxy", serverSide = "gregicadditions.bees.CommonProxy")
@@ -46,8 +46,6 @@ public class GregicAdditions {
 	public static final Logger LOGGER = LogManager.getLogger(Tags.MODID);
 
 	public GregicAdditions() {
-		GAEnums.preInit();
-
 	}
 
 	@EventHandler

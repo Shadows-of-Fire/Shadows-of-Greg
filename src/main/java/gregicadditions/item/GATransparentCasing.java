@@ -1,5 +1,6 @@
 package gregicadditions.item;
 
+import gregtech.common.blocks.LookupBlock;
 import gregtech.common.blocks.VariantBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -13,6 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.jetbrains.annotations.NotNull;
 
 public class GATransparentCasing extends VariantBlock<GATransparentCasing.CasingType> {
 
@@ -53,7 +55,7 @@ public class GATransparentCasing extends VariantBlock<GATransparentCasing.Casing
 		return block != this && super.shouldSideBeRendered(blockState, blockAccess, pos, side);
 	}
 
-	public enum CasingType implements IStringSerializable {
+	public enum CasingType implements IStringSerializable, LookupBlock<CasingType> {
 
 		REINFORCED_GLASS("reinforced_glass");
 
@@ -68,5 +70,9 @@ public class GATransparentCasing extends VariantBlock<GATransparentCasing.Casing
 			return this.name;
 		}
 
+		@Override
+		public @NotNull VariantBlock<CasingType> getVariantBlock() {
+			return GAMetaBlocks.TRANSPARENT_CASING;
+		}
 	}
 }

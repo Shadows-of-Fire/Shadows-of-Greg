@@ -4,7 +4,9 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import gregtech.api.metatileentity.IMaterial;
 import gregtech.api.recipes.ModHandler;
+import gregtech.api.unification.material.type.Material;
 import org.apache.commons.lang3.tuple.Pair;
 
 import codechicken.lib.colour.ColourRGBA;
@@ -32,7 +34,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 
-public class TileEntityCrate extends MetaTileEntity {
+public class TileEntityCrate extends MetaTileEntity implements IMaterial {
 
 	private final SolidMaterial material;
 	private final int inventorySize;
@@ -143,5 +145,10 @@ public class TileEntityCrate extends MetaTileEntity {
 	@Override
 	public void addInformation(ItemStack stack, @Nullable World player, List<String> tooltip, boolean advanced) {
 		tooltip.add(I18n.format("gregtech.universal.tooltip.item_storage_capacity", inventorySize));
+	}
+
+	@Override
+	public Material getMaterial() {
+		return material;
 	}
 }
