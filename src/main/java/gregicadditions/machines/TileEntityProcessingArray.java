@@ -208,7 +208,8 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 	@Override
 	protected void handleDisplayClick(String componentData, Widget.ClickData clickData) {
 		super.handleDisplayClick(componentData, clickData);
-		isDistinctInputBusMode = !isDistinctInputBusMode;
+		if(componentData.equals("distinct"))
+			isDistinctInputBusMode = !isDistinctInputBusMode;
 	}
 
 	@Override
