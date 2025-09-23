@@ -857,7 +857,7 @@ public class GARecipeAddition {
 						sub('H', ring, stackFluid.material),
 						sub('P', PIPE),
 						sub('M', MOTOR),
-						sub('C', CABLE)));
+						sub('C', AL_CABLE)));
 		}
 
 		//Adjust the GTCE Pump Assembler recipe to match our pump recipe
@@ -867,7 +867,7 @@ public class GARecipeAddition {
 				ASSEMBLER_RECIPES
 					.recipeBuilder()
 					.output(tier, PUMP)
-					.inputs(tier, ROTOR, CABLE, SCREW, PIPE, MOTOR)
+					.inputs(tier, ROTOR, AL_CABLE, SCREW, PIPE, MOTOR)
 					.fluidInputs(m.getFluid((int) stackFluid.amount))
 					.duration(100).EUt(30 << (tier - 1) * 2)
 					.buildAndRegister();

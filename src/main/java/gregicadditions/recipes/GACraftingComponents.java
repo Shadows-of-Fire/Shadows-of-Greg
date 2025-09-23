@@ -146,6 +146,7 @@ public class GACraftingComponents extends CraftingComponent {
 		bind(OrePrefix.ingot, AL_METAL);
 
 	public static final Component<Material> AL_CABLE_MATERIAL = tier -> switch(tier) {
+		case IV -> Materials.Tungsten;
 		case LuV -> Materials.YttriumBariumCuprate;
 		case ZPM -> Materials.VanadiumGallium;
 		case UV -> Materials.NiobiumTitanium;
