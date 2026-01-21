@@ -50,7 +50,7 @@ public class MachineCraftingRecipes {
 			    "ore_washer", "packer", "unpacker", "chemical_reactor", "fluid_canner", "brewery", "fermenter",
 			    "fluid_extractor", "fluid_solidifier", "distillery", "chemical_bath", "polarizer",
 			    "electromagnetic_separator", "mixer", "forming_press", "forge_hammer", "fluid_heater", "sifter",
-			    "arc_furnace", "plasma_arc_furnace", "pump", "air_collector"))
+			    "arc_furnace", "plasma_arc_furnace", "pump", "air_collector", "thermal_centrifuge"))
 			for (String tier : arr("lv", "mv", "hv", "ev"))
 				ModHandler.removeRecipeByName(
 					new ResourceLocation(String.format("gregtech:gregtech.machine.%s.%s", machineName, tier)));
