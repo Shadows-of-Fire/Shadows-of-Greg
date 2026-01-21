@@ -13,10 +13,13 @@ import gregtech.api.recipes.RecipeMaps;
 import gregtech.api.render.Textures;
 import gregtech.api.unification.material.Materials;
 import gregtech.common.metatileentities.electric.MetaTileEntityAirCollector;
+import gregtech.common.metatileentities.electric.MetaTileEntityMacerator;
 import gregtech.common.metatileentities.electric.MetaTileEntityPump;
 import net.minecraft.util.ResourceLocation;
 
 import java.util.stream.IntStream;
+
+import static gregtech.api.GTValues.*;
 
 public class GATileEntities {
 	public static SimpleMachineMetaTileEntity[] CLUSTERMILL = new SimpleMachineMetaTileEntity[8];
@@ -109,10 +112,10 @@ public class GATileEntities {
 		}
 
 		if (GAConfig.GT5U.highTierMacerators) {
-			MACERATOR[0] = GregTechAPI.registerMetaTileEntity(2020, new SimpleMachineMetaTileEntity(location("macerator.iv"), RecipeMaps.MACERATOR_RECIPES, Textures.MACERATOR_OVERLAY, 5));
-			MACERATOR[1] = GregTechAPI.registerMetaTileEntity(2021, new SimpleMachineMetaTileEntity(location("macerator.luv"), RecipeMaps.MACERATOR_RECIPES, Textures.MACERATOR_OVERLAY, 6));
-			MACERATOR[2] = GregTechAPI.registerMetaTileEntity(2022, new SimpleMachineMetaTileEntity(location("macerator.zpm"), RecipeMaps.MACERATOR_RECIPES, Textures.MACERATOR_OVERLAY, 7));
-			MACERATOR[3] = GregTechAPI.registerMetaTileEntity(2023, new SimpleMachineMetaTileEntity(location("macerator.uv"), RecipeMaps.MACERATOR_RECIPES, Textures.MACERATOR_OVERLAY, 8));
+			MACERATOR[0] = GregTechAPI.registerMetaTileEntity(2020, new MetaTileEntityMacerator(location("macerator.iv"), RecipeMaps.MACERATOR_RECIPES, 3, Textures.MACERATOR_OVERLAY, IV));
+			MACERATOR[1] = GregTechAPI.registerMetaTileEntity(2021, new MetaTileEntityMacerator(location("macerator.luv"), RecipeMaps.MACERATOR_RECIPES, 3, Textures.MACERATOR_OVERLAY, LuV));
+			MACERATOR[2] = GregTechAPI.registerMetaTileEntity(2022, new MetaTileEntityMacerator(location("macerator.zpm"), RecipeMaps.MACERATOR_RECIPES, 3, Textures.MACERATOR_OVERLAY, ZPM));
+			MACERATOR[3] = GregTechAPI.registerMetaTileEntity(2023, new MetaTileEntityMacerator(location("macerator.uv"), RecipeMaps.MACERATOR_RECIPES, 3, Textures.MACERATOR_OVERLAY, UV));
 		}
 
 		if (GAConfig.GT5U.highTierAlloySmelter) {
