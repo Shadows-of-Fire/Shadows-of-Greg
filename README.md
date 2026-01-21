@@ -15,13 +15,13 @@ Some features implemented specifically in this mod are:
 - The Assembly Line
 - Additional tiers of Gregtech CE machines
 - Additional materials such as Curved Plates, Double ingots, and Rounds
-- The Cluster Mill, which is an machine specifically for making foils
+- The Cluster Mill, which is a machine specifically for making foils
 - Forestry Integration
 - Tinkers Construct Integration
-- The addiiton of content from GT5U and GT6
+- The addition of content from GT5U and GT6
 
 ----
 
 This mod was originally created by [Shadows-of-Fire](https://github.com/Shadows-of-Fire), but has had development and bug fixes taken over by the [Nomifactory Team](https://github.com/Nomifactory) for Minecraft 1.12.2. 
 
-[Nomifactory](https://www.curseforge.com/minecraft/modpacks/nomifactory) is a Gregtech CE based modpack, heavily focused on automation and factory creation and features Shadows-of-Greg as one of the key endgame mods. 
+[Nomifactory](https://www.curseforge.com/minecraft/modpacks/nomifactory) is a Gregtech Nomifactory Edition based modpack, heavily focused on automation and factory creation and features Shadows-of-Greg as one of the key endgame mods. 
