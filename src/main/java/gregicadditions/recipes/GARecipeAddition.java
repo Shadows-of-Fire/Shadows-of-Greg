@@ -744,6 +744,7 @@ public class GARecipeAddition {
 	}
 
 	private static void reinforcedGlass() {
+		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:ingot_mixed_metal"));
 		//Reinforced Glass
 		int multiplier2;
 		for (MaterialStack metal1 : firstMetal) {
@@ -1100,6 +1101,7 @@ public class GARecipeAddition {
 			sub('A', IV, ROBOT_ARM),
 			sub('F', frameGt, TungstenSteel));
 
+		ModHandler.removeRecipeByName(new ResourceLocation("gregtech:casing_assembler_casing"));
 		ModHandler.addShapedRecipe(
 			"ga_assmbler_casing",
 			ASSEMBLER_CASING.getStack(3),
