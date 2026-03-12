@@ -29,6 +29,7 @@ import net.minecraft.util.*;
 import net.minecraft.util.text.*;
 import net.minecraftforge.fluids.*;
 import net.minecraftforge.items.*;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.*;
 import java.util.Arrays;
@@ -951,28 +952,30 @@ public class TileEntityProcessingArray extends RecipeMapMultiblockController {
 
 		// ------------------------------- End Distinct Bus Logic ------------------------------------------------
 
+
+		// Fix improper use of PA's workable for establishing bonus tier (see #187)
+		@Override
+		public int getMachineTierForRecipe(Recipe recipe) {
+			// Get the implementation appropriate for the specific machines and call that
+			if(MachineItemBlock.getMetaTileEntity(machineItemStack) instanceof WorkableTieredMetaTileEntity wmte)
+				return wmte.getMachineTierForRecipe(recipe);
+
+			// As a contingency, return the base tier so that "overclocks" in setupRecipe (below) is zero
+			return recipe.getBaseTier();
+		}
+
+		@Override
+		protected int[] calculateOverclock(@NotNull Recipe recipe) {
+			// Use the voltage from the machine stack for overclocking
+			return super.calculateOverclock(recipe, machineVoltage);
+		}
+
 		@Override
 		protected void setupRecipe(Recipe recipe) {
-			int[] resultOverclock = calculateOverclock(recipe, machineVoltage);
-			this.progressTime = 1;
-			setMaxProgress(resultOverclock[1]);
-			this.recipeEUt = resultOverclock[0] * this.numberOfOperations;
-			this.fluidOutputs = GTUtility.copyFluidList(recipe.getFluidOutputs());
-			int tier = Math.min(getMachineTierForRecipe(recipe), machineTier);
-			int overclocks = tier - recipe.getBaseTier();
-			this.nonChancedItemAmt = recipe.getOutputs().size();
-			this.chancedItemOutputs = recipe.getChancedRecipeOutputsAtTier(overclocks);
-			this.itemOutputs = GTUtility.copyStackList(recipe.getResultItemOutputs(getOutputInventory().getSlots(),
-			                                                                       random,
-			                                                                       overclocks));
-
-			if(this.wasActiveAndNeedsUpdate)
-				this.wasActiveAndNeedsUpdate = false;
-			else
-				setActive(true);
-
+			super.setupRecipe(recipe);
+			this.recipeEUt *= this.numberOfOperations;
 			if(metaTileEntity instanceof TileEntityProcessingArray tepa)
-				tepa.activeRecipeMachineStats = new MachineStats(tier, numberOfOperations, recipeMap);
+				tepa.activeRecipeMachineStats = new MachineStats(machineTier, numberOfOperations, recipeMap);
 		}
 
 		@Override
