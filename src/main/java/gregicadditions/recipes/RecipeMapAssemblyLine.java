@@ -30,7 +30,7 @@ public class RecipeMapAssemblyLine<R extends RecipeBuilder<R>> extends RecipeMap
 
 	@Override
 	public ModularUI.Builder createUITemplate(DoubleSupplier progressSupplier, IItemHandlerModifiable importItems, IItemHandlerModifiable exportItems, FluidTankList importFluids, FluidTankList exportFluids) {
-		ModularUI.Builder builder = new ModularUI.Builder(GuiTextures.BACKGROUND_EXTENDED, 176, 216) {
+		ModularUI.Builder builder = new ModularUI.Builder(GuiTextures.BACKGROUND, 176, 166) {
 			@Override
 			public ModularUI.Builder bindPlayerInventory(InventoryPlayer inventoryPlayer) {
 				this.bindPlayerInventory(inventoryPlayer, 134);
@@ -38,7 +38,7 @@ public class RecipeMapAssemblyLine<R extends RecipeBuilder<R>> extends RecipeMap
 			}
 
 		};
-		builder.widget(new ProgressWidget(progressSupplier, 109, 22, 20, 20, this.progressBarTexture, this.moveType));
+		builder.widget(new ProgressWidget(progressSupplier, 109, 26, 20, 20, this.progressBarTexture, this.moveType));
 		this.addInventorySlotGroup(builder, importItems, importFluids, false);
 		this.addInventorySlotGroup(builder, exportItems, exportFluids, true);
 		return builder;
@@ -59,7 +59,7 @@ public class RecipeMapAssemblyLine<R extends RecipeBuilder<R>> extends RecipeMap
 		int itemSlotsToLeft = inputSlotGrid[0];
 		int itemSlotsToDown = inputSlotGrid[1];
 		int startInputsX = isOutputs ? 138 : 101 - itemSlotsToLeft * 18;
-		int startInputsY = 32 - (int) (itemSlotsToDown / 2.0 * 18);
+		int startInputsY = 36 - (int) (itemSlotsToDown / 2.0 * 18);
 		for (int i = 0; i < itemSlotsToDown; i++) {
 			for (int j = 0; j < itemSlotsToLeft; j++) {
 				int slotIndex = i * itemSlotsToLeft + j;
