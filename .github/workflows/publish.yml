@@ -85,7 +85,7 @@ jobs:
         uses: Kira-NT/mc-publish@v3
         with:
           curseforge-id: ${{ secrets.CURSEFORGE_PROJECT_ID }}
-          curseforge-token: ${{ secrets.CURSEFORGE_API_KEY }}
+          curseforge-token: ${{ secrets.CURSEFORGE_API_TOKEN }}
           changelog: ${{env.CHANGELOG_LOCATION}}
           name: Shadows of Greg − ${{ github.ref_name }}
           loaders: |
