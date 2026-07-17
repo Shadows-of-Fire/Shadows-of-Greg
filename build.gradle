@@ -1,4 +1,4 @@
-//version: 1723428048
+//version: 1777224609
 /*
  * DO NOT CHANGE THIS FILE!
  * Also, you may replace this file at any time if there is an update available.
@@ -34,7 +34,7 @@ plugins {
     id 'eclipse'
     id 'maven-publish'
     id 'org.jetbrains.gradle.plugin.idea-ext' version '1.1.8'
-    id 'com.gtnewhorizons.retrofuturagradle' version '1.4.0'
+    id 'com.gtnewhorizons.retrofuturagradle' version '1.4.1'
     id 'net.darkhax.curseforgegradle' version '1.1.24' apply false
     id 'com.modrinth.minotaur' version '2.8.7' apply false
     id 'com.diffplug.spotless' version '6.13.0' apply false
@@ -50,6 +50,8 @@ def out = services.get(StyledTextOutputFactory).create('an-output')
 
 
 // Project properties
+loadProjectProperties()
+
 
 // Required properties: we don't know how to handle these being missing gracefully
 checkPropertyExists("modName")
@@ -80,6 +82,7 @@ propertyDefaultIfUnset("includeWellKnownRepositories", true)
 propertyDefaultIfUnset("includeCommonDevEnvMods", true)
 propertyDefaultIfUnset("stripForgeRequirements", false)
 propertyDefaultIfUnset("noPublishedSources", false)
+propertyDefaultIfUnset("mixinProviderSpec", "zone.rong:mixinbooter:10.6")
 propertyDefaultIfUnset("forceEnableMixins", false)
 propertyDefaultIfUnset("mixinConfigRefmap", "mixins.${project.modId}.refmap.json")
 propertyDefaultIfUnsetWithEnvVar("enableCoreModDebug", false, "CORE_MOD_DEBUG")
@@ -315,14 +318,6 @@ tasks.withType(ScalaCompile).configureEach {
 }
 
 
-// Allow others using this buildscript to have custom gradle code run
-if (getFile('addon.gradle').exists()) {
-    apply from: 'addon.gradle'
-} else if (getFile('addon.gradle.kts').exists()) {
-    apply from: 'addon.gradle.kts'
-}
-
-
 // Configure Minecraft
 
 // Try to gather mod version from git tags if version is not manually specified
@@ -369,11 +364,14 @@ minecraft {
 
     // JVM arguments
     extraRunJvmArguments.add("-ea:${modGroup}")
+
+    // enable JLine Terminal since idea_rt.jar is no longer added to the classpath
+    extraRunJvmArguments.add('-Dterminal.jline=true')
     if (usesMixins.toBoolean()) {
         extraRunJvmArguments.addAll([
-            '-Dmixin.hotSwap=true',
-            '-Dmixin.checks.interfaces=true',
-            '-Dmixin.debug.export=true'
+                '-Dmixin.hotSwap=true',
+                '-Dmixin.checks.interfaces=true',
+                '-Dmixin.debug.export=true'
         ])
     }
 
@@ -518,7 +516,6 @@ configurations {
     testRuntimeClasspath.extendsFrom(runtimeOnlyNonPublishable)
 }
 
-String mixinProviderSpec = 'zone.rong:mixinbooter:9.1'
 dependencies {
     if (usesMixins.toBoolean()) {
         annotationProcessor 'org.ow2.asm:asm-debug-all:5.2'
@@ -624,12 +621,12 @@ test {
     }.get()
 
     testLogging {
-        events TestLogEvent.STARTED, TestLogEvent.PASSED, TestLogEvent.FAILED
+        events TestLogEvent.SKIPPED, TestLogEvent.PASSED, TestLogEvent.FAILED
         exceptionFormat TestExceptionFormat.FULL
         showExceptions true
         showStackTraces true
         showCauses true
-        showStandardStreams true
+        showStandardStreams false
     }
 
     if (enableJUnit.toBoolean()) {
@@ -870,10 +867,10 @@ if (enableJava17RunTasks.toBoolean()) {
 
     dependencies {
         if (modId != 'lwjgl3ify') {
-            java17Dependencies("io.github.twilightflower:lwjgl3ify:1.0.0")
-        }
-        java17PatchDependencies("io.github.twilightflower:lwjgl3ify:1.0.0:forgePatches") {
-            transitive = false
+            java17Dependencies("io.github.twilightflower:lwjgl3ify:1.0.1")
+            java17PatchDependencies("io.github.twilightflower:lwjgl3ify:1.0.1:forgePatches") {
+                transitive = false
+            }
         }
     }
 
@@ -1324,7 +1321,7 @@ def addModrinthDep(String scope, String type, String name) {
     project.modrinth.dependencies.add(dep)
 }
 
-if (customMavenPublishUrl) {
+/* Maven Publishing */ {
     String publishedVersion = modVersion
 
     publishing {
@@ -1345,12 +1342,18 @@ if (customMavenPublishUrl) {
         }
 
         repositories {
-            maven {
-                url = customMavenPublishUrl
-                allowInsecureProtocol = !customMavenPublishUrl.startsWith('https')
-                credentials {
-                    username = providers.environmentVariable('MAVEN_USER').getOrElse('NONE')
-                    password = providers.environmentVariable('MAVEN_PASSWORD').getOrElse('NONE')
+            if(customMavenPublishUrl) {
+                maven {
+                    url = customMavenPublishUrl
+                    allowInsecureProtocol = !customMavenPublishUrl.startsWith('https')
+                    credentials {
+                        username = providers.environmentVariable('MAVEN_USER').getOrElse('NONE')
+                        password = providers.environmentVariable('MAVEN_PASSWORD').getOrElse('NONE')
+                    }
+                }
+            } else {
+                maven {
+                    mavenLocal()
                 }
             }
         }
@@ -1483,6 +1486,20 @@ tasks.register('faq') {
 
 
 // Helpers
+def loadProjectProperties() {
+    def configFile = file("gradle.properties")
+    if (configFile.exists()) {
+        configFile.withReader {
+            def prop = new Properties()
+            prop.load(it)
+            new ConfigSlurper().parse(prop).forEach { String k, def v ->
+                project.ext.setProperty(k, v)
+            }
+        }
+    } else {
+        print("Failed to read from gradle.properties, as it did not exist!")
+    }
+}
 
 def getDefaultArtifactGroup() {
     def lastIndex = project.modGroup.lastIndexOf('.')
@@ -1495,7 +1512,7 @@ def getFile(String relativePath) {
 
 def checkPropertyExists(String propertyName) {
     if (!project.hasProperty(propertyName)) {
-        throw new GradleException("This project requires a property \"" + propertyName + "\"! Please add it your \"gradle.properties\". You can find all properties and their description here: https://github.com/GregTechCEu/Buildscripts/blob/main/gradle.properties")
+        throw new GradleException("This project requires a property \"" + propertyName + "\"! Please add it your \"buildscript.properties\" or \"gradle.properties\". You can find all properties and their description here: https://github.com/GregTechCEu/Buildscripts/blob/main/buildscript.properties and https://github.com/GregTechCEu/Buildscripts/blob/main/gradle.properties")
     }
 }
 
@@ -1532,4 +1549,12 @@ def getLastTag() {
     def githubTag = providers.environmentVariable('GITHUB_TAG')
     return runShell('git describe --abbrev=0 --tags ' +
             (githubTag.isPresent() ? runShell('git rev-list --tags --skip=1 --max-count=1') : ''))
+}
+
+
+// Allow others using this buildscript to have custom gradle code run
+if (getFile('addon.gradle').exists()) {
+    apply from: 'addon.gradle'
+} else if (getFile('addon.gradle.kts').exists()) {
+    apply from: 'addon.gradle.kts'
 }
